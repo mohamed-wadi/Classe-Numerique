@@ -48,8 +48,18 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Route racine pour Fly.io
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'API École CM2/CM1 - Backend déployé sur Fly.io',
+    status: 'running',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Utilisation du stockage en mémoire pour cette démo
 console.log('Utilisation du stockage en mémoire (pas de MongoDB)');
+console.log('Mode déploiement : sans redimensionnement d\'images');
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);

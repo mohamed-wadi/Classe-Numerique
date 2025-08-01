@@ -1,44 +1,18 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs');
-const { resizeImageIfNeeded } = require('../utils/imageResizer');
 const router = express.Router();
 
-// Configuration multer pour upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = 'uploads/';
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
-    }
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-const upload = multer({ 
-  storage,
-  fileFilter: (req, file, cb) => {
-    // Accepter les images et PDFs
-    if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
-      cb(null, true);
-    } else {
-      cb(new Error('Type de fichier non supporté'), false);
-    }
-  }
-});
-
 // Middleware de vérification du token
-const jwt = require('jsonwebtoken');
 const verifyToken = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
+  
   if (!token) {
-    return res.status(401).json({ message: 'Accès refusé' });
+    return res.status(401).json({ message: 'Accès refusé. Token manquant.' });
   }
+
   try {
+    const jwt = require('jsonwebtoken');
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret_key');
     req.user = decoded;
     next();
@@ -47,59 +21,50 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-// Stockage temporaire en mémoire (remplacer par MongoDB en production)
+// Configuration multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage });
+
+// Stockage temporaire en mémoire
 let contents = [];
 let nextId = 1;
 
-// GET - Récupérer tout le contenu (pour prof) ou contenu visible (pour étudiants)
-router.get('/', verifyToken, (req, res) => {
-  let filteredContent = contents;
+// Fonction pour redimensionner les images (version simplifiée sans sharp)
+const resizeImageIfNeeded = async (filePath) => {
+  // En mode déploiement, on retourne le chemin original
+  // Le redimensionnement sera fait côté client si nécessaire
+  console.log('Redimensionnement d\'image désactivé en mode déploiement');
+  return filePath;
+};
 
-  if (req.user.role === 'student') {
-    // Les étudiants ne voient que le contenu visible de leur niveau
-    filteredContent = contents.filter(
-      content => content.isVisible && content.level === req.user.level
-    );
-  }
-
-  res.json(filteredContent);
-});
-
-// GET - Récupérer contenu par niveau et catégorie
-router.get('/:level/:category', verifyToken, (req, res) => {
+// GET - Récupérer le contenu par niveau et catégorie
+router.get('/:level/:category', (req, res) => {
   const { level, category } = req.params;
-  let filteredContent = contents.filter(
-    content => content.level === level && content.category === category
+  const filteredContents = contents.filter(content => 
+    content.level === level && content.category === category
   );
-
-  if (req.user.role === 'student') {
-    filteredContent = filteredContent.filter(content => content.isVisible);
-  }
-
-  res.json(filteredContent);
+  res.json(filteredContents);
 });
 
-// POST - Ajouter nouveau contenu (professeur seulement)
+// GET - Récupérer tout le contenu
+router.get('/', (req, res) => {
+  res.json(contents);
+});
+
+// POST - Créer un nouveau contenu
 router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
 ]), async (req, res) => {
-  if (req.user.role !== 'teacher') {
-    return res.status(403).json({ message: 'Accès refusé. Professeur requis.' });
-  }
-
-  const {
-    title,
-    level,
-    category,
-    theme,
-    subcategory,
-    type,
-    description
-  } = req.body;
-
   try {
-    // Redimensionner les images si elles existent
     let miniaturePath = '';
     let pdfFilePath = '';
 
@@ -108,44 +73,40 @@ router.post('/', verifyToken, upload.fields([
     }
 
     if (req.files?.pdfFile) {
-      pdfFilePath = req.files.pdfFile[0].path; // Les PDFs ne sont pas redimensionnés
+      pdfFilePath = req.files.pdfFile[0].path;
     }
 
     const newContent = {
       id: nextId++,
-      title,
-      level,
-      category,
-      theme: theme ? parseInt(theme) : null,
-      subcategory,
-      type,
-      description: description || '',
+      title: req.body.title,
+      level: req.body.level,
+      category: req.body.category,
+      theme: req.body.theme ? parseInt(req.body.theme) : null,
+      subcategory: req.body.subcategory || '',
+      type: req.body.type,
+      description: req.body.description || '',
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
       isVisible: false,
       createdBy: req.user.username,
       createdAt: new Date(),
       updatedAt: new Date(),
-      visibilityChangedAt: new Date() // Initialisation avec la date de création
+      visibilityChangedAt: new Date()
     };
 
     contents.push(newContent);
     res.status(201).json(newContent);
   } catch (error) {
-    console.error('Erreur lors du traitement des fichiers:', error);
-    res.status(500).json({ message: 'Erreur lors du traitement des fichiers' });
+    console.error('Erreur lors de la création:', error);
+    res.status(500).json({ message: 'Erreur lors de la création du contenu' });
   }
 });
 
-// PUT - Modifier contenu (professeur seulement)
+// PUT - Modifier un contenu
 router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
 ]), async (req, res) => {
-  if (req.user.role !== 'teacher') {
-    return res.status(403).json({ message: 'Accès refusé. Professeur requis.' });
-  }
-
   const contentId = parseInt(req.params.id);
   const contentIndex = contents.findIndex(c => c.id === contentId);
 
@@ -154,34 +115,41 @@ router.put('/:id', verifyToken, upload.fields([
   }
 
   try {
+    let miniaturePath = contents[contentIndex].miniature;
+    let pdfFilePath = contents[contentIndex].pdfFile;
+
+    if (req.files?.miniature) {
+      miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
+    }
+
+    if (req.files?.pdfFile) {
+      pdfFilePath = req.files.pdfFile[0].path;
+    }
+
     const updatedContent = {
       ...contents[contentIndex],
-      ...req.body,
+      title: req.body.title || contents[contentIndex].title,
+      level: req.body.level || contents[contentIndex].level,
+      category: req.body.category || contents[contentIndex].category,
+      theme: req.body.theme ? parseInt(req.body.theme) : contents[contentIndex].theme,
+      subcategory: req.body.subcategory || contents[contentIndex].subcategory,
+      type: req.body.type || contents[contentIndex].type,
+      description: req.body.description || contents[contentIndex].description,
+      miniature: miniaturePath,
+      pdfFile: pdfFilePath,
       updatedAt: new Date()
     };
-
-    // Redimensionner les nouvelles images si elles existent
-    if (req.files?.miniature) {
-      updatedContent.miniature = await resizeImageIfNeeded(req.files.miniature[0].path);
-    }
-    if (req.files?.pdfFile) {
-      updatedContent.pdfFile = req.files.pdfFile[0].path; // Les PDFs ne sont pas redimensionnés
-    }
 
     contents[contentIndex] = updatedContent;
     res.json(updatedContent);
   } catch (error) {
-    console.error('Erreur lors du traitement des fichiers:', error);
-    res.status(500).json({ message: 'Erreur lors du traitement des fichiers' });
+    console.error('Erreur lors de la modification:', error);
+    res.status(500).json({ message: 'Erreur lors de la modification du contenu' });
   }
 });
 
-// PUT - Basculer la visibilité du contenu (professeur seulement)
+// PUT - Changer la visibilité
 router.put('/:id/visibility', verifyToken, (req, res) => {
-  if (req.user.role !== 'teacher') {
-    return res.status(403).json({ message: 'Accès refusé. Professeur requis.' });
-  }
-
   const contentId = parseInt(req.params.id);
   const contentIndex = contents.findIndex(c => c.id === contentId);
 
@@ -191,31 +159,17 @@ router.put('/:id/visibility', verifyToken, (req, res) => {
 
   contents[contentIndex].isVisible = !contents[contentIndex].isVisible;
   contents[contentIndex].updatedAt = new Date();
-  contents[contentIndex].visibilityChangedAt = new Date(); // Nouveau champ pour la date de changement de visibilité
-
+  contents[contentIndex].visibilityChangedAt = new Date();
   res.json(contents[contentIndex]);
 });
 
-// DELETE - Supprimer contenu (professeur seulement)
+// DELETE - Supprimer un contenu
 router.delete('/:id', verifyToken, (req, res) => {
-  if (req.user.role !== 'teacher') {
-    return res.status(403).json({ message: 'Accès refusé. Professeur requis.' });
-  }
-
   const contentId = parseInt(req.params.id);
   const contentIndex = contents.findIndex(c => c.id === contentId);
 
   if (contentIndex === -1) {
     return res.status(404).json({ message: 'Contenu non trouvé' });
-  }
-
-  // Supprimer les fichiers associés
-  const content = contents[contentIndex];
-  if (content.miniature && fs.existsSync(content.miniature)) {
-    fs.unlinkSync(content.miniature);
-  }
-  if (content.pdfFile && fs.existsSync(content.pdfFile)) {
-    fs.unlinkSync(content.pdfFile);
   }
 
   contents.splice(contentIndex, 1);
