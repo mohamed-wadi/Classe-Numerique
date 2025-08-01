@@ -9,6 +9,8 @@ import LoginEnseignant from './components/LoginEnseignant';
 import TeacherDashboard from './components/TeacherDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Aide from './components/Aide';
+import Contact from './components/Contact';
 import './App.css';
 
 // Thème moderne et épuré
@@ -166,6 +168,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/login/eleve" element={<LoginEleve />} />
               <Route path="/login/enseignant" element={<LoginEnseignant />} />
+              <Route path="/aide" element={<Aide />} />
+              <Route path="/contact" element={<Contact />} />
               <Route 
                 path="/teacher" 
                 element={

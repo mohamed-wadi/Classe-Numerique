@@ -33,8 +33,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
 
 // Route de test
-app.get('/', (req, res) => {
-  res.json({ message: 'API École CM2/CE6 fonctionne!' });
+app.get('/api', (req, res) => {
+  res.json({ message: 'API École CM2/CM1 fonctionne!' });
 });
 
 // Utilisation du stockage en mémoire pour cette démo

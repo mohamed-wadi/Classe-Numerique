@@ -4,9 +4,9 @@ const router = express.Router();
 
 // Utilisateurs prédéfinis (peut être étendu avec une base de données)
 const users = {
-  teacher: {
+  prof: {
     username: 'prof',
-    password: 'prof123', // En production, utiliser bcrypt
+    password: 'prof123',
     role: 'teacher'
   },
   cm2: {
@@ -15,11 +15,11 @@ const users = {
     role: 'student',
     level: 'CM2'
   },
-  ce6: {
-    username: 'ce6',
+  cm1: {
+    username: 'cm1',
     password: 'ecole',
     role: 'student',
-    level: 'CE6'
+    level: 'CM1'
   }
 };
 

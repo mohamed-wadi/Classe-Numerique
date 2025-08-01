@@ -25,7 +25,6 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import emailjs from '@emailjs/browser';
@@ -135,12 +134,28 @@ export default function LoginEnseignant() {
     setConfirmPassword('');
   };
 
+  const handleLogoClick = () => {
+    navigate('/');
+  };
+
+  const handleConnexionClick = () => {
+    navigate('/');
+  };
+
+  const handleContactClick = () => {
+    navigate('/contact');
+  };
+
+  const handleAideClick = () => {
+    navigate('/aide');
+  };
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
         width: '100vw',
-        backgroundColor: '#80b8e4',
+        backgroundColor: '#80b9e5',
         backgroundImage: `url(${backgroundConnect})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -154,13 +169,23 @@ export default function LoginEnseignant() {
       <AppBar position="static" elevation={0} sx={{ background: '#ffffff', boxShadow: 'none', p: 0 }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, md: 6 }, py: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box component="img" src={logo} alt="Logo" sx={{ height: 40, width: 40 }} />
+            <IconButton onClick={handleLogoClick} sx={{ p: 0 }}>
+              <Box component="img" src={logo} alt="Logo" sx={{ height: 40, width: 40 }} />
+            </IconButton>
           </Box>
           <Box sx={{ display: 'flex', gap: 3 }}>
-            <IconButton sx={{ color: '#3b4a6b' }}><MailOutlineIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Contact</Typography></IconButton>
-            <IconButton sx={{ color: '#3b4a6b' }}><MenuBookIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Exercices</Typography></IconButton>
-            <IconButton sx={{ color: '#3b4a6b' }}><HelpOutlineIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Aide</Typography></IconButton>
-            <IconButton sx={{ color: '#3b4a6b' }}><AccountCircleIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Connexion</Typography></IconButton>
+            <IconButton onClick={handleContactClick} sx={{ color: '#3b4a6b' }}>
+              <MailOutlineIcon />
+              <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Contact</Typography>
+            </IconButton>
+            <IconButton onClick={handleAideClick} sx={{ color: '#3b4a6b' }}>
+              <HelpOutlineIcon />
+              <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Aide</Typography>
+            </IconButton>
+            <IconButton onClick={handleConnexionClick} sx={{ color: '#3b4a6b' }}>
+              <AccountCircleIcon />
+              <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Connexion</Typography>
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
@@ -249,46 +274,28 @@ export default function LoginEnseignant() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Box sx={{
-                        background: '#e6f0fe',
-                        borderRadius: '50%',
-                        width: 56,
-                        height: 56,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: 1,
-                      }}>
-                        <AccountCircleIcon sx={{ color: '#b0b3c6', fontSize: 32 }} />
-                      </Box>
+                      <AccountCircleIcon sx={{ color: '#9ca3af' }} />
                     </InputAdornment>
                   ),
-                  sx: {
-                    pl: 0,
-                    pr: 2,
-                    height: 56,
-                    borderRadius: '28px',
-                    background: '#e6f0fe',
-                    fontWeight: 600,
-                  },
                 }}
                 sx={{
-                  borderRadius: '28px',
-                  background: '#e6f0fe',
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '28px',
-                    background: '#e6f0fe',
-                    fontWeight: 600,
-                    pl: 0,
-                    pr: 2,
-                    height: 56,
-                  },
-                  '& .MuiInputBase-input': {
-                    pl: 0,
+                    borderRadius: '12px',
+                    backgroundColor: '#e6f0ff',
+                    '& fieldset': {
+                      borderColor: '#e5e7eb',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#d1d5db',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#292b40',
+                    },
                   },
                 }}
               />
             </Box>
+
             {/* Mot de passe */}
             <Box sx={{ position: 'relative', width: '100%' }}>
               <TextField
@@ -302,150 +309,155 @@ export default function LoginEnseignant() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Box sx={{
-                        background: '#e6f0fe',
-                        borderRadius: '50%',
-                        width: 56,
-                        height: 56,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        boxShadow: 1,
-                      }}>
-                        <LockIcon sx={{ color: '#b0b3c6', fontSize: 32 }} />
-                      </Box>
+                      <LockIcon sx={{ color: '#9ca3af' }} />
                     </InputAdornment>
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowPassword((v) => !v)} edge="end">
-                        {showPassword ? <VisibilityOff sx={{ color: '#b0b3c6' }} /> : <Visibility sx={{ color: '#b0b3c6' }} />}
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                        sx={{ color: '#9ca3af' }}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
-                  sx: {
-                    pl: 0,
-                    pr: 2,
-                    height: 56,
-                    borderRadius: '28px',
-                    background: '#e6f0fe',
-                    fontWeight: 600,
-                  },
                 }}
                 sx={{
-                  borderRadius: '28px',
-                  background: '#e6f0fe',
                   '& .MuiOutlinedInput-root': {
-                    borderRadius: '28px',
-                    background: '#e6f0fe',
-                    fontWeight: 600,
-                    pl: 0,
-                    pr: 2,
-                    height: 56,
-                  },
-                  '& .MuiInputBase-input': {
-                    pl: 0,
+                    borderRadius: '12px',
+                    backgroundColor: '#e6f0ff',
+                    '& fieldset': {
+                      borderColor: '#e5e7eb',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#d1d5db',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#292b40',
+                    },
                   },
                 }}
               />
             </Box>
-            {/* Bouton Connexion */}
+
+            {/* Options */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    sx={{
+                      color: '#292b40',
+                      '&.Mui-checked': {
+                        color: '#292b40',
+                      },
+                    }}
+                  />
+                }
+                label={
+                  <Typography variant="body2" sx={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                    Se souvenir de moi
+                  </Typography>
+                }
+              />
+              <Box sx={{ textAlign: 'center' }}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={handleForgotPassword}
+                  disabled={forgotPasswordLoading}
+                  sx={{
+                    color: '#292b40',
+                    textDecoration: 'none',
+                    fontSize: '0.875rem',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                    },
+                  }}
+                >
+                  Mot de passe oublié ?
+                </Link>
+              </Box>
+            </Box>
+
+            {/* Bouton de connexion */}
             <Button
               type="submit"
               variant="contained"
               disabled={loading}
               sx={{
+                width: '100%',
+                borderRadius: '12px',
                 background: '#292b40',
                 color: '#fff',
-                borderRadius: '28px',
-                height: 44,
-                fontWeight: 400,
+                fontWeight: 600,
+                py: 1.5,
                 fontSize: '1rem',
-                boxShadow: 3,
-                width: '90%',
-                mx: 'auto',
-                '&:hover': { background: '#3b5998' },
+                textTransform: 'none',
+                '&:hover': {
+                  background: '#23264c',
+                },
                 '&:disabled': {
-                  background: '#9CA3AF',
+                  background: '#9ca3af',
                 },
               }}
             >
-              {loading ? 'Connexion...' : 'Connexion'}
+              {loading ? 'Connexion...' : 'Se connecter'}
             </Button>
-            {/* Se souvenir de moi */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  sx={{
-                    color: '#6b7280',
-                    '&.Mui-checked': {
-                      color: '#292b40',
-                    },
-                  }}
-                />
-              }
-              label="Se souvenir de moi"
-              sx={{ 
-                color: '#6b7280', 
-                fontSize: '0.875rem',
-                alignSelf: 'flex-start',
-                ml: 1
-              }}
-            />
-            {/* Séparateur */}
-            <Divider sx={{ my: 1, borderColor: '#e5e7eb' }} />
-            {/* Mot de passe oublié */}
-            <Box sx={{ textAlign: 'center' }}>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={handleForgotPassword}
-                disabled={forgotPasswordLoading}
-                sx={{
-                  color: '#6b7280',
-                  textDecoration: 'none',
-                  cursor: 'pointer',
-                  '&:hover': {
-                    color: '#292b40',
-                    textDecoration: 'underline',
-                  },
-                  '&:disabled': {
-                    color: '#9ca3af',
-                    cursor: 'not-allowed',
-                  },
-                }}
-              >
-                {forgotPasswordLoading ? 'Envoi en cours...' : 'Mot de passe oublié ?'}
-              </Link>
-            </Box>
           </Box>
         </Paper>
       </Box>
 
-      {/* Dialog pour réinitialisation du mot de passe */}
-      <Dialog open={showResetDialog} onClose={() => setShowResetDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ textAlign: 'center', fontWeight: 'bold' }}>
-          {resetStep === 'code' ? 'Vérification du code' : 'Nouveau mot de passe'}
+      {/* Dialog de réinitialisation de mot de passe */}
+      <Dialog
+        open={showResetDialog}
+        onClose={() => setShowResetDialog(false)}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+          },
+        }}
+      >
+        <DialogTitle sx={{ pb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: '#292b40' }}>
+            {resetStep === 'code' ? 'Vérification du code' : 'Nouveau mot de passe'}
+          </Typography>
         </DialogTitle>
         <DialogContent>
           {resetStep === 'code' ? (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-              <Typography variant="body2" sx={{ textAlign: 'center', mb: 2 }}>
-                Entrez le code reçu par email
+            <Box sx={{ pt: 1 }}>
+              <Typography variant="body2" sx={{ color: '#6b7280', mb: 3 }}>
+                Un code de réinitialisation a été envoyé à votre email. Veuillez l'entrer ci-dessous.
               </Typography>
               <TextField
                 fullWidth
                 label="Code de vérification"
                 value={enteredCode}
-                onChange={(e) => setEnteredCode(e.target.value.toUpperCase())}
-                inputProps={{ maxLength: 6, style: { textTransform: 'uppercase' } }}
+                onChange={(e) => setEnteredCode(e.target.value)}
                 sx={{ mb: 2 }}
               />
+              <Button
+                variant="contained"
+                onClick={handleVerifyCode}
+                disabled={!enteredCode}
+                sx={{
+                  background: '#292b40',
+                  '&:hover': { background: '#23264c' },
+                }}
+              >
+                Vérifier le code
+              </Button>
             </Box>
           ) : (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <Box sx={{ pt: 1 }}>
+              <Typography variant="body2" sx={{ color: '#6b7280', mb: 3 }}>
+                Entrez votre nouveau mot de passe.
+              </Typography>
               <TextField
                 fullWidth
                 label="Nouveau mot de passe"
@@ -455,46 +467,54 @@ export default function LoginEnseignant() {
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowNewPassword(!showNewPassword)}>
+                      <IconButton
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        edge="end"
+                      >
                         {showNewPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
                 }}
+                sx={{ mb: 2 }}
               />
               <TextField
                 fullWidth
-                label="Confirmer le nouveau mot de passe"
+                label="Confirmer le mot de passe"
                 type={showConfirmPassword ? 'text' : 'password'}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                      <IconButton
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        edge="end"
+                      >
                         {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
                 }}
+                sx={{ mb: 2 }}
               />
+              <Button
+                variant="contained"
+                onClick={handleResetPassword}
+                disabled={!newPassword || !confirmPassword || newPassword !== confirmPassword}
+                sx={{
+                  background: '#292b40',
+                  '&:hover': { background: '#23264c' },
+                }}
+              >
+                Réinitialiser le mot de passe
+              </Button>
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ justifyContent: 'center', pb: 3 }}>
-          <Button
-            onClick={resetStep === 'code' ? handleVerifyCode : handleResetPassword}
-            variant="contained"
-            sx={{
-              background: '#292b40',
-              color: '#fff',
-              px: 4,
-              py: 1.5,
-              borderRadius: '28px',
-              '&:hover': { background: '#3b5998' },
-            }}
-          >
-            {resetStep === 'code' ? 'Vérifier' : 'Changer le mot de passe'}
+        <DialogActions>
+          <Button onClick={() => setShowResetDialog(false)} sx={{ color: '#6b7280' }}>
+            Annuler
           </Button>
         </DialogActions>
       </Dialog>
