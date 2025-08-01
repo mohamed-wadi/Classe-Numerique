@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   AppBar,
@@ -72,18 +72,18 @@ const StudentDashboard = () => {
     'exercice': 'Exercices'
   };
 
-  useEffect(() => {
-    fetchContents();
-  }, [selectedCategory, user.level]);
-
-  const fetchContents = async () => {
+  const fetchContents = useCallback(async () => {
     try {
       const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(user.level, selectedCategory));
       setContents(response.data);
     } catch (error) {
       console.error('Erreur lors du chargement du contenu:', error);
     }
-  };
+  }, [user.level, selectedCategory]);
+
+  useEffect(() => {
+    fetchContents();
+  }, [fetchContents]);
 
   const handleContentClick = (content) => {
     setSelectedContent(content);

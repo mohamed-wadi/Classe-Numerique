@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   AppBar,
@@ -330,6 +330,15 @@ const TeacherDashboard = () => {
     }
   };
 
+  const fetchContents = useCallback(async () => {
+    try {
+      const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(selectedLevel, selectedCategory));
+      setContents(response.data);
+    } catch (error) {
+      console.error('Erreur lors du chargement du contenu:', error);
+    }
+  }, [selectedLevel, selectedCategory]);
+
   // Charger les données selon la catégorie sélectionnée
   useEffect(() => {
     if (selectedCategory === 'CONTACT') {
@@ -343,16 +352,7 @@ const TeacherDashboard = () => {
     } else {
       fetchContents();
     }
-  }, [selectedCategory, selectedLevel]);
-
-  const fetchContents = async () => {
-    try {
-      const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(selectedLevel, selectedCategory));
-      setContents(response.data);
-    } catch (error) {
-      console.error('Erreur lors du chargement du contenu:', error);
-    }
-  };
+  }, [selectedCategory, fetchContents]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
