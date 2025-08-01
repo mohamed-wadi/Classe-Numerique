@@ -1,0 +1,21 @@
+app = "ecole-backend-mohamed"
+primary_region = "cdg"
+
+[build]
+
+[env]
+  NODE_ENV = "production"
+  JWT_SECRET = "ecole_cm2_cm1_2024_mohamed_wadi_jwt_secret_key_abcdefghijklmnopqrstuvwxyz_123456789"
+
+[http_service]
+  internal_port = 5000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory_mb = 256 
