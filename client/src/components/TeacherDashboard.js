@@ -72,6 +72,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 const SIDEBAR_WIDTH = 280;
 
@@ -213,7 +214,7 @@ const TeacherDashboard = () => {
   // Nouvelles fonctions pour les messages de contact
   const fetchContactMessages = async () => {
     try {
-      const response = await axios.get('/contact/messages');
+      const response = await axios.get(API_ENDPOINTS.CONTACT.MESSAGES);
       setContactMessages(response.data);
     } catch (error) {
       console.error('Erreur lors du chargement des messages:', error);
@@ -228,11 +229,11 @@ const TeacherDashboard = () => {
   const deleteMessage = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
       try {
-        await axios.delete(`/contact/messages/${id}`);
+        await axios.delete(API_ENDPOINTS.CONTACT.MESSAGE_BY_ID(id));
         fetchContactMessages();
         setOpenContactDialog(false);
       } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
+        console.error('Erreur lors de la suppression du message:', error);
       }
     }
   };
@@ -241,7 +242,7 @@ const TeacherDashboard = () => {
   const fetchStudents = async () => {
     try {
       console.log('Chargement de la liste des élèves...');
-      const response = await axios.get('/students');
+      const response = await axios.get(API_ENDPOINTS.STUDENTS.BASE);
       console.log('Données reçues du serveur:', response.data);
       setStudents(response.data);
       console.log('Liste des élèves mise à jour dans l\'état');
@@ -264,9 +265,9 @@ const TeacherDashboard = () => {
   const handleStudentSave = async (studentData) => {
     try {
       if (editingStudent) {
-        await axios.put(`/students/${editingStudent.id}`, studentData);
+        await axios.put(API_ENDPOINTS.STUDENTS.BY_ID(editingStudent.id), studentData);
       } else {
-        await axios.post('/students', studentData);
+        await axios.post(API_ENDPOINTS.STUDENTS.BASE, studentData);
       }
       fetchStudents();
       setOpenStudentsDialog(false);
@@ -278,7 +279,7 @@ const TeacherDashboard = () => {
         level: 'CM2'
       });
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
+      console.error('Erreur lors de la sauvegarde de l\'élève:', error);
     }
   };
 
@@ -286,7 +287,7 @@ const TeacherDashboard = () => {
     try {
       console.log(`Changement de statut pour l'élève ${id}: ${isActive ? 'Actif' : 'Inactif'}`);
       
-      const response = await axios.put(`/students/${id}/status`, { isActive });
+      const response = await axios.put(API_ENDPOINTS.STUDENTS.STATUS(id), { isActive });
       console.log('Réponse du serveur:', response.data);
       
       // Recharger la liste des élèves
@@ -302,10 +303,10 @@ const TeacherDashboard = () => {
   const deleteStudent = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce compte élève ?')) {
       try {
-        await axios.delete(`/students/${id}`);
+        await axios.delete(API_ENDPOINTS.STUDENTS.BY_ID(id));
         fetchStudents();
       } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
+        console.error('Erreur lors de la suppression de l\'élève:', error);
       }
     }
   };
@@ -313,7 +314,7 @@ const TeacherDashboard = () => {
   // Fonctions pour les historiques
   const fetchHistoriqueAjouts = async () => {
     try {
-      const response = await axios.get('/content');
+      const response = await axios.get(API_ENDPOINTS.CONTENT.BASE);
       const allContents = response.data;
       // Trier par date de création (du plus récent au plus ancien)
       const sortedContents = allContents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -325,7 +326,7 @@ const TeacherDashboard = () => {
 
   const fetchHistoriqueVisibilite = async () => {
     try {
-      const response = await axios.get('/content');
+      const response = await axios.get(API_ENDPOINTS.CONTENT.BASE);
       const allContents = response.data;
       // Filtrer seulement les contenus qui ont une date de changement de visibilité
       const contentsWithVisibilityChanges = allContents.filter(content => content.visibilityChangedAt);
@@ -354,7 +355,7 @@ const TeacherDashboard = () => {
 
   const fetchContents = async () => {
     try {
-      const response = await axios.get(`/content/${selectedLevel}/${selectedCategory}`);
+      const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(selectedLevel, selectedCategory));
       setContents(response.data);
     } catch (error) {
       console.error('Erreur lors du chargement du contenu:', error);
@@ -365,28 +366,37 @@ const TeacherDashboard = () => {
     e.preventDefault();
     
     const submitData = new FormData();
-    Object.keys(formData).forEach(key => {
-      if (formData[key] !== null && formData[key] !== '') {
-        submitData.append(key, formData[key]);
-      }
-    });
-
+    submitData.append('title', formData.title);
+    submitData.append('level', formData.level);
+    submitData.append('category', formData.category);
+    submitData.append('theme', formData.theme);
+    submitData.append('subcategory', formData.subcategory);
+    submitData.append('type', formData.type);
+    submitData.append('description', formData.description);
+    
+    if (formData.pdfFile) {
+      submitData.append('pdfFile', formData.pdfFile);
+    }
+    if (formData.miniature) {
+      submitData.append('miniature', formData.miniature);
+    }
+    
     try {
       if (editingContent) {
-        await axios.put(`/content/${editingContent.id}`, submitData, {
+        await axios.put(API_ENDPOINTS.CONTENT.BY_ID(editingContent.id), submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       } else {
-        await axios.post('/content', submitData, {
+        await axios.post(API_ENDPOINTS.CONTENT.BASE, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
       }
       
+      fetchContents();
       setOpenDialog(false);
       resetForm();
-      fetchContents();
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde:', error);
+      console.error('Erreur lors de la sauvegarde du contenu:', error);
     }
   };
 
@@ -396,12 +406,12 @@ const TeacherDashboard = () => {
       title: content.title,
       level: content.level,
       category: content.category,
-      theme: content.theme || 1,
-      subcategory: content.subcategory || '',
+      theme: content.theme,
+      subcategory: content.subcategory,
       type: content.type,
-      description: content.description || '',
-      miniature: null,
-      pdfFile: null
+      description: content.description,
+      pdfFile: null,
+      miniature: null
     });
     setOpenDialog(true);
   };
@@ -409,29 +419,26 @@ const TeacherDashboard = () => {
   const handleDelete = async (id) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce contenu ?')) {
       try {
-        await axios.delete(`/content/${id}`);
+        await axios.delete(API_ENDPOINTS.CONTENT.BY_ID(id));
         fetchContents();
       } catch (error) {
-        console.error('Erreur lors de la suppression:', error);
+        console.error('Erreur lors de la suppression du contenu:', error);
       }
     }
   };
 
   const toggleVisibility = async (id) => {
-    const content = contents.find(c => c.id === id);
-    const action = content?.isVisible ? 'masquer' : 'rendre visible';
-    
-    setVisibilityConfirmDialog({
-      open: true,
-      contentId: id,
-      action: action,
-      contentTitle: content?.title || 'ce contenu'
+    setVisibilityConfirmDialog({ 
+      open: true, 
+      contentId: id, 
+      action: 'toggle',
+      contentTitle: contents.find(c => c.id === id)?.title || ''
     });
   };
 
   const handleVisibilityConfirm = async () => {
     try {
-      await axios.put(`/content/${visibilityConfirmDialog.contentId}/visibility`);
+      await axios.put(API_ENDPOINTS.CONTENT.BY_ID(visibilityConfirmDialog.contentId) + '/visibility');
       fetchContents();
       setVisibilityConfirmDialog({ open: false, contentId: null, action: '', contentTitle: '' });
     } catch (error) {
@@ -1231,7 +1238,7 @@ const TeacherDashboard = () => {
                             onClick={() => handleContentView(content)}
                         >
                           <img 
-                            src={`http://localhost:5000/${content.miniature}`}
+                            src={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
                             alt={content.title}
                             style={{
                               width: '100%',
@@ -1845,14 +1852,13 @@ const TeacherDashboard = () => {
               {contentViewDialog.content.miniature && (
                 <Box sx={{ mb: 3, textAlign: 'center' }}>
                   <img 
-                    src={`http://localhost:5000/${contentViewDialog.content.miniature}`}
+                    src={API_ENDPOINTS.UPLOADS.FILE(contentViewDialog.content.miniature)}
                     alt={contentViewDialog.content.title}
                     style={{
                       maxWidth: '100%',
-                      maxHeight: '400px',
-                      objectFit: 'contain',
+                      maxHeight: '300px',
                       borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
                     }}
                   />
                 </Box>
@@ -1965,7 +1971,7 @@ const TeacherDashboard = () => {
                             background: 'rgba(231, 76, 60, 0.2)',
                           }
                         }}
-                        onClick={() => window.open(`http://localhost:5000/${contentViewDialog.content.pdfFile}`, '_blank')}
+                        onClick={() => window.open(API_ENDPOINTS.UPLOADS.FILE(contentViewDialog.content.pdfFile), '_blank')}
                       />
                     )}
                     {contentViewDialog.content.miniature && (

@@ -41,6 +41,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 const SIDEBAR_WIDTH = 280;
 
@@ -89,7 +90,7 @@ const StudentDashboard = () => {
 
   const fetchContents = async () => {
     try {
-      const response = await axios.get(`/content/${user.level}/${selectedCategory}`);
+      const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(user.level, selectedCategory));
       setContents(response.data);
     } catch (error) {
       console.error('Erreur lors du chargement du contenu:', error);
@@ -103,7 +104,7 @@ const StudentDashboard = () => {
 
   const downloadFile = (filePath, filename) => {
     const link = document.createElement('a');
-    link.href = `http://localhost:5000/${filePath}`;
+    link.href = API_ENDPOINTS.UPLOADS.FILE(filePath);
     link.download = filename;
     link.click();
   };
@@ -492,7 +493,7 @@ const StudentDashboard = () => {
                       <CardMedia
                         component="img"
                         height="160"
-                        image={`http://localhost:5000/${content.miniature}`}
+                        image={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
                         alt={content.title}
                         sx={{ borderRadius: '12px 12px 0 0' }}
                       />
