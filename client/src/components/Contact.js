@@ -20,14 +20,17 @@ import {
   Snackbar,
   Alert
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import MailOutlineIcon from '@mui/icons-material/MailOutline';
-import PhoneIcon from '@mui/icons-material/Phone';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
-import SendIcon from '@mui/icons-material/Send';
-import SchoolIcon from '@mui/icons-material/School';
-import logo from '../public/logo (1).png';
+import { 
+  MailOutline as MailOutlineIcon,
+  ArrowBack as ArrowBackIcon,
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  LocationOn as LocationOnIcon
+} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
+import logo from '../assets/logo.png';
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -65,7 +68,7 @@ const Contact = () => {
     if (!formData.name || !formData.email || !formData.message) {
       setSnackbar({
         open: true,
-        message: 'Veuillez remplir tous les champs obligatoires (nom, email, message)',
+        message: 'Veuillez remplir tous les champs obligatoires.',
         severity: 'error'
       });
       return;
@@ -74,7 +77,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      await axios.post('/contact/send', formData);
+      await axios.post(API_ENDPOINTS.CONTACT.MESSAGES, formData);
       
       setSnackbar({
         open: true,

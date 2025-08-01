@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api';
+import { API_BASE_URL, API_ENDPOINTS } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -16,8 +16,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Configuration axios
-  axios.defaults.baseURL = API_ENDPOINTS.AUTH.LOGIN.replace('/api/auth/login', '');
+  // Configuration axios avec la bonne URL de base
+  axios.defaults.baseURL = API_BASE_URL;
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
   const verifyToken = async () => {
     try {
-      const response = await axios.get('/auth/verify');
+      const response = await axios.get(API_ENDPOINTS.AUTH.VERIFY);
       setUser(response.data.user);
     } catch (error) {
       localStorage.removeItem('token');
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password) => {
     try {
-      const response = await axios.post('/auth/login', { username, password });
+      const response = await axios.post(API_ENDPOINTS.AUTH.LOGIN, { username, password });
       const { token, user } = response.data;
       
       localStorage.setItem('token', token);
