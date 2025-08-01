@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
     STATUS: (id) => `${API_BASE_URL}/api/students/${id}/status`,
   },
   CONTACT: {
+    SEND: `${API_BASE_URL}/api/contact/send`,
     MESSAGES: `${API_BASE_URL}/api/contact/messages`,
     MESSAGE_BY_ID: (id) => `${API_BASE_URL}/api/contact/messages/${id}`,
   },

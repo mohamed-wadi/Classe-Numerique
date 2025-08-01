@@ -77,7 +77,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      await axios.post(API_ENDPOINTS.CONTACT.MESSAGES, formData);
+      await axios.post(API_ENDPOINTS.CONTACT.SEND, formData);
       
       setSnackbar({
         open: true,
