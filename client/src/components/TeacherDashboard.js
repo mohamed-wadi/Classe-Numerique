@@ -31,7 +31,16 @@ import {
   ListItemIcon,
   ListItemText,
   useTheme,
-  useMediaQuery
+  useMediaQuery,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Switch,
+  FormControlLabel
 } from '@mui/material';
 import {
   Add,
@@ -50,7 +59,16 @@ import {
   Quiz,
   Assessment,
   Menu as MenuIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  ContactMail,
+  People,
+  Settings,
+  Message,
+  Email,
+  Phone,
+  Person,
+  Lock,
+  Block
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -66,6 +84,12 @@ const TeacherDashboard = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [editingContent, setEditingContent] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [contactMessages, setContactMessages] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [openContactDialog, setOpenContactDialog] = useState(false);
+  const [openStudentsDialog, setOpenStudentsDialog] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState(null);
+  const [editingStudent, setEditingStudent] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     level: 'CM2',
@@ -78,6 +102,31 @@ const TeacherDashboard = () => {
     pdfFile: null
   });
 
+  // Nouvel état pour le formulaire de gestion des élèves
+  const [studentFormData, setStudentFormData] = useState({
+    username: '',
+    password: '',
+    level: 'CM2'
+  });
+
+  // État pour la boîte de dialogue de confirmation de visibilité
+  const [visibilityConfirmDialog, setVisibilityConfirmDialog] = useState({
+    open: false,
+    contentId: null,
+    action: '',
+    contentTitle: ''
+  });
+
+  // État pour la boîte de dialogue d'affichage du contenu
+  const [contentViewDialog, setContentViewDialog] = useState({
+    open: false,
+    content: null
+  });
+
+  // États pour les historiques
+  const [historiqueAjouts, setHistoriqueAjouts] = useState([]);
+  const [historiqueVisibilite, setHistoriqueVisibilite] = useState([]);
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
@@ -87,7 +136,11 @@ const TeacherDashboard = () => {
     { key: 'LECTURE_SUIVIE', label: 'LECTURE SUIVIE', icon: <AutoStories />, description: 'Textes de lecture' },
     { key: 'PRODUCTION_ECRIT', label: 'PRODUCTION DE L\'ÉCRIT', icon: <Create />, description: 'Exercices d\'écriture' },
     { key: 'EVALUATIONS', label: 'ÉVALUATIONS', icon: <Quiz />, description: 'Tests et contrôles' },
-    { key: 'EVIL_SCIENTIFIQUE', label: 'ÉVEIL SCIENTIFIQUE', icon: <Assessment />, description: 'Sciences et découvertes' }
+    { key: 'EVIL_SCIENTIFIQUE', label: 'ÉVEIL SCIENTIFIQUE', icon: <Assessment />, description: 'Sciences et découvertes' },
+    { key: 'CONTACT', label: 'MESSAGES', icon: <ContactMail />, description: 'Messages de contact' },
+    { key: 'STUDENTS', label: 'GESTION COMPTES', icon: <People />, description: 'Gérer les comptes élèves' },
+    { key: 'HISTORIQUE_AJOUTS', label: 'HISTORIQUE AJOUTS', icon: <Add />, description: 'Historique des ajouts' },
+    { key: 'HISTORIQUE_VISIBILITE', label: 'HISTORIQUE VISIBILITÉ', icon: <Visibility />, description: 'Historique des changements de visibilité' }
   ];
 
   const subcategories = [
@@ -115,9 +168,189 @@ const TeacherDashboard = () => {
     return ['Cours', 'Exercices', 'Évaluations'];
   };
 
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      level: selectedLevel,
+      category: selectedCategory,
+      theme: selectedTheme,
+      subcategory: '',
+      type: 'cours_manuel',
+      description: '',
+      miniature: null,
+      pdfFile: null
+    });
+    setEditingContent(null);
+  };
+
+  const openAddDialog = () => {
+    setFormData({
+      title: '',
+      level: selectedLevel,
+      category: selectedCategory,
+      theme: selectedTheme,
+      subcategory: '',
+      type: 'cours_manuel',
+      description: '',
+      miniature: null,
+      pdfFile: null
+    });
+    setEditingContent(null);
+    setOpenDialog(true);
+  };
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  const handleCategorySelect = (categoryKey) => {
+    setSelectedCategory(categoryKey);
+    if (isMobile) {
+      setMobileOpen(false);
+    }
+  };
+
+  // Nouvelles fonctions pour les messages de contact
+  const fetchContactMessages = async () => {
+    try {
+      const response = await axios.get('/contact/messages');
+      setContactMessages(response.data);
+    } catch (error) {
+      console.error('Erreur lors du chargement des messages:', error);
+    }
+  };
+
+  const handleMessageClick = (message) => {
+    setSelectedMessage(message);
+    setOpenContactDialog(true);
+  };
+
+  const deleteMessage = async (id) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) {
+      try {
+        await axios.delete(`/contact/messages/${id}`);
+        fetchContactMessages();
+        setOpenContactDialog(false);
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+      }
+    }
+  };
+
+  // Nouvelles fonctions pour la gestion des comptes élèves
+  const fetchStudents = async () => {
+    try {
+      console.log('Chargement de la liste des élèves...');
+      const response = await axios.get('/students');
+      console.log('Données reçues du serveur:', response.data);
+      setStudents(response.data);
+      console.log('Liste des élèves mise à jour dans l\'état');
+    } catch (error) {
+      console.error('Erreur lors du chargement des élèves:', error);
+      alert(`Erreur lors du chargement des élèves: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const handleStudentEdit = (student) => {
+    setEditingStudent(student);
+    setStudentFormData({
+      username: student.username,
+      password: '', // Toujours vide pour la modification
+      level: student.level
+    });
+    setOpenStudentsDialog(true);
+  };
+
+  const handleStudentSave = async (studentData) => {
+    try {
+      if (editingStudent) {
+        await axios.put(`/students/${editingStudent.id}`, studentData);
+      } else {
+        await axios.post('/students', studentData);
+      }
+      fetchStudents();
+      setOpenStudentsDialog(false);
+      setEditingStudent(null);
+      // Réinitialiser le formulaire
+      setStudentFormData({
+        username: '',
+        password: '',
+        level: 'CM2'
+      });
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+    }
+  };
+
+  const toggleStudentStatus = async (id, isActive) => {
+    try {
+      console.log(`Changement de statut pour l'élève ${id}: ${isActive ? 'Actif' : 'Inactif'}`);
+      
+      const response = await axios.put(`/students/${id}/status`, { isActive });
+      console.log('Réponse du serveur:', response.data);
+      
+      // Recharger la liste des élèves
+      await fetchStudents();
+      
+      console.log(`Statut mis à jour avec succès pour l'élève ${id}`);
+    } catch (error) {
+      console.error('Erreur lors du changement de statut:', error);
+      alert(`Erreur lors du changement de statut: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const deleteStudent = async (id) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer ce compte élève ?')) {
+      try {
+        await axios.delete(`/students/${id}`);
+        fetchStudents();
+      } catch (error) {
+        console.error('Erreur lors de la suppression:', error);
+      }
+    }
+  };
+
+  // Fonctions pour les historiques
+  const fetchHistoriqueAjouts = async () => {
+    try {
+      const response = await axios.get('/content');
+      const allContents = response.data;
+      // Trier par date de création (du plus récent au plus ancien)
+      const sortedContents = allContents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      setHistoriqueAjouts(sortedContents);
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'historique des ajouts:', error);
+    }
+  };
+
+  const fetchHistoriqueVisibilite = async () => {
+    try {
+      const response = await axios.get('/content');
+      const allContents = response.data;
+      // Filtrer seulement les contenus qui ont une date de changement de visibilité
+      const contentsWithVisibilityChanges = allContents.filter(content => content.visibilityChangedAt);
+      // Trier par date de changement de visibilité (du plus récent au plus ancien)
+      const sortedContents = contentsWithVisibilityChanges.sort((a, b) => new Date(b.visibilityChangedAt) - new Date(a.visibilityChangedAt));
+      setHistoriqueVisibilite(sortedContents);
+    } catch (error) {
+      console.error('Erreur lors du chargement de l\'historique de visibilité:', error);
+    }
+  };
+
+  // Charger les données selon la catégorie sélectionnée
   useEffect(() => {
-    fetchContents();
-  }, [selectedLevel, selectedCategory]);
+    if (selectedCategory === 'CONTACT') {
+      fetchContactMessages();
+    } else if (selectedCategory === 'STUDENTS') {
+      fetchStudents();
+    } else if (selectedCategory === 'HISTORIQUE_AJOUTS') {
+      fetchHistoriqueAjouts();
+    } else if (selectedCategory === 'HISTORIQUE_VISIBILITE') {
+      fetchHistoriqueVisibilite();
+    } else {
+      fetchContents();
+    }
+  }, [selectedCategory]);
 
   const fetchContents = async () => {
     try {
@@ -185,43 +418,32 @@ const TeacherDashboard = () => {
   };
 
   const toggleVisibility = async (id) => {
+    const content = contents.find(c => c.id === id);
+    const action = content?.isVisible ? 'masquer' : 'rendre visible';
+    
+    setVisibilityConfirmDialog({
+      open: true,
+      contentId: id,
+      action: action,
+      contentTitle: content?.title || 'ce contenu'
+    });
+  };
+
+  const handleVisibilityConfirm = async () => {
     try {
-      await axios.put(`/content/${id}/visibility`);
+      await axios.put(`/content/${visibilityConfirmDialog.contentId}/visibility`);
       fetchContents();
+      setVisibilityConfirmDialog({ open: false, contentId: null, action: '', contentTitle: '' });
     } catch (error) {
       console.error('Erreur lors du changement de visibilité:', error);
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      level: selectedLevel,
-      category: selectedCategory,
-      theme: selectedTheme,
-      subcategory: '',
-      type: 'cours_manuel',
-      description: '',
-      miniature: null,
-      pdfFile: null
+  const handleContentView = (content) => {
+    setContentViewDialog({
+      open: true,
+      content: content
     });
-    setEditingContent(null);
-  };
-
-  const openAddDialog = () => {
-    resetForm();
-    setOpenDialog(true);
-  };
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
-
-  const handleCategorySelect = (categoryKey) => {
-    setSelectedCategory(categoryKey);
-    if (isMobile) {
-      setMobileOpen(false);
-    }
   };
 
   const filteredContents = selectedCategory === 'THEMES' 
@@ -563,7 +785,9 @@ const TeacherDashboard = () => {
                 mb: 1,
               }}
             >
-              Contenu existant
+              {selectedCategory === 'CONTACT' ? 'Messages de contact' : 
+               selectedCategory === 'STUDENTS' ? 'Gestion des comptes élèves' : 
+               'Contenu existant'}
             </Typography>
             <Typography 
               variant="body1" 
@@ -572,227 +796,610 @@ const TeacherDashboard = () => {
                 color: '#7f8c8d',
               }}
             >
-              {selectedLevel} • {categories.find(c => c.key === selectedCategory)?.label}
-              {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
+              {selectedCategory === 'CONTACT' ? `${contactMessages.length} message(s) reçu(s)` :
+               selectedCategory === 'STUDENTS' ? `${students.length} compte(s) élève(s)` :
+               `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${selectedTheme}` : ''}`}
             </Typography>
           </Box>
 
-          {filteredContents.length === 0 ? (
-            <Card 
-              sx={{ 
-                p: 4, 
-                textAlign: 'center',
-                background: '#ffffff',
-                border: '1px solid #ecf0f1',
-                borderRadius: 2,
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-              }}
-            >
-              <Box sx={{ color: '#bdc3c7', mb: 2 }}>
-                <School sx={{ fontSize: 48, opacity: 0.5 }} />
-              </Box>
-              <Typography variant="h6" color="#7f8c8d" gutterBottom>
-                Aucun contenu pour cette catégorie
-              </Typography>
-              <Typography variant="body2" color="#95a5a6">
-                Utilisez le bouton d'ajout pour créer du contenu.
-              </Typography>
-            </Card>
-          ) : (
-            <Grid container spacing={2}>
-              {filteredContents.map((content) => (
-                <Grid item xs={12} sm={6} lg={4} key={content.id}>
-                  <Card 
-                    sx={{ 
-                      height: '100%', 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      background: '#ffffff',
-                      border: '1px solid #ecf0f1',
-                      borderRadius: 2,
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                      },
-                    }}
-                  >
-                    {content.miniature ? (
-                      <Box 
-                        sx={{ 
-                          height: 140, 
-                          borderRadius: '8px 8px 0 0',
-                          overflow: 'hidden',
-                        }}
-                      >
-                        <img 
-                          src={`http://localhost:5000/${content.miniature}`}
-                          alt={content.title}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                          }}
-                        />
-                      </Box>
-                    ) : (
-                      <Box 
-                        sx={{ 
-                          height: 100, 
-                          background: '#3498db',
-                          display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          borderRadius: '8px 8px 0 0',
-                        }}
-                      >
-                        <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
-                      </Box>
-                    )}
-                    
-                    <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                        <Typography 
-                          variant="h6" 
-                          component="h2"
-                          sx={{ 
-                            fontWeight: 600,
-                            fontSize: '1rem',
-                            lineHeight: 1.3,
-                            color: '#2c3e50',
-                          }}
-                        >
-                          {content.title}
+          {/* Affichage des messages de contact */}
+          {selectedCategory === 'CONTACT' && (
+            contactMessages.length === 0 ? (
+              <Card 
+                sx={{ 
+                  p: 4, 
+                  textAlign: 'center',
+                  background: '#ffffff',
+                  border: '1px solid #ecf0f1',
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                <Box sx={{ color: '#bdc3c7', mb: 2 }}>
+                  <ContactMail sx={{ fontSize: 48, opacity: 0.5 }} />
+                </Box>
+                <Typography variant="h6" color="#7f8c8d" gutterBottom>
+                  Aucun message de contact
+                </Typography>
+                <Typography variant="body2" color="#95a5a6">
+                  Les messages envoyés depuis la page de contact apparaîtront ici.
+                </Typography>
+              </Card>
+            ) : (
+              <Grid container spacing={2}>
+                {contactMessages.map((message) => (
+                  <Grid item xs={12} sm={6} lg={4} key={message.id}>
+                    <Card 
+                      sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        background: '#ffffff',
+                        border: '1px solid #ecf0f1',
+                        borderRadius: 2,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                      onClick={() => handleMessageClick(message)}
+                    >
+                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                          <Avatar sx={{ bgcolor: '#3498db', mr: 2 }}>
+                            <Person />
+                          </Avatar>
+                          <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                              {message.name}
+                            </Typography>
+                            <Typography variant="body2" color="#7f8c8d">
+                              {new Date(message.createdAt).toLocaleDateString()}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Typography variant="body2" color="#7f8c8d" sx={{ mb: 2 }}>
+                          {message.email}
                         </Typography>
-                        <Chip
-                          size="small"
-                          label={content.isVisible ? 'Visible' : 'Masqué'}
-                          color={content.isVisible ? 'success' : 'default'}
-                          sx={{
-                            fontWeight: 500,
-                            fontSize: '0.7rem',
-                          }}
-                        />
-                      </Box>
-                      
-                      <Typography 
-                        variant="body2" 
-                        color="#7f8c8d" 
-                        gutterBottom
-                        sx={{ fontWeight: 500, mb: 1.5 }}
-                      >
-                        {getContentTypes(selectedCategory).find(t => t === content.contentType) || content.contentType}
-                      </Typography>
-                      
-                      {content.description && (
                         <Typography 
                           variant="body2" 
-                          color="#95a5a6" 
+                          color="#2c3e50"
                           sx={{ 
-                            mb: 1.5,
                             display: '-webkit-box',
-                            WebkitLineClamp: 2,
+                            WebkitLineClamp: 3,
                             WebkitBoxOrient: 'vertical',
                             overflow: 'hidden',
                           }}
                         >
-                          {content.description}
+                          {message.message}
                         </Typography>
-                      )}
-                      
-                      <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                        {content.pdfFile && (
-                          <Chip 
-                            size="small" 
-                            icon={<PictureAsPdf />} 
-                            label="PDF" 
-                            sx={{ 
-                              background: 'rgba(231, 76, 60, 0.1)',
-                              color: '#e74c3c',
-                              fontWeight: 500,
-                              fontSize: '0.7rem',
-                            }}
-                          />
-                        )}
-                        {content.miniature && (
-                          <Chip 
-                            size="small" 
-                            icon={<Image />} 
-                            label="Image" 
-                            sx={{ 
-                              background: 'rgba(52, 152, 219, 0.1)',
-                              color: '#3498db',
-                              fontWeight: 500,
-                              fontSize: '0.7rem',
-                            }}
-                          />
-                        )}
-                      </Box>
-                    </CardContent>
-                    
-                    <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
-                      <Box sx={{ display: 'flex', gap: 0.5 }}>
-                        <IconButton 
-                          onClick={() => handleEdit(content)} 
-                          size="small"
-                          sx={{
-                            color: '#3498db',
-                            background: 'rgba(52, 152, 219, 0.1)',
-                            '&:hover': {
-                              background: '#3498db',
-                              color: '#ffffff',
-                              transform: 'scale(1.1)',
-                            },
-                            transition: 'all 0.2s ease',
-                          }}
-                        >
-                          <Edit fontSize="small" />
-                        </IconButton>
-                        <IconButton 
-                          onClick={() => handleDelete(content.id)} 
-                          size="small"
-                          sx={{
-                            color: '#e74c3c',
-                            background: 'rgba(231, 76, 60, 0.1)',
-                            '&:hover': {
-                              background: '#e74c3c',
-                              color: '#ffffff',
-                              transform: 'scale(1.1)',
-                            },
-                            transition: 'all 0.2s ease',
-                          }}
-                        >
-                          <Delete fontSize="small" />
-                        </IconButton>
-                      </Box>
-                      <IconButton 
-                        onClick={() => toggleVisibility(content.id)} 
-                        size="small"
-                        sx={{
-                          color: content.isVisible ? '#27ae60' : '#95a5a6',
-                          background: content.isVisible 
-                            ? 'rgba(39, 174, 96, 0.1)' 
-                            : 'rgba(149, 165, 166, 0.1)',
-                          '&:hover': {
-                            background: content.isVisible 
-                              ? '#27ae60' 
-                              : '#95a5a6',
-                            color: '#ffffff',
-                            transform: 'scale(1.1)',
-                          },
-                          transition: 'all 0.2s ease',
-                        }}
-                      >
-                        {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                      </IconButton>
-                    </CardActions>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )
           )}
 
-          {/* Bouton d'ajout flottant */}
+          {/* Affichage de la gestion des comptes élèves */}
+          {selectedCategory === 'STUDENTS' && (
+            <Box>
+              <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" color="#2c3e50">
+                  Comptes élèves
+                </Typography>
+                <Button
+                  variant="contained"
+                  startIcon={<Add />}
+                  onClick={() => {
+                    setEditingStudent(null);
+                    setStudentFormData({
+                      username: '',
+                      password: '',
+                      level: 'CM2'
+                    });
+                    setOpenStudentsDialog(true);
+                  }}
+                  sx={{
+                    backgroundColor: '#3498db',
+                    '&:hover': {
+                      backgroundColor: '#2980b9',
+                    }
+                  }}
+                >
+                  Ajouter un élève
+                </Button>
+              </Box>
+              
+              <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Nom d'utilisateur</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Niveau</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Statut</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {students.map((student) => (
+                      <TableRow key={student.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
+                        <TableCell sx={{ color: '#2c3e50' }}>{student.username}</TableCell>
+                        <TableCell>
+                          <Chip 
+                            label={student.level} 
+                            size="small"
+                            sx={{ 
+                              backgroundColor: student.level === 'CM2' ? '#3498db' : '#e67e22',
+                              color: 'white',
+                              fontWeight: 500
+                            }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={student.isActive}
+                                onChange={(e) => toggleStudentStatus(student.id, e.target.checked)}
+                                sx={{
+                                  '& .MuiSwitch-switchBase.Mui-checked': {
+                                    color: '#27ae60',
+                                  },
+                                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                    backgroundColor: '#27ae60',
+                                  },
+                                }}
+                              />
+                            }
+                            label={student.isActive ? 'Actif' : 'Inactif'}
+                            sx={{ color: '#7f8c8d' }}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Box sx={{ display: 'flex', gap: 1 }}>
+                            <IconButton 
+                              onClick={() => handleStudentEdit(student)}
+                              size="small"
+                              sx={{
+                                color: '#3498db',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                }
+                              }}
+                            >
+                              <Edit fontSize="small" />
+                            </IconButton>
+                            <IconButton 
+                              onClick={() => deleteStudent(student.id)}
+                              size="small"
+                              sx={{
+                                color: '#e74c3c',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                                }
+                              }}
+                            >
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          </Box>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+
+          {/* Affichage de l'historique des ajouts */}
+          {selectedCategory === 'HISTORIQUE_AJOUTS' && (
+            <Box>
+              <Typography variant="h6" color="#2c3e50" sx={{ mb: 3 }}>
+                Historique des ajouts de contenu ({historiqueAjouts.length} élément(s))
+              </Typography>
+              
+              <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Titre</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Niveau</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Catégorie</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Type</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Date d'ajout</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {historiqueAjouts.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4, color: '#7f8c8d' }}>
+                          Aucun contenu ajouté
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      historiqueAjouts.map((content) => (
+                        <TableRow key={content.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
+                          <TableCell sx={{ color: '#2c3e50', fontWeight: 500 }}>{content.title}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={content.level} 
+                              size="small"
+                              sx={{ 
+                                backgroundColor: content.level === 'CM2' ? '#3498db' : '#e67e22',
+                                color: 'white',
+                                fontWeight: 500
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ color: '#7f8c8d' }}>
+                            {categories.find(c => c.key === content.category)?.label || content.category}
+                          </TableCell>
+                          <TableCell sx={{ color: '#7f8c8d' }}>{content.type}</TableCell>
+                          <TableCell sx={{ color: '#7f8c8d' }}>
+                            {new Date(content.createdAt).toLocaleDateString('fr-FR', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </TableCell>
+                          <TableCell>
+                            <IconButton 
+                              onClick={() => handleContentView(content)}
+                              size="small"
+                              sx={{
+                                color: '#3498db',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                }
+                              }}
+                            >
+                              <Visibility fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+
+          {/* Affichage de l'historique des changements de visibilité */}
+          {selectedCategory === 'HISTORIQUE_VISIBILITE' && (
+            <Box>
+              <Typography variant="h6" color="#2c3e50" sx={{ mb: 3 }}>
+                Historique des changements de visibilité ({historiqueVisibilite.length} élément(s))
+              </Typography>
+              
+              <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f8f9fa' }}>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Titre</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Niveau</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Catégorie</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Statut</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Date de modification</TableCell>
+                      <TableCell sx={{ fontWeight: 600, color: '#2c3e50' }}>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {historiqueVisibilite.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4, color: '#7f8c8d' }}>
+                          Aucun changement de visibilité
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      historiqueVisibilite.map((content) => (
+                        <TableRow key={content.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
+                          <TableCell sx={{ color: '#2c3e50', fontWeight: 500 }}>{content.title}</TableCell>
+                          <TableCell>
+                            <Chip 
+                              label={content.level} 
+                              size="small"
+                              sx={{ 
+                                backgroundColor: content.level === 'CM2' ? '#3498db' : '#e67e22',
+                                color: 'white',
+                                fontWeight: 500
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ color: '#7f8c8d' }}>
+                            {categories.find(c => c.key === content.category)?.label || content.category}
+                          </TableCell>
+                          <TableCell>
+                            <Chip
+                              size="small"
+                              label={content.isVisible ? 'Visible' : 'Masqué'}
+                              color={content.isVisible ? 'success' : 'default'}
+                              sx={{
+                                fontWeight: 500,
+                                fontSize: '0.7rem',
+                              }}
+                            />
+                          </TableCell>
+                          <TableCell sx={{ color: '#7f8c8d' }}>
+                            {new Date(content.visibilityChangedAt).toLocaleDateString('fr-FR', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </TableCell>
+                          <TableCell>
+                            <IconButton 
+                              onClick={() => handleContentView(content)}
+                              size="small"
+                              sx={{
+                                color: '#3498db',
+                                '&:hover': {
+                                  backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                                }
+                              }}
+                            >
+                              <Visibility fontSize="small" />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Box>
+          )}
+
+          {/* Affichage du contenu normal */}
+          {selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
+            filteredContents.length === 0 ? (
+              <Card 
+                sx={{ 
+                  p: 4, 
+                  textAlign: 'center',
+                  background: '#ffffff',
+                  border: '1px solid #ecf0f1',
+                  borderRadius: 2,
+                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                }}
+              >
+                <Box sx={{ color: '#bdc3c7', mb: 2 }}>
+                  <School sx={{ fontSize: 48, opacity: 0.5 }} />
+                </Box>
+                <Typography variant="h6" color="#7f8c8d" gutterBottom>
+                  Aucun contenu pour cette catégorie
+                </Typography>
+                <Typography variant="body2" color="#95a5a6">
+                  Utilisez le bouton d'ajout pour créer du contenu.
+                </Typography>
+              </Card>
+            ) : (
+              <Grid container spacing={2}>
+                {filteredContents.map((content) => (
+                  <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                    <Card 
+                      sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        background: '#ffffff',
+                        border: '1px solid #ecf0f1',
+                        borderRadius: 2,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        '&:hover': {
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      {content.miniature ? (
+                        <Box 
+                          sx={{ 
+                            height: 140, 
+                            borderRadius: '8px 8px 0 0',
+                            overflow: 'hidden',
+                              cursor: 'pointer',
+                              position: 'relative',
+                              '&:hover': {
+                                '&::after': {
+                                  content: '""',
+                                  position: 'absolute',
+                                  top: 0,
+                                  left: 0,
+                                  right: 0,
+                                  bottom: 0,
+                                  background: 'rgba(0,0,0,0.3)',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  color: 'white',
+                                  fontSize: '0.8rem',
+                                  fontWeight: 600,
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.5px'
+                                }
+                              }
+                            }}
+                            onClick={() => handleContentView(content)}
+                        >
+                          <img 
+                            src={`http://localhost:5000/${content.miniature}`}
+                            alt={content.title}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        </Box>
+                      ) : (
+                        <Box 
+                          sx={{ 
+                            height: 100, 
+                            background: '#3498db',
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            borderRadius: '8px 8px 0 0',
+                          }}
+                        >
+                          <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
+                        </Box>
+                      )}
+                      
+                      <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                          <Typography 
+                            variant="h6" 
+                            component="h2"
+                            sx={{ 
+                              fontWeight: 600,
+                              fontSize: '1rem',
+                              lineHeight: 1.3,
+                              color: '#2c3e50',
+                            }}
+                          >
+                            {content.title}
+                          </Typography>
+                          <Chip
+                            size="small"
+                            label={content.isVisible ? 'Visible' : 'Masqué'}
+                            color={content.isVisible ? 'success' : 'default'}
+                            sx={{
+                              fontWeight: 500,
+                              fontSize: '0.7rem',
+                            }}
+                          />
+                        </Box>
+                        
+                        <Typography 
+                          variant="body2" 
+                          color="#7f8c8d" 
+                          gutterBottom
+                          sx={{ fontWeight: 500, mb: 1.5 }}
+                        >
+                          {getContentTypes(selectedCategory).find(t => t === content.contentType) || content.contentType}
+                        </Typography>
+                        
+                        {content.description && (
+                          <Typography 
+                            variant="body2" 
+                            color="#95a5a6" 
+                            sx={{ 
+                              mb: 1.5,
+                              display: '-webkit-box',
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            {content.description}
+                          </Typography>
+                        )}
+                        
+                        <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                          {content.pdfFile && (
+                            <Chip 
+                              size="small" 
+                              icon={<PictureAsPdf />} 
+                              label="PDF" 
+                              sx={{ 
+                                background: 'rgba(231, 76, 60, 0.1)',
+                                color: '#e74c3c',
+                                fontWeight: 500,
+                                fontSize: '0.7rem',
+                              }}
+                            />
+                          )}
+                          {content.miniature && (
+                            <Chip 
+                              size="small" 
+                              icon={<Image />} 
+                              label="Image" 
+                              sx={{ 
+                                background: 'rgba(52, 152, 219, 0.1)',
+                                color: '#3498db',
+                                fontWeight: 500,
+                                fontSize: '0.7rem',
+                              }}
+                            />
+                          )}
+                        </Box>
+                      </CardContent>
+                      
+                      <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          <IconButton 
+                            onClick={() => handleEdit(content)} 
+                            size="small"
+                            sx={{
+                              color: '#3498db',
+                              background: 'rgba(52, 152, 219, 0.1)',
+                              '&:hover': {
+                                background: '#3498db',
+                                color: '#ffffff',
+                                transform: 'scale(1.1)',
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                          <IconButton 
+                            onClick={() => handleDelete(content.id)} 
+                            size="small"
+                            sx={{
+                              color: '#e74c3c',
+                              background: 'rgba(231, 76, 60, 0.1)',
+                              '&:hover': {
+                                background: '#e74c3c',
+                                color: '#ffffff',
+                                transform: 'scale(1.1)',
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Box>
+                        <IconButton 
+                          onClick={() => toggleVisibility(content.id)} 
+                          size="small"
+                          sx={{
+                            color: content.isVisible ? '#27ae60' : '#95a5a6',
+                            background: content.isVisible 
+                              ? 'rgba(39, 174, 96, 0.1)' 
+                              : 'rgba(149, 165, 166, 0.1)',
+                            '&:hover': {
+                              background: content.isVisible 
+                                ? '#27ae60' 
+                                : '#95a5a6',
+                              color: '#ffffff',
+                              transform: 'scale(1.1)',
+                            },
+                            transition: 'all 0.2s ease',
+                          }}
+                        >
+                          {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                        </IconButton>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            )
+          )}
+
+          {/* Bouton d'ajout flottant - seulement pour les catégories de contenu */}
+          {selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
           <Fab
             color="primary"
             aria-label="add"
@@ -811,6 +1418,7 @@ const TeacherDashboard = () => {
           >
             <Add />
           </Fab>
+          )}
 
           {/* Dialog d'ajout/modification */}
           <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
@@ -1031,8 +1639,411 @@ const TeacherDashboard = () => {
               </Button>
             </DialogActions>
           </Dialog>
+
+          {/* Dialog des messages de contact */}
+          <Dialog open={openContactDialog} onClose={() => setOpenContactDialog(false)} maxWidth="md" fullWidth>
+            <DialogTitle sx={{ bgcolor: '#2c3e50', color: 'white' }}>
+              <Typography variant="h5">
+                Message de contact
+              </Typography>
+            </DialogTitle>
+            <DialogContent sx={{ mt: 2 }}>
+              {selectedMessage && (
+                <Box>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50' }}>
+                    De: {selectedMessage.name}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1, color: '#7f8c8d' }}>
+                    Email: {selectedMessage.email}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1, color: '#7f8c8d' }}>
+                    Téléphone: {selectedMessage.phone}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 1, color: '#7f8c8d' }}>
+                    Date: {new Date(selectedMessage.createdAt).toLocaleDateString()}
+                  </Typography>
+                  <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50', mt: 3 }}>
+                    Message:
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#7f8c8d', whiteSpace: 'pre-wrap' }}>
+                    {selectedMessage.message}
+                  </Typography>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button 
+                onClick={() => deleteMessage(selectedMessage?.id)}
+                sx={{ color: '#e74c3c' }}
+              >
+                Supprimer
+              </Button>
+              <Button 
+                onClick={() => setOpenContactDialog(false)}
+                sx={{ color: '#7f8c8d' }}
+              >
+                Fermer
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {/* Dialog de gestion des comptes élèves */}
+          <Dialog open={openStudentsDialog} onClose={() => setOpenStudentsDialog(false)} maxWidth="md" fullWidth>
+            <DialogTitle sx={{ bgcolor: '#2c3e50', color: 'white' }}>
+              <Typography variant="h5">
+                {editingStudent ? 'Modifier le compte élève' : 'Ajouter un compte élève'}
+              </Typography>
+            </DialogTitle>
+            <DialogContent sx={{ mt: 2 }}>
+              <Box component="form" sx={{ mt: 1 }}>
+                <TextField
+                  fullWidth
+                  label="Nom d'utilisateur"
+                  value={studentFormData.username}
+                  onChange={(e) => setStudentFormData({ ...studentFormData, username: e.target.value })}
+                  margin="normal"
+                  required
+                  id="student-username"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: 1.5,
+                    }
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label={editingStudent ? "Nouveau mot de passe (laisser vide pour ne pas changer)" : "Mot de passe"}
+                  type="password"
+                  value={studentFormData.password}
+                  onChange={(e) => setStudentFormData({ ...studentFormData, password: e.target.value })}
+                  margin="normal"
+                  required={!editingStudent}
+                  id="student-password"
+                  placeholder={editingStudent ? "Laisser vide pour conserver l'ancien mot de passe" : "Entrez le mot de passe"}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: 1.5,
+                    }
+                  }}
+                />
+                <FormControl fullWidth margin="normal">
+                  <InputLabel>Niveau</InputLabel>
+                  <Select
+                    value={studentFormData.level}
+                    onChange={(e) => setStudentFormData({ ...studentFormData, level: e.target.value })}
+                    id="student-level"
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1.5,
+                      }
+                    }}
+                  >
+                    <MenuItem value="CM2">CM2</MenuItem>
+                    <MenuItem value="CM1">CM1</MenuItem>
+                  </Select>
+                </FormControl>
+              </Box>
+            </DialogContent>
+            <DialogActions>
+              <Button 
+                onClick={() => setOpenStudentsDialog(false)}
+                sx={{ color: '#7f8c8d' }}
+              >
+                Annuler
+              </Button>
+              <Button 
+                variant="contained"
+                onClick={() => {
+                  if (!studentFormData.username || !studentFormData.level) {
+                    alert('Veuillez remplir le nom d\'utilisateur et le niveau');
+                    return;
+                  }
+                  
+                  // Pour un nouvel élève, le mot de passe est obligatoire
+                  if (!editingStudent && !studentFormData.password) {
+                    alert('Veuillez entrer un mot de passe pour le nouvel élève');
+                    return;
+                  }
+                  
+                  handleStudentSave(studentFormData);
+                }}
+                sx={{
+                  backgroundColor: '#3498db',
+                  '&:hover': {
+                    backgroundColor: '#2980b9',
+                  }
+                }}
+              >
+                {editingStudent ? 'Modifier' : 'Ajouter'}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Container>
       </Box>
+
+      {/* Boîte de dialogue de confirmation de visibilité */}
+      <Dialog 
+        open={visibilityConfirmDialog.open} 
+        onClose={() => setVisibilityConfirmDialog({ open: false, contentId: null, action: '', contentTitle: '' })}
+        maxWidth="sm" 
+        fullWidth
+      >
+        <DialogTitle sx={{ bgcolor: '#3498db', color: 'white' }}>
+          <Typography variant="h6">
+            Confirmation de visibilité
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          <Typography variant="body1" sx={{ color: '#2c3e50', mb: 2 }}>
+            Êtes-vous sûr de vouloir <strong>{visibilityConfirmDialog.action}</strong> le contenu :
+          </Typography>
+          <Typography variant="h6" sx={{ color: '#3498db', fontWeight: 600 }}>
+            "{visibilityConfirmDialog.contentTitle}"
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setVisibilityConfirmDialog({ open: false, contentId: null, action: '', contentTitle: '' })}
+            sx={{ color: '#7f8c8d' }}
+          >
+            Annuler
+          </Button>
+          <Button 
+            onClick={handleVisibilityConfirm}
+            variant="contained"
+            sx={{
+              backgroundColor: '#3498db',
+              '&:hover': {
+                backgroundColor: '#2980b9',
+              }
+            }}
+          >
+            Confirmer
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Boîte de dialogue d'affichage du contenu */}
+      <Dialog 
+        open={contentViewDialog.open} 
+        onClose={() => setContentViewDialog({ open: false, content: null })}
+        maxWidth="md" 
+        fullWidth
+      >
+        <DialogTitle sx={{ bgcolor: '#2c3e50', color: 'white' }}>
+          <Typography variant="h5">
+            Détails du contenu
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          {contentViewDialog.content && (
+            <Box>
+              {/* Image en grand */}
+              {contentViewDialog.content.miniature && (
+                <Box sx={{ mb: 3, textAlign: 'center' }}>
+                  <img 
+                    src={`http://localhost:5000/${contentViewDialog.content.miniature}`}
+                    alt={contentViewDialog.content.title}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '400px',
+                      objectFit: 'contain',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                  />
+                </Box>
+              )}
+
+              {/* Informations du contenu */}
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                    Titre
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#7f8c8d', mb: 2 }}>
+                    {contentViewDialog.content.title}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                    Niveau
+                  </Typography>
+                  <Chip 
+                    label={contentViewDialog.content.level} 
+                    sx={{ 
+                      backgroundColor: contentViewDialog.content.level === 'CM2' ? '#3498db' : '#e67e22',
+                      color: 'white',
+                      fontWeight: 500
+                    }}
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                    Catégorie
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#7f8c8d', mb: 2 }}>
+                    {categories.find(c => c.key === contentViewDialog.content.category)?.label || contentViewDialog.content.category}
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                    Type de contenu
+                  </Typography>
+                  <Typography variant="body1" sx={{ color: '#7f8c8d', mb: 2 }}>
+                    {contentViewDialog.content.type}
+                  </Typography>
+                </Grid>
+
+                {/* Afficher Thème et Sous-catégorie seulement si ce n'est pas ACCUEIL */}
+                {contentViewDialog.content.category !== 'HOME' && contentViewDialog.content.theme && (
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                      Thème
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#7f8c8d', mb: 2 }}>
+                      Thème {contentViewDialog.content.theme}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {contentViewDialog.content.category !== 'HOME' && contentViewDialog.content.subcategory && (
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                      Sous-catégorie
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#7f8c8d', mb: 2 }}>
+                      {contentViewDialog.content.subcategory.replace('_', ' ')}
+                    </Typography>
+                  </Grid>
+                )}
+
+                <Grid item xs={12}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                    Statut
+                  </Typography>
+                  <Chip 
+                    label={contentViewDialog.content.isVisible ? 'Visible' : 'Masqué'} 
+                    color={contentViewDialog.content.isVisible ? 'success' : 'default'}
+                    sx={{ fontWeight: 500 }}
+                  />
+                </Grid>
+
+                {contentViewDialog.content.description && (
+                  <Grid item xs={12}>
+                    <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                      Description
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: '#7f8c8d', mb: 2, whiteSpace: 'pre-wrap' }}>
+                      {contentViewDialog.content.description}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {/* Fichiers attachés */}
+                <Grid item xs={12}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 2, fontWeight: 600 }}>
+                    Fichiers attachés
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    {contentViewDialog.content.pdfFile && (
+                      <Chip 
+                        icon={<PictureAsPdf />} 
+                        label="Fichier PDF" 
+                        sx={{ 
+                          background: 'rgba(231, 76, 60, 0.1)',
+                          color: '#e74c3c',
+                          fontWeight: 500,
+                          cursor: 'pointer',
+                          '&:hover': {
+                            background: 'rgba(231, 76, 60, 0.2)',
+                          }
+                        }}
+                        onClick={() => window.open(`http://localhost:5000/${contentViewDialog.content.pdfFile}`, '_blank')}
+                      />
+                    )}
+                    {contentViewDialog.content.miniature && (
+                      <Chip 
+                        icon={<Image />} 
+                        label="Image" 
+                        sx={{ 
+                          background: 'rgba(52, 152, 219, 0.1)',
+                          color: '#3498db',
+                          fontWeight: 500
+                        }}
+                      />
+                    )}
+                  </Box>
+                </Grid>
+
+                {/* Dates */}
+                <Grid item xs={12} md={6}>
+                  <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                    Date de création
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                    {new Date(contentViewDialog.content.createdAt).toLocaleDateString('fr-FR', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </Typography>
+                </Grid>
+
+                {contentViewDialog.content.updatedAt && (
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                      Dernière modification
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                      {new Date(contentViewDialog.content.updatedAt).toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {contentViewDialog.content.visibilityChangedAt && (
+                  <Grid item xs={12} md={6}>
+                    <Typography variant="h6" sx={{ color: '#2c3e50', mb: 1, fontWeight: 600 }}>
+                      Visibilité modifiée le
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#7f8c8d' }}>
+                      {new Date(contentViewDialog.content.visibilityChangedAt).toLocaleDateString('fr-FR', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button 
+            onClick={() => setContentViewDialog({ open: false, content: null })}
+            sx={{ color: '#7f8c8d' }}
+          >
+            Fermer
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

@@ -27,13 +27,14 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SendIcon from '@mui/icons-material/Send';
 import SchoolIcon from '@mui/icons-material/School';
 import logo from '../public/logo (1).png';
+import axios from 'axios';
 
 const Contact = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nom: '',
+    name: '',
     email: '',
-    sujet: '',
+    phone: '',
     message: ''
   });
   const [snackbar, setSnackbar] = useState({
@@ -41,6 +42,7 @@ const Contact = () => {
     message: '',
     severity: 'success'
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLogoClick = () => {
     navigate('/');
@@ -57,20 +59,45 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulation d'envoi du formulaire
-    setSnackbar({
-      open: true,
-      message: 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.',
-      severity: 'success'
-    });
-    setFormData({
-      nom: '',
-      email: '',
-      sujet: '',
-      message: ''
-    });
+    
+    if (!formData.name || !formData.email || !formData.message) {
+      setSnackbar({
+        open: true,
+        message: 'Veuillez remplir tous les champs obligatoires (nom, email, message)',
+        severity: 'error'
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await axios.post('/contact/send', formData);
+      
+      setSnackbar({
+        open: true,
+        message: 'Votre message a été envoyé avec succès ! Nous vous répondrons dans les plus brefs délais.',
+        severity: 'success'
+      });
+      
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        message: ''
+      });
+    } catch (error) {
+      console.error('Erreur lors de l\'envoi du message:', error);
+      setSnackbar({
+        open: true,
+        message: 'Erreur lors de l\'envoi du message. Veuillez réessayer.',
+        severity: 'error'
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -125,8 +152,8 @@ const Contact = () => {
                       <TextField
                         fullWidth
                         label="Nom complet"
-                        name="nom"
-                        value={formData.nom}
+                        name="name"
+                        value={formData.name}
                         onChange={handleInputChange}
                         required
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
@@ -147,11 +174,10 @@ const Contact = () => {
                     <Grid item xs={12}>
                       <TextField
                         fullWidth
-                        label="Sujet"
-                        name="sujet"
-                        value={formData.sujet}
+                        label="Téléphone (optionnel)"
+                        name="phone"
+                        value={formData.phone}
                         onChange={handleInputChange}
-                        required
                         sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                       />
                     </Grid>
@@ -174,6 +200,7 @@ const Contact = () => {
                         variant="contained"
                         size="large"
                         startIcon={<SendIcon />}
+                        disabled={isSubmitting}
                         sx={{
                           bgcolor: '#3b4a6b',
                           color: '#ffffff',
@@ -183,10 +210,13 @@ const Contact = () => {
                           borderRadius: 2,
                           '&:hover': {
                             bgcolor: '#2c3e50',
+                          },
+                          '&:disabled': {
+                            bgcolor: '#95a5a6',
                           }
                         }}
                       >
-                        Envoyer le message
+                        {isSubmitting ? 'Envoi en cours...' : 'Envoyer le message'}
                       </Button>
                     </Grid>
                   </Grid>

@@ -137,7 +137,7 @@ const StudentDashboard = () => {
       <Box 
         sx={{ 
           p: 3, 
-          background: '#292b40',
+          background: '#2c3e50',
           color: 'white',
           position: 'relative'
         }}
@@ -188,7 +188,7 @@ const StudentDashboard = () => {
             px: 3, 
             mb: 1, 
             display: 'block',
-            color: '#3b4a6b',
+            color: '#7f8c8d',
             fontWeight: 600,
             fontSize: '0.75rem'
           }}
@@ -205,21 +205,21 @@ const StudentDashboard = () => {
                 borderRadius: 2,
                 cursor: 'pointer',
                 background: selectedCategory === category.key 
-                  ? '#292b40'
+                  ? '#3498db'
                   : 'transparent',
-                color: selectedCategory === category.key ? 'white' : '#292b40',
+                color: selectedCategory === category.key ? 'white' : '#2c3e50',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   background: selectedCategory === category.key 
-                    ? '#23264c'
-                    : '#e6f0ff',
+                    ? '#2980b9'
+                    : '#ecf0f1',
                   transform: 'translateX(4px)',
                 },
               }}
             >
               <ListItemIcon 
                 sx={{ 
-                  color: selectedCategory === category.key ? 'white' : '#292b40',
+                  color: selectedCategory === category.key ? 'white' : '#2c3e50',
                   minWidth: 40
                 }}
               >
@@ -255,11 +255,11 @@ const StudentDashboard = () => {
           sx={{
             borderRadius: 2,
             py: 1.5,
-            borderColor: '#292b40',
-            color: '#292b40',
+            borderColor: '#2c3e50',
+            color: '#2c3e50',
             '&:hover': {
-              borderColor: '#23264c',
-              background: '#e6f0ff',
+              borderColor: '#34495e',
+              background: '#ecf0f1',
             }
           }}
         >
@@ -270,7 +270,7 @@ const StudentDashboard = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#80b9e5' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#ecf0f1' }}>
       {/* Sidebar */}
       <Box
         component="nav"
@@ -322,7 +322,7 @@ const StudentDashboard = () => {
           elevation={0}
           sx={{ 
             display: { md: 'none' },
-            background: '#292b40',
+            background: '#2c3e50',
             backdropFilter: 'blur(20px)',
           }}
         >
@@ -350,10 +350,10 @@ const StudentDashboard = () => {
               gutterBottom 
               sx={{
                 fontWeight: 700,
-                color: '#ffffff',
+                color: '#2c3e50',
                 fontSize: { xs: '1.8rem', md: '2.5rem' },
                 mb: 2,
-                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
+                textShadow: '2px 2px 4px rgba(0,0,0,0.1)'
               }}
             >
               Bienvenue, {user?.username}! 👨‍🎓
@@ -363,8 +363,8 @@ const StudentDashboard = () => {
               sx={{
                 fontWeight: 400,
                 fontSize: { xs: '1.1rem', md: '1.3rem' },
-                color: '#ffffff',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                color: '#7f8c8d',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
               }}
             >
               {getWelcomeMessage()}
@@ -379,10 +379,10 @@ const StudentDashboard = () => {
                 gutterBottom 
                 sx={{ 
                   fontWeight: 600, 
-                  color: '#ffffff',
+                  color: '#2c3e50',
                   mb: 3,
                   textAlign: 'center',
-                  textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
                 }}
               >
                 Sélectionner un thème
@@ -401,12 +401,12 @@ const StudentDashboard = () => {
                       height: 48,
                       borderRadius: 3,
                       background: selectedTheme === theme 
-                        ? '#292b40'
+                        ? '#3498db'
                         : '#ffffff',
-                      color: selectedTheme === theme ? '#ffffff' : '#292b40',
+                      color: selectedTheme === theme ? '#ffffff' : '#2c3e50',
                       border: selectedTheme === theme 
                         ? 'none'
-                        : '2px solid #292b40',
+                        : '2px solid #3498db',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': { 
                         transform: 'translateY(-2px) scale(1.05)',
@@ -426,9 +426,9 @@ const StudentDashboard = () => {
               gutterBottom 
               sx={{ 
                 fontWeight: 600, 
-                color: '#ffffff',
+                color: '#2c3e50',
                 mb: 2,
-                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
               }}
             >
               Contenu disponible
@@ -437,8 +437,8 @@ const StudentDashboard = () => {
               variant="body1" 
               sx={{ 
                 mb: 3,
-                color: '#ffffff',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+                color: '#7f8c8d',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
               }}
             >
               {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
@@ -452,18 +452,18 @@ const StudentDashboard = () => {
                 p: 6, 
                 textAlign: 'center',
                 background: '#ffffff',
-                border: '2px solid #292b40',
+                border: '2px solid #3498db',
                 borderRadius: 3,
                 boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
               }}
             >
-              <Box sx={{ color: '#292b40', mb: 2 }}>
+              <Box sx={{ color: '#2c3e50', mb: 2 }}>
                 <School sx={{ fontSize: 64, opacity: 0.7 }} />
               </Box>
-              <Typography variant="h6" color="#292b40" gutterBottom>
+              <Typography variant="h6" color="#2c3e50" gutterBottom>
                 Aucun contenu disponible pour cette catégorie
               </Typography>
-              <Typography variant="body2" color="#3b4a6b">
+              <Typography variant="body2" color="#7f8c8d">
                 Votre professeur n'a pas encore publié de contenu ici.
               </Typography>
             </Card>
@@ -477,7 +477,7 @@ const StudentDashboard = () => {
                       display: 'flex', 
                       flexDirection: 'column',
                       background: '#ffffff',
-                      border: '2px solid #292b40',
+                      border: '2px solid #3498db',
                       borderRadius: 3,
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       cursor: 'pointer',
@@ -500,7 +500,7 @@ const StudentDashboard = () => {
                       <Box 
                         sx={{ 
                           height: 120, 
-                          background: '#292b40',
+                          background: '#3498db',
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
@@ -519,7 +519,7 @@ const StudentDashboard = () => {
                           fontWeight: 600,
                           fontSize: '1.1rem',
                           lineHeight: 1.3,
-                          color: '#292b40',
+                          color: '#2c3e50',
                           mb: 1,
                         }}
                       >
@@ -528,7 +528,7 @@ const StudentDashboard = () => {
                       
                       <Typography 
                         variant="body2" 
-                        color="#3b4a6b" 
+                        color="#7f8c8d" 
                         gutterBottom
                         sx={{ fontWeight: 500, mb: 2 }}
                       >
@@ -538,7 +538,7 @@ const StudentDashboard = () => {
                       {content.description && (
                         <Typography 
                           variant="body2" 
-                          color="#3b4a6b" 
+                          color="#7f8c8d" 
                           sx={{ 
                             mb: 2,
                             display: '-webkit-box',
@@ -558,8 +558,8 @@ const StudentDashboard = () => {
                             icon={<PictureAsPdf />} 
                             label="PDF disponible" 
                             sx={{ 
-                              background: 'rgba(244, 67, 54, 0.1)',
-                              color: 'error.main',
+                              background: 'rgba(231, 76, 60, 0.1)',
+                              color: '#e74c3c',
                               fontWeight: 500,
                             }}
                           />
@@ -570,8 +570,8 @@ const StudentDashboard = () => {
                             icon={<School />} 
                             label="Image" 
                             sx={{ 
-                              background: 'rgba(102, 126, 234, 0.1)',
-                              color: 'primary.main',
+                              background: 'rgba(52, 152, 219, 0.1)',
+                              color: '#3498db',
                               fontWeight: 500,
                             }}
                           />
@@ -586,7 +586,7 @@ const StudentDashboard = () => {
 
           {/* Dialog de contenu */}
           <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
-            <DialogTitle sx={{ bgcolor: '#292b40', color: 'white' }}>
+            <DialogTitle sx={{ bgcolor: '#2c3e50', color: 'white' }}>
               <Typography variant="h5">
                 {selectedContent?.title}
               </Typography>
@@ -595,14 +595,14 @@ const StudentDashboard = () => {
               {selectedContent && (
                 <Box>
                   {selectedContent.description && (
-                    <Typography variant="body1" sx={{ mb: 3, color: '#3b4a6b' }}>
+                    <Typography variant="body1" sx={{ mb: 3, color: '#7f8c8d' }}>
                       {selectedContent.description}
                     </Typography>
                   )}
                   
                   {selectedContent.pdfFile && (
                     <Box sx={{ mb: 3 }}>
-                      <Typography variant="h6" sx={{ mb: 2, color: '#292b40' }}>
+                      <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50' }}>
                         Document PDF
                       </Typography>
                       <Button
@@ -610,9 +610,9 @@ const StudentDashboard = () => {
                         startIcon={<GetApp />}
                         onClick={() => downloadFile(selectedContent.pdfFile, selectedContent.title)}
                         sx={{
-                          backgroundColor: '#292b40',
+                          backgroundColor: '#3498db',
                           '&:hover': {
-                            backgroundColor: '#23264c',
+                            backgroundColor: '#2980b9',
                           }
                         }}
                       >
@@ -623,10 +623,10 @@ const StudentDashboard = () => {
                   
                   {selectedContent.content && (
                     <Box>
-                      <Typography variant="h6" sx={{ mb: 2, color: '#292b40' }}>
+                      <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50' }}>
                         Contenu
                       </Typography>
-                      <Typography variant="body1" sx={{ color: '#3b4a6b' }}>
+                      <Typography variant="body1" sx={{ color: '#7f8c8d' }}>
                         {selectedContent.content}
                       </Typography>
                     </Box>
@@ -637,7 +637,7 @@ const StudentDashboard = () => {
             <DialogActions>
               <Button 
                 onClick={() => setOpenDialog(false)}
-                sx={{ color: '#3b4a6b' }}
+                sx={{ color: '#7f8c8d' }}
               >
                 Fermer
               </Button>

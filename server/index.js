@@ -26,11 +26,15 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Routes
-const authRoutes = require('./routes/auth');
+const { router: authRoutes } = require('./routes/auth');
 const contentRoutes = require('./routes/content');
+const contactRoutes = require('./routes/contact');
+const studentsRoutes = require('./routes/students');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/content', contentRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/students', studentsRoutes);
 
 // Route de test
 app.get('/api', (req, res) => {

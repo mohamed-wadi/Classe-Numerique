@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { resizeImageIfNeeded } = require('../utils/imageResizer');
 const router = express.Router();
 
 // Configuration multer pour upload
@@ -82,7 +83,7 @@ router.get('/:level/:category', verifyToken, (req, res) => {
 router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
-]), (req, res) => {
+]), async (req, res) => {
   if (req.user.role !== 'teacher') {
     return res.status(403).json({ message: 'Accès refusé. Professeur requis.' });
   }
@@ -97,32 +98,50 @@ router.post('/', verifyToken, upload.fields([
     description
   } = req.body;
 
-  const newContent = {
-    id: nextId++,
-    title,
-    level,
-    category,
-    theme: theme ? parseInt(theme) : null,
-    subcategory,
-    type,
-    description: description || '',
-    miniature: req.files?.miniature ? req.files.miniature[0].path : '',
-    pdfFile: req.files?.pdfFile ? req.files.pdfFile[0].path : '',
-    isVisible: false,
-    createdBy: req.user.username,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  };
+  try {
+    // Redimensionner les images si elles existent
+    let miniaturePath = '';
+    let pdfFilePath = '';
 
-  contents.push(newContent);
-  res.status(201).json(newContent);
+    if (req.files?.miniature) {
+      miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
+    }
+
+    if (req.files?.pdfFile) {
+      pdfFilePath = req.files.pdfFile[0].path; // Les PDFs ne sont pas redimensionnés
+    }
+
+    const newContent = {
+      id: nextId++,
+      title,
+      level,
+      category,
+      theme: theme ? parseInt(theme) : null,
+      subcategory,
+      type,
+      description: description || '',
+      miniature: miniaturePath,
+      pdfFile: pdfFilePath,
+      isVisible: false,
+      createdBy: req.user.username,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      visibilityChangedAt: new Date() // Initialisation avec la date de création
+    };
+
+    contents.push(newContent);
+    res.status(201).json(newContent);
+  } catch (error) {
+    console.error('Erreur lors du traitement des fichiers:', error);
+    res.status(500).json({ message: 'Erreur lors du traitement des fichiers' });
+  }
 });
 
 // PUT - Modifier contenu (professeur seulement)
 router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
-]), (req, res) => {
+]), async (req, res) => {
   if (req.user.role !== 'teacher') {
     return res.status(403).json({ message: 'Accès refusé. Professeur requis.' });
   }
@@ -134,21 +153,27 @@ router.put('/:id', verifyToken, upload.fields([
     return res.status(404).json({ message: 'Contenu non trouvé' });
   }
 
-  const updatedContent = {
-    ...contents[contentIndex],
-    ...req.body,
-    updatedAt: new Date()
-  };
+  try {
+    const updatedContent = {
+      ...contents[contentIndex],
+      ...req.body,
+      updatedAt: new Date()
+    };
 
-  if (req.files?.miniature) {
-    updatedContent.miniature = req.files.miniature[0].path;
-  }
-  if (req.files?.pdfFile) {
-    updatedContent.pdfFile = req.files.pdfFile[0].path;
-  }
+    // Redimensionner les nouvelles images si elles existent
+    if (req.files?.miniature) {
+      updatedContent.miniature = await resizeImageIfNeeded(req.files.miniature[0].path);
+    }
+    if (req.files?.pdfFile) {
+      updatedContent.pdfFile = req.files.pdfFile[0].path; // Les PDFs ne sont pas redimensionnés
+    }
 
-  contents[contentIndex] = updatedContent;
-  res.json(updatedContent);
+    contents[contentIndex] = updatedContent;
+    res.json(updatedContent);
+  } catch (error) {
+    console.error('Erreur lors du traitement des fichiers:', error);
+    res.status(500).json({ message: 'Erreur lors du traitement des fichiers' });
+  }
 });
 
 // PUT - Basculer la visibilité du contenu (professeur seulement)
@@ -166,6 +191,7 @@ router.put('/:id/visibility', verifyToken, (req, res) => {
 
   contents[contentIndex].isVisible = !contents[contentIndex].isVisible;
   contents[contentIndex].updatedAt = new Date();
+  contents[contentIndex].visibilityChangedAt = new Date(); // Nouveau champ pour la date de changement de visibilité
 
   res.json(contents[contentIndex]);
 });
