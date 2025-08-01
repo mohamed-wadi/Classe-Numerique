@@ -12,7 +12,6 @@ import {
   Alert,
   Checkbox,
   FormControlLabel,
-  Divider,
   Link,
   Dialog,
   DialogTitle,

@@ -23,8 +23,6 @@ import {
   Chip,
   Avatar,
   IconButton,
-  Tabs,
-  Tab,
   Drawer,
   List,
   ListItem,
@@ -62,13 +60,7 @@ import {
   Close as CloseIcon,
   ContactMail,
   People,
-  Settings,
-  Message,
-  Email,
-  Phone,
-  Person,
-  Lock,
-  Block
+  Person
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -351,7 +343,7 @@ const TeacherDashboard = () => {
     } else {
       fetchContents();
     }
-  }, [selectedCategory]);
+  }, [selectedCategory, selectedLevel]);
 
   const fetchContents = async () => {
     try {

@@ -72,21 +72,9 @@ const StudentDashboard = () => {
     'exercice': 'Exercices'
   };
 
-  const subcategoryLabels = {
-    'expression_orale': 'Expression orale',
-    'lecture': 'Lecture',
-    'vocabulaire_thematique': 'Vocabulaire thématique',
-    'grammaire': 'Grammaire',
-    'conjugaison': 'Conjugaison',
-    'orthographe': 'Orthographe',
-    'vocabulaire': 'Vocabulaire',
-    'poesie': 'Poésie',
-    'expression_ecrite': 'Expression écrite'
-  };
-
   useEffect(() => {
     fetchContents();
-  }, [selectedCategory]);
+  }, [selectedCategory, user.level]);
 
   const fetchContents = async () => {
     try {

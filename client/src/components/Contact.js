@@ -74,7 +74,7 @@ const Contact = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await axios.post('/contact/send', formData);
+      await axios.post('/contact/send', formData);
       
       setSnackbar({
         open: true,
