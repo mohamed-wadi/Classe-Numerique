@@ -137,7 +137,7 @@ const StudentDashboard = () => {
       <Box 
         sx={{ 
           p: 3, 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: '#292b40',
           color: 'white',
           position: 'relative'
         }}
@@ -168,15 +168,15 @@ const StudentDashboard = () => {
           </Avatar>
           <Box>
             <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-              École {user?.level}
+              Espace Élève
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.9 }}>
-              Espace Élève
+              Classe {user?.level}
             </Typography>
           </Box>
         </Box>
         <Typography variant="body2" sx={{ opacity: 0.8 }}>
-          Classe {user?.level}
+          Bienvenue, {user?.username}
         </Typography>
       </Box>
 
@@ -188,12 +188,12 @@ const StudentDashboard = () => {
             px: 3, 
             mb: 1, 
             display: 'block',
-            color: 'text.secondary',
+            color: '#3b4a6b',
             fontWeight: 600,
             fontSize: '0.75rem'
           }}
         >
-          NAVIGATION
+          CATÉGORIES
         </Typography>
         <List sx={{ px: 2 }}>
           {categories.map((category) => (
@@ -205,21 +205,21 @@ const StudentDashboard = () => {
                 borderRadius: 2,
                 cursor: 'pointer',
                 background: selectedCategory === category.key 
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  ? '#292b40'
                   : 'transparent',
-                color: selectedCategory === category.key ? 'white' : 'text.primary',
+                color: selectedCategory === category.key ? 'white' : '#292b40',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   background: selectedCategory === category.key 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                    : 'rgba(102, 126, 234, 0.08)',
+                    ? '#23264c'
+                    : '#e6f0ff',
                   transform: 'translateX(4px)',
                 },
               }}
             >
               <ListItemIcon 
                 sx={{ 
-                  color: selectedCategory === category.key ? 'white' : '#667eea',
+                  color: selectedCategory === category.key ? 'white' : '#292b40',
                   minWidth: 40
                 }}
               >
@@ -255,11 +255,11 @@ const StudentDashboard = () => {
           sx={{
             borderRadius: 2,
             py: 1.5,
-            borderColor: 'rgba(102, 126, 234, 0.3)',
-            color: '#667eea',
+            borderColor: '#292b40',
+            color: '#292b40',
             '&:hover': {
-              borderColor: '#667eea',
-              background: 'rgba(102, 126, 234, 0.08)',
+              borderColor: '#23264c',
+              background: '#e6f0ff',
             }
           }}
         >
@@ -270,7 +270,7 @@ const StudentDashboard = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#80b9e5' }}>
       {/* Sidebar */}
       <Box
         component="nav"
@@ -287,7 +287,8 @@ const StudentDashboard = () => {
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: SIDEBAR_WIDTH,
-              boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
+              boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+              background: '#ffffff'
             },
           }}
         >
@@ -303,7 +304,8 @@ const StudentDashboard = () => {
               boxSizing: 'border-box', 
               width: SIDEBAR_WIDTH,
               border: 'none',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
+              boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+              background: '#ffffff'
             },
           }}
           open
@@ -320,7 +322,7 @@ const StudentDashboard = () => {
           elevation={0}
           sx={{ 
             display: { md: 'none' },
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: '#292b40',
             backdropFilter: 'blur(20px)',
           }}
         >
@@ -334,7 +336,7 @@ const StudentDashboard = () => {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
-              École {user?.level}
+              Espace Élève
             </Typography>
           </Toolbar>
         </AppBar>
@@ -348,25 +350,24 @@ const StudentDashboard = () => {
               gutterBottom 
               sx={{
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontSize: { xs: '2rem', md: '3rem' },
+                color: '#ffffff',
+                fontSize: { xs: '1.8rem', md: '2.5rem' },
                 mb: 2,
+                textShadow: '2px 2px 4px rgba(0,0,0,0.3)'
               }}
             >
-              {getWelcomeMessage()}, Classe {user?.level}! 📚
+              Bienvenue, {user?.username}! 👨‍🎓
             </Typography>
             <Typography 
               variant="h5" 
-              color="text.secondary"
               sx={{
                 fontWeight: 400,
-                fontSize: { xs: '1.25rem', md: '1.5rem' },
+                fontSize: { xs: '1.1rem', md: '1.3rem' },
+                color: '#ffffff',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
               }}
             >
-              Découvrez vos cours et exercices du jour
+              {getWelcomeMessage()}
             </Typography>
           </Box>
 
@@ -378,12 +379,13 @@ const StudentDashboard = () => {
                 gutterBottom 
                 sx={{ 
                   fontWeight: 600, 
-                  color: 'text.primary',
+                  color: '#ffffff',
                   mb: 3,
                   textAlign: 'center',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
                 }}
               >
-                Choisissez votre thème
+                Sélectionner un thème
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {[1, 2, 3, 4, 5, 6].map((theme) => (
@@ -399,21 +401,16 @@ const StudentDashboard = () => {
                       height: 48,
                       borderRadius: 3,
                       background: selectedTheme === theme 
-                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                        : 'rgba(255, 255, 255, 0.9)',
-                      color: selectedTheme === theme ? 'white' : 'text.primary',
+                        ? '#292b40'
+                        : '#ffffff',
+                      color: selectedTheme === theme ? '#ffffff' : '#292b40',
                       border: selectedTheme === theme 
                         ? 'none'
-                        : '1px solid rgba(226, 232, 240, 0.8)',
+                        : '2px solid #292b40',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': { 
                         transform: 'translateY(-2px) scale(1.05)',
-                        boxShadow: selectedTheme === theme 
-                          ? '0 8px 25px rgba(102, 126, 234, 0.3)'
-                          : '0 8px 25px rgba(0, 0, 0, 0.1)',
-                      },
-                      '&:active': {
-                        transform: 'translateY(0) scale(1.02)',
+                        boxShadow: '0 8px 25px rgba(0, 0, 0, 0.2)',
                       },
                     }}
                   />
@@ -422,25 +419,30 @@ const StudentDashboard = () => {
             </Box>
           )}
 
-          {/* Contenu disponible */}
+          {/* Liste du contenu */}
           <Box sx={{ mb: 4 }}>
             <Typography 
               variant="h4" 
               gutterBottom 
               sx={{ 
                 fontWeight: 600, 
-                color: 'text.primary',
+                color: '#ffffff',
                 mb: 2,
+                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
               }}
             >
-              {categories.find(c => c.key === selectedCategory)?.label}
+              Contenu disponible
             </Typography>
             <Typography 
               variant="body1" 
-              color="text.secondary"
-              sx={{ mb: 3 }}
+              sx={{ 
+                mb: 3,
+                color: '#ffffff',
+                textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
+              }}
             >
-              {selectedCategory === 'THEMES' && `Thème ${selectedTheme} • `}Contenu disponible pour votre classe
+              {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
+              {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
             </Typography>
           </Box>
 
@@ -449,20 +451,20 @@ const StudentDashboard = () => {
               sx={{ 
                 p: 6, 
                 textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(226, 232, 240, 0.8)',
+                background: '#ffffff',
+                border: '2px solid #292b40',
                 borderRadius: 3,
+                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
               }}
             >
-              <Box sx={{ color: 'text.secondary', mb: 2 }}>
-                <School sx={{ fontSize: 64, opacity: 0.3 }} />
+              <Box sx={{ color: '#292b40', mb: 2 }}>
+                <School sx={{ fontSize: 64, opacity: 0.7 }} />
               </Box>
-              <Typography variant="h5" color="text.secondary" gutterBottom>
-                Aucun contenu disponible pour le moment
+              <Typography variant="h6" color="#292b40" gutterBottom>
+                Aucun contenu disponible pour cette catégorie
               </Typography>
-              <Typography variant="body1" color="text.secondary">
-                Votre professeur n'a pas encore publié de contenu pour cette section.
+              <Typography variant="body2" color="#3b4a6b">
+                Votre professeur n'a pas encore publié de contenu ici.
               </Typography>
             </Card>
           ) : (
@@ -474,16 +476,15 @@ const StudentDashboard = () => {
                       height: '100%', 
                       display: 'flex', 
                       flexDirection: 'column',
-                      cursor: 'pointer',
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(226, 232, 240, 0.8)',
+                      background: '#ffffff',
+                      border: '2px solid #292b40',
                       borderRadius: 3,
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      '&:hover': { 
-                        transform: 'translateY(-6px)',
-                        boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1)',
-                      }
+                      cursor: 'pointer',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
+                      },
                     }}
                     onClick={() => handleContentClick(content)}
                   >
@@ -493,55 +494,86 @@ const StudentDashboard = () => {
                         height="160"
                         image={`http://localhost:5000/${content.miniature}`}
                         alt={content.title}
+                        sx={{ borderRadius: '12px 12px 0 0' }}
                       />
                     ) : (
                       <Box 
                         sx={{ 
-                          height: 160, 
-                          bgcolor: 'primary.light', 
+                          height: 120, 
+                          background: '#292b40',
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
-                          color: 'white'
+                          borderRadius: '12px 12px 0 0',
                         }}
                       >
-                        <MenuBook sx={{ fontSize: 60 }} />
+                        <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
                       </Box>
                     )}
                     
                     <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                      <Typography variant="h6" component="h2" gutterBottom>
+                      <Typography 
+                        variant="h6" 
+                        component="h2"
+                        sx={{ 
+                          fontWeight: 600,
+                          fontSize: '1.1rem',
+                          lineHeight: 1.3,
+                          color: '#292b40',
+                          mb: 1,
+                        }}
+                      >
                         {content.title}
                       </Typography>
                       
-                      <Box sx={{ mb: 2 }}>
-                        <Chip
-                          size="small"
-                          label={contentTypeLabels[content.type]}
-                          color="primary"
-                          variant="outlined"
-                        />
-                      </Box>
-                      
-                      {content.subcategory && (
-                        <Typography variant="body2" color="text.secondary" gutterBottom>
-                          {subcategoryLabels[content.subcategory]}
-                        </Typography>
-                      )}
+                      <Typography 
+                        variant="body2" 
+                        color="#3b4a6b" 
+                        gutterBottom
+                        sx={{ fontWeight: 500, mb: 2 }}
+                      >
+                        {contentTypeLabels[content.type] || content.type}
+                      </Typography>
                       
                       {content.description && (
-                        <Typography variant="body2" sx={{ mt: 1 }}>
+                        <Typography 
+                          variant="body2" 
+                          color="#3b4a6b" 
+                          sx={{ 
+                            mb: 2,
+                            display: '-webkit-box',
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: 'vertical',
+                            overflow: 'hidden',
+                          }}
+                        >
                           {content.description}
                         </Typography>
                       )}
                       
-                      <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                         {content.pdfFile && (
                           <Chip 
                             size="small" 
                             icon={<PictureAsPdf />} 
                             label="PDF disponible" 
-                            color="secondary"
+                            sx={{ 
+                              background: 'rgba(244, 67, 54, 0.1)',
+                              color: 'error.main',
+                              fontWeight: 500,
+                            }}
+                          />
+                        )}
+                        {content.miniature && (
+                          <Chip 
+                            size="small" 
+                            icon={<School />} 
+                            label="Image" 
+                            sx={{ 
+                              background: 'rgba(102, 126, 234, 0.1)',
+                              color: 'primary.main',
+                              fontWeight: 500,
+                            }}
                           />
                         )}
                       </Box>
@@ -552,73 +584,64 @@ const StudentDashboard = () => {
             </Grid>
           )}
 
-          {/* Dialog de détail du contenu */}
-          <Dialog 
-            open={openDialog} 
-            onClose={() => setOpenDialog(false)} 
-            maxWidth="md" 
-            fullWidth
-          >
-            {selectedContent && (
-              <>
-                <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
-                  <Typography variant="h5">
-                    {selectedContent.title}
-                  </Typography>
-                </DialogTitle>
-                <DialogContent sx={{ mt: 2 }}>
-                  {selectedContent.miniature && (
-                    <Box sx={{ mb: 3, textAlign: 'center' }}>
-                      <img
-                        src={`http://localhost:5000/${selectedContent.miniature}`}
-                        alt={selectedContent.title}
-                        style={{ maxWidth: '100%', maxHeight: '300px', borderRadius: '8px' }}
-                      />
-                    </Box>
-                  )}
-                  
-                  <Box sx={{ mb: 2 }}>
-                    <Chip
-                      label={contentTypeLabels[selectedContent.type]}
-                      color="primary"
-                      sx={{ mr: 1 }}
-                    />
-                    {selectedContent.subcategory && (
-                      <Chip
-                        label={subcategoryLabels[selectedContent.subcategory]}
-                        variant="outlined"
-                      />
-                    )}
-                  </Box>
-                  
+          {/* Dialog de contenu */}
+          <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
+            <DialogTitle sx={{ bgcolor: '#292b40', color: 'white' }}>
+              <Typography variant="h5">
+                {selectedContent?.title}
+              </Typography>
+            </DialogTitle>
+            <DialogContent sx={{ mt: 2 }}>
+              {selectedContent && (
+                <Box>
                   {selectedContent.description && (
-                    <Typography variant="body1" paragraph>
+                    <Typography variant="body1" sx={{ mb: 3, color: '#3b4a6b' }}>
                       {selectedContent.description}
                     </Typography>
                   )}
                   
                   {selectedContent.pdfFile && (
-                    <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.100', borderRadius: 2 }}>
-                      <Typography variant="h6" gutterBottom>
-                        Document PDF disponible
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 2, color: '#292b40' }}>
+                        Document PDF
                       </Typography>
                       <Button
                         variant="contained"
                         startIcon={<GetApp />}
-                        onClick={() => downloadFile(selectedContent.pdfFile, selectedContent.title + '.pdf')}
+                        onClick={() => downloadFile(selectedContent.pdfFile, selectedContent.title)}
+                        sx={{
+                          backgroundColor: '#292b40',
+                          '&:hover': {
+                            backgroundColor: '#23264c',
+                          }
+                        }}
                       >
                         Télécharger le PDF
                       </Button>
                     </Box>
                   )}
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setOpenDialog(false)} variant="contained">
-                    Fermer
-                  </Button>
-                </DialogActions>
-              </>
-            )}
+                  
+                  {selectedContent.content && (
+                    <Box>
+                      <Typography variant="h6" sx={{ mb: 2, color: '#292b40' }}>
+                        Contenu
+                      </Typography>
+                      <Typography variant="body1" sx={{ color: '#3b4a6b' }}>
+                        {selectedContent.content}
+                      </Typography>
+                    </Box>
+                  )}
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button 
+                onClick={() => setOpenDialog(false)}
+                sx={{ color: '#3b4a6b' }}
+              >
+                Fermer
+              </Button>
+            </DialogActions>
           </Dialog>
         </Container>
       </Box>

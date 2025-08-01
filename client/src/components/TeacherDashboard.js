@@ -235,7 +235,7 @@ const TeacherDashboard = () => {
       <Box 
         sx={{ 
           p: 3, 
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          background: '#2c3e50',
           color: 'white',
           position: 'relative'
         }}
@@ -285,7 +285,7 @@ const TeacherDashboard = () => {
           sx={{ 
             mb: 2, 
             display: 'block',
-            color: 'text.secondary',
+            color: '#7f8c8d',
             fontWeight: 600,
             fontSize: '0.75rem'
           }}
@@ -300,15 +300,15 @@ const TeacherDashboard = () => {
               onClick={() => setSelectedLevel(level)}
               sx={{
                 background: selectedLevel === level 
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                  : 'rgba(102, 126, 234, 0.1)',
-                color: selectedLevel === level ? 'white' : '#667eea',
+                  ? '#3498db'
+                  : '#ecf0f1',
+                color: selectedLevel === level ? 'white' : '#2c3e50',
                 fontWeight: 600,
                 border: 'none',
                 '&:hover': {
                   background: selectedLevel === level 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                    : 'rgba(102, 126, 234, 0.2)',
+                    ? '#2980b9'
+                    : '#d5dbdb',
                 },
               }}
             />
@@ -324,7 +324,7 @@ const TeacherDashboard = () => {
             px: 3, 
             mb: 1, 
             display: 'block',
-            color: 'text.secondary',
+            color: '#7f8c8d',
             fontWeight: 600,
             fontSize: '0.75rem'
           }}
@@ -341,21 +341,21 @@ const TeacherDashboard = () => {
                 borderRadius: 2,
                 cursor: 'pointer',
                 background: selectedCategory === category.key 
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  ? '#3498db'
                   : 'transparent',
-                color: selectedCategory === category.key ? 'white' : 'text.primary',
+                color: selectedCategory === category.key ? 'white' : '#2c3e50',
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   background: selectedCategory === category.key 
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                    : 'rgba(102, 126, 234, 0.08)',
+                    ? '#2980b9'
+                    : '#ecf0f1',
                   transform: 'translateX(4px)',
                 },
               }}
             >
               <ListItemIcon 
                 sx={{ 
-                  color: selectedCategory === category.key ? 'white' : '#667eea',
+                  color: selectedCategory === category.key ? 'white' : '#3498db',
                   minWidth: 40
                 }}
               >
@@ -391,11 +391,11 @@ const TeacherDashboard = () => {
           sx={{
             borderRadius: 2,
             py: 1.5,
-            borderColor: 'rgba(102, 126, 234, 0.3)',
-            color: '#667eea',
+            borderColor: '#3498db',
+            color: '#3498db',
             '&:hover': {
-              borderColor: '#667eea',
-              background: 'rgba(102, 126, 234, 0.08)',
+              borderColor: '#2980b9',
+              background: 'rgba(52, 152, 219, 0.05)',
             }
           }}
         >
@@ -406,7 +406,7 @@ const TeacherDashboard = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f5f7fa' }}>
       {/* Sidebar */}
       <Box
         component="nav"
@@ -423,7 +423,8 @@ const TeacherDashboard = () => {
             '& .MuiDrawer-paper': { 
               boxSizing: 'border-box', 
               width: SIDEBAR_WIDTH,
-              boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
+              boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+              background: '#ffffff'
             },
           }}
         >
@@ -439,7 +440,8 @@ const TeacherDashboard = () => {
               boxSizing: 'border-box', 
               width: SIDEBAR_WIDTH,
               border: 'none',
-              boxShadow: '0 8px 30px rgba(0,0,0,0.12)'
+              boxShadow: '0 8px 30px rgba(0,0,0,0.12)',
+              background: '#ffffff'
             },
           }}
           open
@@ -456,7 +458,7 @@ const TeacherDashboard = () => {
           elevation={0}
           sx={{ 
             display: { md: 'none' },
-            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            background: '#2c3e50',
             backdropFilter: 'blur(20px)',
           }}
         >
@@ -475,31 +477,28 @@ const TeacherDashboard = () => {
           </Toolbar>
         </AppBar>
 
-        <Container maxWidth="xl" sx={{ mt: { xs: 2, md: 4 }, px: { xs: 2, sm: 3 } }}>
+        <Container maxWidth="lg" sx={{ mt: { xs: 2, md: 3 }, px: { xs: 2, sm: 3 } }}>
           {/* Message de bienvenue */}
-          <Box sx={{ mb: 6, textAlign: 'center' }}>
+          <Box sx={{ mb: 4, textAlign: 'center' }}>
             <Typography 
-              variant="h2" 
+              variant="h3" 
               component="h1" 
               gutterBottom 
               sx={{
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontSize: { xs: '1.8rem', md: '2.5rem' },
-                mb: 2,
+                color: '#2c3e50',
+                fontSize: { xs: '1.5rem', md: '2rem' },
+                mb: 1,
               }}
             >
               Bienvenue, {user?.username}! 👨‍🏫
             </Typography>
             <Typography 
-              variant="h5" 
-              color="text.secondary"
+              variant="h6" 
               sx={{
                 fontWeight: 400,
-                fontSize: { xs: '1.1rem', md: '1.3rem' },
+                fontSize: { xs: '1rem', md: '1.1rem' },
+                color: '#7f8c8d',
               }}
             >
               Gérez vos contenus pédagogiques pour la classe {selectedLevel}
@@ -508,45 +507,43 @@ const TeacherDashboard = () => {
 
           {/* Sélection des thèmes (si catégorie THEMES) */}
           {selectedCategory === 'THEMES' && (
-            <Box sx={{ mb: 5 }}>
+            <Box sx={{ mb: 4 }}>
               <Typography 
-                variant="h4" 
+                variant="h5" 
                 gutterBottom 
                 sx={{ 
                   fontWeight: 600, 
-                  color: 'text.primary',
-                  mb: 3,
+                  color: '#2c3e50',
+                  mb: 2,
                   textAlign: 'center',
                 }}
               >
                 Sélectionner un thème
               </Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {[1, 2, 3, 4, 5, 6].map((theme) => (
                   <Chip
                     key={theme}
                     label={`Thème ${theme}`}
                     onClick={() => setSelectedTheme(theme)}
                     sx={{
-                      fontSize: '1.1rem',
+                      fontSize: '0.9rem',
                       fontWeight: 600,
-                      py: 2,
-                      px: 3,
-                      height: 48,
-                      borderRadius: 3,
+                      py: 1.5,
+                      px: 2,
+                      height: 40,
+                      borderRadius: 2,
                       background: selectedTheme === theme 
-                        ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                        : 'rgba(255, 255, 255, 0.9)',
-                      color: selectedTheme === theme ? 'white' : 'text.primary',
+                        ? '#3498db'
+                        : '#ecf0f1',
+                      color: selectedTheme === theme ? '#ffffff' : '#2c3e50',
                       border: selectedTheme === theme 
                         ? 'none'
-                        : '1px solid rgba(226, 232, 240, 0.8)',
+                        : '1px solid #bdc3c7',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': { 
-                        transform: 'translateY(-2px) scale(1.05)',
-                        boxShadow: selectedTheme === theme 
-                          ? '0 8px 25px rgba(102, 126, 234, 0.3)'
-                          : '0 8px 25px rgba(0, 0, 0, 0.1)',
+                        transform: 'translateY(-1px) scale(1.02)',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                       },
                     }}
                   />
@@ -556,22 +553,24 @@ const TeacherDashboard = () => {
           )}
 
           {/* Liste du contenu */}
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 3 }}>
             <Typography 
-              variant="h4" 
+              variant="h5" 
               gutterBottom 
               sx={{ 
                 fontWeight: 600, 
-                color: 'text.primary',
-                mb: 2,
+                color: '#2c3e50',
+                mb: 1,
               }}
             >
               Contenu existant
             </Typography>
             <Typography 
               variant="body1" 
-              color="text.secondary"
-              sx={{ mb: 3 }}
+              sx={{ 
+                mb: 2,
+                color: '#7f8c8d',
+              }}
             >
               {selectedLevel} • {categories.find(c => c.key === selectedCategory)?.label}
               {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
@@ -581,26 +580,26 @@ const TeacherDashboard = () => {
           {filteredContents.length === 0 ? (
             <Card 
               sx={{ 
-                p: 6, 
+                p: 4, 
                 textAlign: 'center',
-                background: 'rgba(255, 255, 255, 0.6)',
-                backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(226, 232, 240, 0.8)',
-                borderRadius: 3,
+                background: '#ffffff',
+                border: '1px solid #ecf0f1',
+                borderRadius: 2,
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
               }}
             >
-              <Box sx={{ color: 'text.secondary', mb: 2 }}>
-                <School sx={{ fontSize: 64, opacity: 0.3 }} />
+              <Box sx={{ color: '#bdc3c7', mb: 2 }}>
+                <School sx={{ fontSize: 48, opacity: 0.5 }} />
               </Box>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
+              <Typography variant="h6" color="#7f8c8d" gutterBottom>
                 Aucun contenu pour cette catégorie
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="#95a5a6">
                 Utilisez le bouton d'ajout pour créer du contenu.
               </Typography>
             </Card>
           ) : (
-            <Grid container spacing={{ xs: 2, md: 3 }}>
+            <Grid container spacing={2}>
               {filteredContents.map((content) => (
                 <Grid item xs={12} sm={6} lg={4} key={content.id}>
                   <Card 
@@ -608,22 +607,21 @@ const TeacherDashboard = () => {
                       height: '100%', 
                       display: 'flex', 
                       flexDirection: 'column',
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(226, 232, 240, 0.8)',
-                      borderRadius: 3,
+                      background: '#ffffff',
+                      border: '1px solid #ecf0f1',
+                      borderRadius: 2,
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:hover': {
-                        transform: 'translateY(-4px)',
-                        boxShadow: '0 12px 32px rgba(0, 0, 0, 0.1)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
                       },
                     }}
                   >
                     {content.miniature ? (
                       <Box 
                         sx={{ 
-                          height: 160, 
-                          borderRadius: '12px 12px 0 0',
+                          height: 140, 
+                          borderRadius: '8px 8px 0 0',
                           overflow: 'hidden',
                         }}
                       >
@@ -640,28 +638,28 @@ const TeacherDashboard = () => {
                     ) : (
                       <Box 
                         sx={{ 
-                          height: 120, 
-                          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                          height: 100, 
+                          background: '#3498db',
                           display: 'flex', 
                           alignItems: 'center', 
                           justifyContent: 'center',
-                          borderRadius: '12px 12px 0 0',
+                          borderRadius: '8px 8px 0 0',
                         }}
                       >
-                        <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
+                        <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
                       </Box>
                     )}
                     
-                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                         <Typography 
                           variant="h6" 
                           component="h2"
                           sx={{ 
                             fontWeight: 600,
-                            fontSize: '1.1rem',
+                            fontSize: '1rem',
                             lineHeight: 1.3,
-                            color: 'text.primary',
+                            color: '#2c3e50',
                           }}
                         >
                           {content.title}
@@ -672,16 +670,16 @@ const TeacherDashboard = () => {
                           color={content.isVisible ? 'success' : 'default'}
                           sx={{
                             fontWeight: 500,
-                            fontSize: '0.75rem',
+                            fontSize: '0.7rem',
                           }}
                         />
                       </Box>
                       
                       <Typography 
                         variant="body2" 
-                        color="text.secondary" 
+                        color="#7f8c8d" 
                         gutterBottom
-                        sx={{ fontWeight: 500 }}
+                        sx={{ fontWeight: 500, mb: 1.5 }}
                       >
                         {getContentTypes(selectedCategory).find(t => t === content.contentType) || content.contentType}
                       </Typography>
@@ -689,9 +687,9 @@ const TeacherDashboard = () => {
                       {content.description && (
                         <Typography 
                           variant="body2" 
-                          color="text.secondary" 
+                          color="#95a5a6" 
                           sx={{ 
-                            mt: 1,
+                            mb: 1.5,
                             display: '-webkit-box',
                             WebkitLineClamp: 2,
                             WebkitBoxOrient: 'vertical',
@@ -702,16 +700,17 @@ const TeacherDashboard = () => {
                         </Typography>
                       )}
                       
-                      <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                         {content.pdfFile && (
                           <Chip 
                             size="small" 
                             icon={<PictureAsPdf />} 
                             label="PDF" 
                             sx={{ 
-                              background: 'rgba(244, 67, 54, 0.1)',
-                              color: 'error.main',
+                              background: 'rgba(231, 76, 60, 0.1)',
+                              color: '#e74c3c',
                               fontWeight: 500,
+                              fontSize: '0.7rem',
                             }}
                           />
                         )}
@@ -721,9 +720,10 @@ const TeacherDashboard = () => {
                             icon={<Image />} 
                             label="Image" 
                             sx={{ 
-                              background: 'rgba(102, 126, 234, 0.1)',
-                              color: 'primary.main',
+                              background: 'rgba(52, 152, 219, 0.1)',
+                              color: '#3498db',
                               fontWeight: 500,
+                              fontSize: '0.7rem',
                             }}
                           />
                         )}
@@ -731,15 +731,16 @@ const TeacherDashboard = () => {
                     </CardContent>
                     
                     <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Box sx={{ display: 'flex', gap: 0.5 }}>
                         <IconButton 
                           onClick={() => handleEdit(content)} 
                           size="small"
                           sx={{
-                            color: 'primary.main',
-                            background: 'rgba(102, 126, 234, 0.1)',
+                            color: '#3498db',
+                            background: 'rgba(52, 152, 219, 0.1)',
                             '&:hover': {
-                              background: 'rgba(102, 126, 234, 0.2)',
+                              background: '#3498db',
+                              color: '#ffffff',
                               transform: 'scale(1.1)',
                             },
                             transition: 'all 0.2s ease',
@@ -751,10 +752,11 @@ const TeacherDashboard = () => {
                           onClick={() => handleDelete(content.id)} 
                           size="small"
                           sx={{
-                            color: 'error.main',
-                            background: 'rgba(244, 67, 54, 0.1)',
+                            color: '#e74c3c',
+                            background: 'rgba(231, 76, 60, 0.1)',
                             '&:hover': {
-                              background: 'rgba(244, 67, 54, 0.2)',
+                              background: '#e74c3c',
+                              color: '#ffffff',
                               transform: 'scale(1.1)',
                             },
                             transition: 'all 0.2s ease',
@@ -767,14 +769,15 @@ const TeacherDashboard = () => {
                         onClick={() => toggleVisibility(content.id)} 
                         size="small"
                         sx={{
-                          color: content.isVisible ? 'success.main' : 'text.secondary',
+                          color: content.isVisible ? '#27ae60' : '#95a5a6',
                           background: content.isVisible 
-                            ? 'rgba(76, 175, 80, 0.1)' 
-                            : 'rgba(158, 158, 158, 0.1)',
+                            ? 'rgba(39, 174, 96, 0.1)' 
+                            : 'rgba(149, 165, 166, 0.1)',
                           '&:hover': {
                             background: content.isVisible 
-                              ? 'rgba(76, 175, 80, 0.2)' 
-                              : 'rgba(158, 158, 158, 0.2)',
+                              ? '#27ae60' 
+                              : '#95a5a6',
+                            color: '#ffffff',
                             transform: 'scale(1.1)',
                           },
                           transition: 'all 0.2s ease',
@@ -795,11 +798,11 @@ const TeacherDashboard = () => {
             aria-label="add"
             sx={{ 
               position: 'fixed', 
-              bottom: 24, 
-              right: 24,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              bottom: 20, 
+              right: 20,
+              background: '#3498db',
               '&:hover': {
-                background: 'linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%)',
+                background: '#2980b9',
                 transform: 'scale(1.1)',
               },
               transition: 'all 0.2s ease',
@@ -811,7 +814,7 @@ const TeacherDashboard = () => {
 
           {/* Dialog d'ajout/modification */}
           <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
-            <DialogTitle sx={{ bgcolor: 'primary.main', color: 'white' }}>
+            <DialogTitle sx={{ bgcolor: '#3498db', color: 'white' }}>
               <Typography variant="h5">
                 {editingContent ? 'Modifier le contenu' : 'Ajouter du contenu'}
               </Typography>
@@ -825,6 +828,12 @@ const TeacherDashboard = () => {
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   margin="normal"
                   required
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: 1.5,
+                    }
+                  }}
                 />
                 
                 <Grid container spacing={2}>
@@ -834,6 +843,12 @@ const TeacherDashboard = () => {
                       <Select
                         value={formData.level}
                         onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: 1.5,
+                          }
+                        }}
                       >
                         <MenuItem value="CM2">CM2</MenuItem>
                         <MenuItem value="CM1">CM1</MenuItem>
@@ -847,6 +862,12 @@ const TeacherDashboard = () => {
                       <Select
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        sx={{
+                          '& .MuiOutlinedInput-root': {
+                            backgroundColor: '#f8f9fa',
+                            borderRadius: 1.5,
+                          }
+                        }}
                       >
                         {categories.map((cat) => (
                           <MenuItem key={cat.key} value={cat.key}>{cat.label}</MenuItem>
@@ -864,6 +885,12 @@ const TeacherDashboard = () => {
                         <Select
                           value={formData.theme}
                           onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#f8f9fa',
+                              borderRadius: 1.5,
+                            }
+                          }}
                         >
                           {[1, 2, 3, 4, 5, 6].map((theme) => (
                             <MenuItem key={theme} value={theme}>Thème {theme}</MenuItem>
@@ -878,6 +905,12 @@ const TeacherDashboard = () => {
                         <Select
                           value={formData.subcategory}
                           onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
+                          sx={{
+                            '& .MuiOutlinedInput-root': {
+                              backgroundColor: '#f8f9fa',
+                              borderRadius: 1.5,
+                            }
+                          }}
                         >
                           {subcategories.map((sub) => (
                             <MenuItem key={sub} value={sub}>
@@ -895,6 +928,12 @@ const TeacherDashboard = () => {
                   <Select
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        backgroundColor: '#f8f9fa',
+                        borderRadius: 1.5,
+                      }
+                    }}
                   >
                     {contentTypes.map((type) => (
                       <MenuItem key={type.key} value={type.key}>{type.label}</MenuItem>
@@ -910,6 +949,12 @@ const TeacherDashboard = () => {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   margin="normal"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      backgroundColor: '#f8f9fa',
+                      borderRadius: 1.5,
+                    }
+                  }}
                 />
 
                 <Grid container spacing={2} sx={{ mt: 1 }}>
@@ -919,6 +964,14 @@ const TeacherDashboard = () => {
                       component="label"
                       fullWidth
                       startIcon={<Image />}
+                      sx={{
+                        borderColor: '#3498db',
+                        color: '#3498db',
+                        '&:hover': {
+                          borderColor: '#2980b9',
+                          backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                        }
+                      }}
                     >
                       Miniature
                       <input
@@ -936,6 +989,14 @@ const TeacherDashboard = () => {
                       component="label"
                       fullWidth
                       startIcon={<PictureAsPdf />}
+                      sx={{
+                        borderColor: '#3498db',
+                        color: '#3498db',
+                        '&:hover': {
+                          borderColor: '#2980b9',
+                          backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                        }
+                      }}
                     >
                       Fichier PDF
                       <input
@@ -950,8 +1011,22 @@ const TeacherDashboard = () => {
               </Box>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setOpenDialog(false)}>Annuler</Button>
-              <Button onClick={handleSubmit} variant="contained">
+              <Button 
+                onClick={() => setOpenDialog(false)}
+                sx={{ color: '#7f8c8d' }}
+              >
+                Annuler
+              </Button>
+              <Button 
+                onClick={handleSubmit} 
+                variant="contained"
+                sx={{
+                  backgroundColor: '#3498db',
+                  '&:hover': {
+                    backgroundColor: '#2980b9',
+                  }
+                }}
+              >
                 {editingContent ? 'Modifier' : 'Ajouter'}
               </Button>
             </DialogActions>
