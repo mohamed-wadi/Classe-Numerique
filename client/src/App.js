@@ -4,6 +4,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './contexts/AuthContext';
 import Login from './components/Login';
+import LoginEleve from './components/LoginEleve';
+import LoginEnseignant from './components/LoginEnseignant';
 import TeacherDashboard from './components/TeacherDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -162,6 +164,8 @@ function App() {
             <Routes>
               <Route path="/" element={<Login />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/login/eleve" element={<LoginEleve />} />
+              <Route path="/login/enseignant" element={<LoginEnseignant />} />
               <Route 
                 path="/teacher" 
                 element={

@@ -1,184 +1,100 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Alert,
-  Paper,
-} from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
+import { Box, Button, Typography, Container, AppBar, Toolbar, IconButton } from '@mui/material';
+import GroupIcon from '@mui/icons-material/Group';
+import PersonIcon from '@mui/icons-material/Person';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+
+// Images
+import logo from '../public/logo (1).png';
+import accueilImg from '../public/accueil.png';
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    const result = await login(credentials.username, credentials.password);
-    if (result.success) {
-      navigate(result.user.role === 'teacher' ? '/teacher' : '/student');
-    } else {
-      setError(result.message);
-    }
-    setLoading(false);
-  };
 
   return (
     <Box
       sx={{
         minHeight: '100vh',
         width: '100vw',
-        background: 'linear-gradient(135deg, #EBF8FF 0%, #BEE3F8 100%)',
+        background: '#80b9e5',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        px: 2,
+        flexDirection: 'column',
       }}
     >
-      <Container maxWidth="sm">
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            borderRadius: 3,
-            backgroundColor: '#fff',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
-            maxWidth: 'md',
-            width: '100%',
-          }}
-        >
-          <Typography
-            variant="h4"
-            align="center"
-            gutterBottom
-            sx={{ 
-              fontWeight: 'bold', 
-              mb: 3,
-              color: '#1E40AF',
-              fontSize: '2rem',
-            }}
-          >
-            Connexion
-          </Typography>
+      {/* Header */}
+      <AppBar position="static" elevation={0} sx={{ background: '#ffffff', boxShadow: 'none', p: 0 }}>
+        <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, md: 6 }, py: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box component="img" src={logo} alt="Logo" sx={{ height: 40, width: 40 }} />
+          </Box>
+          <Box sx={{ display: 'flex', gap: 3 }}>
+            <IconButton sx={{ color: '#3b4a6b' }}><MailOutlineIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Contact</Typography></IconButton>
+            <IconButton sx={{ color: '#3b4a6b' }}><MenuBookIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Exercices</Typography></IconButton>
+            <IconButton sx={{ color: '#3b4a6b' }}><HelpOutlineIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Aide</Typography></IconButton>
+            <IconButton sx={{ color: '#3b4a6b' }}><AccountCircleIcon /><Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Connexion</Typography></IconButton>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
-          {error && (
-            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
-              {error}
-            </Alert>
-          )}
-
-          <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-            <TextField
-              fullWidth
-              label="Nom d'utilisateur"
-              variant="outlined"
-              value={credentials.username}
-              onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
-              required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '&:hover': {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#93C5FD',
-                    },
-                  },
-                  '&.Mui-focused': {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#3B82F6',
-                      borderWidth: 2,
-                    },
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#6B7280',
-                  '&.Mui-focused': {
-                    color: '#3B82F6',
-                  },
-                },
-              }}
-            />
-
-            <TextField
-              fullWidth
-              label="Mot de passe"
-              type="password"
-              variant="outlined"
-              value={credentials.password}
-              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              required
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 2,
-                  '&:hover': {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#93C5FD',
-                    },
-                  },
-                  '&.Mui-focused': {
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#3B82F6',
-                      borderWidth: 2,
-                    },
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#6B7280',
-                  '&.Mui-focused': {
-                    color: '#3B82F6',
-                  },
-                },
-              }}
-            />
-
+      {/* Main content */}
+      <Container maxWidth="lg" sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: 'center', width: '100%', justifyContent: 'center', mt: { xs: 4, md: 0 } }}>
+          {/* Left: Buttons */}
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-start' }, justifyContent: 'center', gap: 2 }}>
             <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={loading}
+              variant="outlined"
+              size="large"
+              startIcon={<GroupIcon />}
+              onClick={() => navigate('/login/eleve')}
               sx={{
-                py: 2,
+                bgcolor: '#fff',
+                color: '#222',
+                border: '2px solid #222',
+                borderRadius: 8,
                 fontWeight: 'bold',
-                fontSize: '1rem',
-                borderRadius: 2,
-                backgroundColor: '#1E40AF',
-                color: '#fff',
-                textTransform: 'none',
-                transition: 'all 0.3s ease-in-out',
+                fontSize: 18,
+                px: 4,
+                py: 1.2,
+                boxShadow: 2,
                 '&:hover': {
-                  backgroundColor: '#1D4ED8',
-                  transform: 'translateY(-1px)',
-                  boxShadow: '0 4px 12px rgba(30, 64, 175, 0.3)',
-                },
-                '&:disabled': {
-                  backgroundColor: '#9CA3AF',
-                  transform: 'none',
-                  boxShadow: 'none',
+                  bgcolor: '#f5f5f5',
+                  borderColor: '#3b4a6b',
                 },
               }}
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              Élèves
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<PersonIcon />}
+              onClick={() => navigate('/login/enseignant')}
+              sx={{
+                bgcolor: '#232c3d',
+                color: '#fff',
+                borderRadius: 8,
+                fontWeight: 'bold',
+                fontSize: 18,
+                px: 4,
+                py: 1.2,
+                boxShadow: 2,
+                '&:hover': {
+                  bgcolor: '#3b4a6b',
+                },
+              }}
+            >
+              Enseignant
             </Button>
           </Box>
-
-          {/* Informations de connexion */}
-          <Box sx={{ mt: 4, p: 3, backgroundColor: '#F8FAFC', borderRadius: 2, border: '1px solid #E2E8F0' }}>
-            <Typography variant="body2" sx={{ color: '#64748B', textAlign: 'center', fontSize: '0.875rem' }}>
-              <strong>Comptes de test :</strong><br />
-              Professeur: prof / prof123<br />
-              CM2: cm2 / ecole<br />
-              CE6: ce6 / ecole
-            </Typography>
+          {/* Right: Illustration */}
+          <Box sx={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: { xs: 4, md: 0 } }}>
+            <Box component="img" src={accueilImg} alt="Illustration accueil" sx={{ maxWidth: 520, width: '100%' }} />
           </Box>
-        </Paper>
+        </Box>
       </Container>
     </Box>
   );
