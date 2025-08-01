@@ -21,6 +21,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:prod": "set REACT_APP_API_URL=https://classe-numerique.fly.dev && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

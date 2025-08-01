@@ -1,4 +1,4 @@
-# 🚀 Guide de Déploiement Netlify
+# 🚀 Guide de Déploiement Netlify - MISE À JOUR
 
 ## 📋 Prérequis
 - Compte GitHub avec le projet `Classe-Numerique`
@@ -16,15 +16,17 @@
 3. Sélectionnez le repository `mohamed-wadi/Classe-Numerique`
 
 ### 3. Configuration du Build
-Utilisez ces paramètres :
+Utilisez ces paramètres **EXACTS** :
 - **Base directory** : `client`
-- **Build command** : `DISABLE_ESLINT_PLUGIN=true npm run build`
+- **Build command** : `DISABLE_ESLINT_PLUGIN=true npm run build:prod`
 - **Publish directory** : `build`
 
-### 4. Variables d'Environnement
-Ajoutez cette variable d'environnement :
+### 4. Variables d'Environnement (OPTIONNEL)
+Si vous voulez ajouter une variable d'environnement manuellement :
 - **Key** : `REACT_APP_API_URL`
 - **Value** : `https://classe-numerique.fly.dev`
+
+**Note** : La variable est maintenant incluse dans le script de build, donc ce n'est plus nécessaire.
 
 ### 5. Déploiement
 1. Cliquez sur "Deploy site"
@@ -46,12 +48,12 @@ Ajoutez cette variable d'environnement :
 ## 🔧 Dépannage
 
 ### Erreur de Build
-- Vérifiez que la commande de build est correcte
-- Assurez-vous que `DISABLE_ESLINT_PLUGIN=true` est inclus
+- Vérifiez que la commande de build est exactement : `DISABLE_ESLINT_PLUGIN=true npm run build:prod`
+- Assurez-vous que le base directory est `client`
 
 ### Erreur de Connexion
 - Vérifiez que le backend Fly.io est actif
-- Vérifiez la variable d'environnement `REACT_APP_API_URL`
+- Vérifiez que l'URL `https://classe-numerique.fly.dev` est accessible
 
 ### Erreur CORS
 - Le backend est configuré pour accepter les domaines Netlify
@@ -61,4 +63,5 @@ Ajoutez cette variable d'environnement :
 En cas de problème, vérifiez :
 1. Les logs de build Netlify
 2. Les logs du backend Fly.io
-3. La console du navigateur pour les erreurs JavaScript 
+3. La console du navigateur pour les erreurs JavaScript
+4. Que l'URL du backend est correcte dans le build 
