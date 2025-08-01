@@ -24,13 +24,13 @@ import {
   MailOutline as MailOutlineIcon,
   ArrowBack as ArrowBackIcon,
   Phone as PhoneIcon,
-  Email as EmailIcon,
-  LocationOn as LocationOnIcon
+  LocationOn as LocationOnIcon,
+  Send as SendIcon,
+  School as SchoolIcon
 } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
-import logo from '../assets/logo.png';
+import logo from '../public/logo (1).png';
 
 const Contact = () => {
   const navigate = useNavigate();
