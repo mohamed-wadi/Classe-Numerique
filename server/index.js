@@ -7,18 +7,9 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configuration CORS pour accepter Netlify et autres domaines
+// Configuration CORS simplifiée pour accepter tous les domaines
 const corsOptions = {
-  origin: [
-    'http://localhost:3000',
-    'https://localhost:3000',
-    'https://*.netlify.app',
-    'https://*.netlify.com',
-    'https://classe-numerique.netlify.app',
-    'https://classe-numerique.netlify.com',
-    // Accepter tous les domaines en développement
-    ...(process.env.NODE_ENV !== 'production' ? ['*'] : [])
-  ],
+  origin: true, // Accepter tous les domaines
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -28,6 +19,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
+
+// Middleware de logging pour déboguer les requêtes
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
+  next();
+});
 
 // Configuration multer pour upload de fichiers
 const storage = multer.diskStorage({

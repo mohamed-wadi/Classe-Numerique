@@ -48,11 +48,15 @@ const syncStudents = (newStudents) => {
 // Route de connexion
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  
+  console.log(`Tentative de connexion pour l'utilisateur: ${username}`);
+  console.log('Corps de la requête:', req.body);
 
   try {
     // Vérifier d'abord si c'est un professeur
     const teacher = users[username];
     if (teacher && teacher.password === password) {
+      console.log(`Connexion réussie pour le professeur: ${username}`);
       const token = jwt.sign(
         { 
           username: teacher.username, 
@@ -74,8 +78,10 @@ router.post('/login', async (req, res) => {
     // Vérifier si c'est un élève
     const student = students.find(s => s.username === username);
     if (student) {
+      console.log(`Élève trouvé: ${username}, actif: ${student.isActive}`);
       // Vérifier si le compte est actif
       if (!student.isActive) {
+        console.log(`Compte désactivé pour: ${username}`);
         return res.status(401).json({ 
           message: 'Compte désactivé. Veuillez contacter votre professeur.' 
         });
@@ -83,10 +89,13 @@ router.post('/login', async (req, res) => {
 
       // Vérifier le mot de passe
       const isValidPassword = await bcrypt.compare(password, student.password);
+      console.log(`Vérification mot de passe pour ${username}: ${isValidPassword}`);
       if (!isValidPassword) {
+        console.log(`Mot de passe incorrect pour: ${username}`);
         return res.status(401).json({ message: 'Identifiants incorrects' });
       }
 
+      console.log(`Connexion réussie pour l'élève: ${username}`);
       const token = jwt.sign(
         { 
           username: student.username, 
@@ -108,6 +117,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Si aucun utilisateur trouvé
+    console.log(`Aucun utilisateur trouvé pour: ${username}`);
     return res.status(401).json({ message: 'Identifiants incorrects' });
 
   } catch (error) {
