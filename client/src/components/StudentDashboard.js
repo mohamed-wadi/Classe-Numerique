@@ -47,18 +47,18 @@ import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
 
 // Import des images
-const image1 = require('../../public/course/1.png');
-const image2 = require('../../public/course/2.png');
-const image3 = require('../../public/course/3.png');
-const image4 = require('../../public/course/4.png');
-const image5 = require('../../public/course/5.png');
-const image6 = require('../../public/course/6.png');
-const image7 = require('../../public/course/7.png');
-const image8 = require('../../public/course/8.png');
-const image9 = require('../../public/course/9.png');
-const image10 = require('../../public/course/10.png');
-const image11 = require('../../public/course/11.png');
-const image12 = require('../../public/course/12.png');
+const image1 = require('../assets/course/1.png');
+const image2 = require('../assets/course/2.png');
+const image3 = require('../assets/course/3.png');
+const image4 = require('../assets/course/4.png');
+const image5 = require('../assets/course/5.png');
+const image6 = require('../assets/course/6.png');
+const image7 = require('../assets/course/7.png');
+const image8 = require('../assets/course/8.png');
+const image9 = require('../assets/course/9.png');
+const image10 = require('../assets/course/10.png');
+const image11 = require('../assets/course/11.png');
+const image12 = require('../assets/course/12.png');
 
 const SIDEBAR_WIDTH = 280;
 
