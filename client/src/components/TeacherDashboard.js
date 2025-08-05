@@ -39,7 +39,8 @@ import {
   Paper,
   Switch,
   FormControlLabel,
-  InputAdornment
+  InputAdornment,
+  CardMedia
 } from '@mui/material';
 import {
   Add,
@@ -67,6 +68,20 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
+
+// Import des images
+const image1 = require('../assets/course/1.png');
+const image2 = require('../assets/course/2.png');
+const image3 = require('../assets/course/3.png');
+const image4 = require('../assets/course/4.png');
+const image5 = require('../assets/course/5.png');
+const image6 = require('../assets/course/6.png');
+const image7 = require('../assets/course/7.png');
+const image8 = require('../assets/course/8.png');
+const image9 = require('../assets/course/9.png');
+const image10 = require('../assets/course/10.png');
+const image11 = require('../assets/course/11.png');
+const image12 = require('../assets/course/12.png');
 
 const SIDEBAR_WIDTH = 280;
 
@@ -156,6 +171,101 @@ const TeacherDashboard = () => {
     { key: 'cours_a_ecrire', label: 'Cours à écrire' },
     { key: 'exercice', label: 'Exercices' }
   ];
+
+  // Définition des thèmes avec leurs images et descriptions
+  const themes = [
+    {
+      id: 1,
+      title: "Thème 1",
+      subtitle: "Tout le bonheur !",
+      image: image1,
+      description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
+    },
+    {
+      id: 2,
+      title: "Thème 2", 
+      subtitle: "Les contes détournés",
+      image: image2,
+      description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
+    },
+    {
+      id: 3,
+      title: "Thème 3",
+      subtitle: "Notre monde en question",
+      image: image3, 
+      description: "Interrogez le monde qui vous entoure et développez votre esprit critique."
+    },
+    {
+      id: 4,
+      title: "Thème 4",
+      subtitle: "Les romans policiers",
+      image: image4,
+      description: "Plongez dans l'univers passionnant des enquêtes et de la résolution d'énigmes."
+    },
+    {
+      id: 5,
+      title: "Thème 5",
+      subtitle: "L'enfance en B.D",
+      image: image5,
+      description: "Découvrez l'art de la bande dessinée et ses histoires captivantes."
+    },
+    {
+      id: 6,
+      title: "Thème 6",
+      subtitle: "Des journaux intimes",
+      image: image6,
+      description: "Apprenez à exprimer vos pensées et vos émotions à travers l'écriture personnelle."
+    }
+  ];
+
+  // Images pour CM2 (thèmes 7-12)
+  const cm2Themes = [
+    {
+      id: 7,
+      title: "Thème 1",
+      subtitle: "Aventures et découvertes",
+      image: image7,
+      description: "Partez à l'aventure et découvrez de nouveaux horizons."
+    },
+    {
+      id: 8,
+      title: "Thème 2",
+      subtitle: "Mystères et énigmes",
+      image: image8,
+      description: "Résolvez des mystères passionnants et développez votre logique."
+    },
+    {
+      id: 9,
+      title: "Thème 3",
+      subtitle: "Créativité et imagination",
+      image: image9,
+      description: "Libérez votre créativité et explorez votre imagination."
+    },
+    {
+      id: 10,
+      title: "Thème 4",
+      subtitle: "Sciences et nature",
+      image: image10,
+      description: "Découvrez les merveilles de la science et de la nature."
+    },
+    {
+      id: 11,
+      title: "Thème 5",
+      subtitle: "Histoire et culture",
+      image: image11,
+      description: "Voyagez dans le temps et explorez différentes cultures."
+    },
+    {
+      id: 12,
+      title: "Thème 6",
+      subtitle: "Technologie et innovation",
+      image: image12,
+      description: "Découvrez les technologies modernes et les innovations."
+    }
+  ];
+
+  // Sélectionner les thèmes selon le niveau sélectionné
+  const currentThemes = selectedLevel === 'CM1' ? themes : cm2Themes;
 
   const getContentTypes = (category) => {
     if (category === 'THEMES') {
@@ -765,6 +875,131 @@ const TeacherDashboard = () => {
             </Typography>
           </Box>
 
+          {/* Affichage des thèmes sur la page d'accueil */}
+          {selectedCategory === 'HOME' && (
+            <Box sx={{ mb: 6 }}>
+              <Typography 
+                variant="h3" 
+                gutterBottom 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#2c3e50',
+                  mb: 4,
+                  textAlign: 'center',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+                }}
+              >
+                Thèmes d'apprentissage pour {selectedLevel}
+              </Typography>
+              
+              <Grid container spacing={{ xs: 2, md: 3 }}>
+                {currentThemes.map((theme) => (
+                  <Grid item xs={12} sm={6} lg={4} key={theme.id}>
+                    <Card 
+                      sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        background: '#ffffff',
+                        border: '2px solid #3498db',
+                        borderRadius: 3,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'translateY(-8px)',
+                          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                          borderColor: '#2980b9',
+                        },
+                      }}
+                      onClick={() => {
+                        setSelectedCategory('THEMES');
+                        setSelectedTheme(theme.id);
+                      }}
+                    >
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={theme.image}
+                        alt={theme.title}
+                        sx={{ 
+                          borderRadius: '12px 12px 0 0',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          console.error(`Erreur de chargement de l'image: ${theme.image}`, e);
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                        onLoad={() => {
+                          console.log(`Image chargée avec succès: ${theme.image}`);
+                        }}
+                      />
+                      <Box 
+                        sx={{ 
+                          height: 200,
+                          background: '#3498db',
+                          display: 'none',
+                          alignItems: 'center', 
+                          justifyContent: 'center',
+                          borderRadius: '12px 12px 0 0',
+                        }}
+                      >
+                        <School sx={{ fontSize: 60, color: 'white', opacity: 0.9 }} />
+                      </Box>
+                      
+                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                        <Typography 
+                          variant="h5" 
+                          component="h2"
+                          sx={{ 
+                            fontWeight: 700,
+                            fontSize: '1.3rem',
+                            lineHeight: 1.2,
+                            color: '#2c3e50',
+                            mb: 1,
+                          }}
+                        >
+                          {theme.title}
+                        </Typography>
+                        
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontWeight: 600,
+                            fontSize: '1.1rem',
+                            color: '#3498db',
+                            mb: 2,
+                            fontStyle: 'italic'
+                          }}
+                        >
+                          {theme.subtitle}
+                        </Typography>
+                        
+                        <Box sx={{ 
+                          display: 'flex', 
+                          justifyContent: 'center',
+                          mt: 'auto'
+                        }}>
+                          <Chip 
+                            label="Gérer ce thème"
+                            sx={{ 
+                              background: '#3498db',
+                              color: 'white',
+                              fontWeight: 600,
+                              '&:hover': {
+                                background: '#2980b9',
+                              }
+                            }}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
           {/* Sélection des thèmes (si catégorie THEMES) */}
           {selectedCategory === 'THEMES' && (
             <Box sx={{ mb: 4 }}>
@@ -781,11 +1016,11 @@ const TeacherDashboard = () => {
                 Sélectionner un thème
               </Typography>
               <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {[1, 2, 3, 4, 5, 6].map((theme) => (
+                {currentThemes.map((theme) => (
                   <Chip
-                    key={theme}
-                    label={`Thème ${theme}`}
-                    onClick={() => setSelectedTheme(theme)}
+                    key={theme.id}
+                    label={`Thème ${theme.id}`}
+                    onClick={() => setSelectedTheme(theme.id)}
                     sx={{
                       fontSize: '0.9rem',
                       fontWeight: 600,
@@ -793,11 +1028,11 @@ const TeacherDashboard = () => {
                       px: 2,
                       height: 40,
                       borderRadius: 2,
-                      background: selectedTheme === theme 
+                      background: selectedTheme === theme.id 
                         ? '#3498db'
                         : '#ecf0f1',
-                      color: selectedTheme === theme ? '#ffffff' : '#2c3e50',
-                      border: selectedTheme === theme 
+                      color: selectedTheme === theme.id ? '#ffffff' : '#2c3e50',
+                      border: selectedTheme === theme.id 
                         ? 'none'
                         : '1px solid #bdc3c7',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -813,32 +1048,34 @@ const TeacherDashboard = () => {
           )}
 
           {/* Liste du contenu */}
-          <Box sx={{ mb: 3 }}>
-            <Typography 
-              variant="h5" 
-              gutterBottom 
-              sx={{ 
-                fontWeight: 600, 
-                color: '#2c3e50',
-                mb: 1,
-              }}
-            >
-              {selectedCategory === 'CONTACT' ? 'Messages de contact' : 
-               selectedCategory === 'STUDENTS' ? 'Gestion des comptes élèves' : 
-               'Contenu existant'}
-            </Typography>
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                mb: 2,
-                color: '#7f8c8d',
-              }}
-            >
-              {selectedCategory === 'CONTACT' ? `${contactMessages.length} message(s) reçu(s)` :
-               selectedCategory === 'STUDENTS' ? `${students.length} compte(s) élève(s)` :
-               `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${selectedTheme}` : ''}`}
-            </Typography>
-          </Box>
+          {selectedCategory !== 'HOME' && (
+            <Box sx={{ mb: 3 }}>
+              <Typography 
+                variant="h5" 
+                gutterBottom 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#2c3e50',
+                  mb: 1,
+                }}
+              >
+                {selectedCategory === 'CONTACT' ? 'Messages de contact' : 
+                 selectedCategory === 'STUDENTS' ? 'Gestion des comptes élèves' : 
+                 'Contenu existant'}
+              </Typography>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  mb: 2,
+                  color: '#7f8c8d',
+                }}
+              >
+                {selectedCategory === 'CONTACT' ? `${contactMessages.length} message(s) reçu(s)` :
+                 selectedCategory === 'STUDENTS' ? `${students.length} compte(s) élève(s)` :
+                 `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${selectedTheme}` : ''}`}
+              </Typography>
+            </Box>
+          )}
 
           {/* Affichage des messages de contact */}
           {selectedCategory === 'CONTACT' && (
@@ -1702,8 +1939,8 @@ const TeacherDashboard = () => {
                             }
                           }}
                         >
-                          {[1, 2, 3, 4, 5, 6].map((theme) => (
-                            <MenuItem key={theme} value={theme}>Thème {theme}</MenuItem>
+                          {currentThemes.map((theme) => (
+                            <MenuItem key={theme.id} value={theme.id}>{theme.title}</MenuItem>
                           ))}
                         </Select>
                       </FormControl>
