@@ -46,6 +46,20 @@ import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
 
+// Import des images
+const image1 = require('../../public/course/1.png');
+const image2 = require('../../public/course/2.png');
+const image3 = require('../../public/course/3.png');
+const image4 = require('../../public/course/4.png');
+const image5 = require('../../public/course/5.png');
+const image6 = require('../../public/course/6.png');
+const image7 = require('../../public/course/7.png');
+const image8 = require('../../public/course/8.png');
+const image9 = require('../../public/course/9.png');
+const image10 = require('../../public/course/10.png');
+const image11 = require('../../public/course/11.png');
+const image12 = require('../../public/course/12.png');
+
 const SIDEBAR_WIDTH = 280;
 
 const StudentDashboard = () => {
@@ -133,42 +147,42 @@ const StudentDashboard = () => {
       id: 1,
       title: "Thème 1",
       subtitle: "Tout le bonheur !",
-      image: "/course/1.png",
+      image: image1,
       description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
     },
     {
       id: 2,
       title: "Thème 2", 
       subtitle: "Les contes détournés",
-      image: "/course/2.png",
+      image: image2,
       description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
     },
     {
       id: 3,
       title: "Thème 3",
       subtitle: "Notre monde en question",
-      image: "/course/3.png", 
+      image: image3, 
       description: "Interrogez le monde qui vous entoure et développez votre esprit critique."
     },
     {
       id: 4,
       title: "Thème 4",
       subtitle: "Les romans policiers",
-      image: "/course/4.png",
+      image: image4,
       description: "Plongez dans l'univers passionnant des enquêtes et de la résolution d'énigmes."
     },
     {
       id: 5,
       title: "Thème 5",
       subtitle: "L'enfance en B.D",
-      image: "/course/5.png",
+      image: image5,
       description: "Découvrez l'art de la bande dessinée et ses histoires captivantes."
     },
     {
       id: 6,
       title: "Thème 6",
       subtitle: "Des journaux intimes",
-      image: "/course/6.png",
+      image: image6,
       description: "Apprenez à exprimer vos pensées et vos émotions à travers l'écriture personnelle."
     }
   ];
@@ -179,42 +193,42 @@ const StudentDashboard = () => {
       id: 7,
       title: "Thème 1",
       subtitle: "Aventures et découvertes",
-      image: "/course/7.png",
+      image: image7,
       description: "Partez à l'aventure et découvrez de nouveaux horizons."
     },
     {
       id: 8,
       title: "Thème 2",
       subtitle: "Mystères et énigmes",
-      image: "/course/8.png",
+      image: image8,
       description: "Résolvez des mystères passionnants et développez votre logique."
     },
     {
       id: 9,
       title: "Thème 3",
       subtitle: "Créativité et imagination",
-      image: "/course/9.png",
+      image: image9,
       description: "Libérez votre créativité et explorez votre imagination."
     },
     {
       id: 10,
       title: "Thème 4",
       subtitle: "Sciences et nature",
-      image: "/course/10.png",
+      image: image10,
       description: "Découvrez les merveilles de la science et de la nature."
     },
     {
       id: 11,
       title: "Thème 5",
       subtitle: "Histoire et culture",
-      image: "/course/11.png",
+      image: image11,
       description: "Voyagez dans le temps et explorez différentes cultures."
     },
     {
       id: 12,
       title: "Thème 6",
       subtitle: "Technologie et innovation",
-      image: "/course/12.png",
+      image: image12,
       description: "Découvrez les technologies modernes et les innovations."
     }
   ];
