@@ -1564,7 +1564,7 @@ const TeacherDashboard = () => {
           )}
 
           {/* Affichage du contenu normal */}
-          {selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
+          {selectedCategory !== 'HOME' && selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
             <>
               {/* Barre de recherche pour le contenu */}
               <Box sx={{ mb: 3 }}>
@@ -1838,7 +1838,7 @@ const TeacherDashboard = () => {
           )}
 
           {/* Bouton d'ajout flottant - seulement pour les catégories de contenu */}
-          {selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
+          {selectedCategory !== 'HOME' && selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
           <Fab
             color="primary"
             aria-label="add"
