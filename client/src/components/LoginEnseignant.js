@@ -165,11 +165,12 @@ export default function LoginEnseignant() {
       }}
     >
       {/* Header avec navigation */}
-      <AppBar position="static" elevation={0} sx={{ background: '#ffffff', boxShadow: 'none', p: 0 }}>
+      <AppBar position="static" elevation={0} sx={{ background: '#ffffff', boxShadow: 'none', height: 80 }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, md: 6 }, py: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton onClick={handleLogoClick} sx={{ p: 0 }}>
-              <Box component="img" src={logo} alt="Logo" sx={{ height: 40, width: 40 }} />
+              {/* Agrandir le logo sans affecter la hauteur du navbar */}
+              <Box component="img" src={logo} alt="Logo" sx={{ height: 60, width: 'auto' }} />
             </IconButton>
           </Box>
           <Box sx={{ display: 'flex', gap: 3 }}>

@@ -41,11 +41,12 @@ const Aide = () => {
   return (
     <Box sx={{ minHeight: '100vh', background: '#80b9e5' }}>
       {/* Header */}
-      <AppBar position="static" elevation={0} sx={{ background: '#ffffff', boxShadow: 'none' }}>
+      <AppBar position="static" elevation={0} sx={{ background: '#ffffff', boxShadow: 'none', height: 80 }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 1, md: 6 }, py: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton onClick={handleLogoClick} sx={{ p: 0 }}>
-              <Box component="img" src={logo} alt="Logo" sx={{ height: 40, width: 40 }} />
+              {/* Agrandir le logo sans affecter la hauteur du navbar */}
+              <Box component="img" src={logo} alt="Logo" sx={{ height: 60, width: 'auto' }} />
             </IconButton>
           </Box>
           <Button
