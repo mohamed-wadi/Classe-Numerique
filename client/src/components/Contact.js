@@ -18,7 +18,9 @@ import {
   ListItemIcon,
   ListItemText,
   Snackbar,
-  Alert
+  Alert,
+  Menu,
+  MenuItem
 } from '@mui/material';
 import { 
   MailOutline as MailOutlineIcon,
@@ -26,7 +28,10 @@ import {
   Phone as PhoneIcon,
   LocationOn as LocationOnIcon,
   Send as SendIcon,
-  School as SchoolIcon
+  School as SchoolIcon,
+  HelpOutline as HelpOutlineIcon,
+  AccountCircle as AccountCircleIcon,
+  Menu as MenuIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
@@ -46,6 +51,8 @@ const Contact = () => {
     severity: 'success'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const isMenuOpen = Boolean(anchorEl);
 
   const handleLogoClick = () => {
     navigate('/');
@@ -54,6 +61,17 @@ const Contact = () => {
   const handleBackClick = () => {
     navigate('/');
   };
+
+  const handleAideClick = () => {
+    navigate('/aide');
+  };
+
+  const handleConnexionClick = () => {
+    navigate('/connexion');
+  };
+
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleInputChange = (e) => {
     setFormData({
@@ -117,6 +135,31 @@ const Contact = () => {
               {/* Agrandir le logo sans affecter la hauteur du navbar */}
               <Box component="img" src={logo} alt="Logo" sx={{ height: 60, width: 'auto' }} />
             </IconButton>
+          </Box>
+          {/* Desktop buttons */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
+            <IconButton onClick={handleAideClick} sx={{ color: '#3b4a6b' }}>
+              <HelpOutlineIcon />
+              <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Aide</Typography>
+            </IconButton>
+            <IconButton onClick={handleConnexionClick} sx={{ color: '#3b4a6b' }}>
+              <AccountCircleIcon />
+              <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Connexion</Typography>
+            </IconButton>
+          </Box>
+          {/* Mobile menu */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton onClick={handleMenuOpen} sx={{ color: '#3b4a6b' }}>
+              <MenuIcon />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
+              <MenuItem onClick={() => { handleAideClick(); handleMenuClose(); }}>
+                <HelpOutlineIcon sx={{ mr: 1 }} /> Aide
+              </MenuItem>
+              <MenuItem onClick={() => { handleConnexionClick(); handleMenuClose(); }}>
+                <AccountCircleIcon sx={{ mr: 1 }} /> Connexion
+              </MenuItem>
+            </Menu>
           </Box>
           <Button
             startIcon={<ArrowBackIcon />}

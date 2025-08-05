@@ -6,6 +6,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MenuIcon from '@mui/icons-material/Menu';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 // Images
 import logo from '../public/LOGO (2).png';
@@ -30,6 +33,11 @@ const Login = () => {
     navigate('/aide');
   };
 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+  const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
+  const handleMenuClose = () => setAnchorEl(null);
+
   return (
     <Box
       sx={{
@@ -49,7 +57,8 @@ const Login = () => {
               <Box component="img" src={logo} alt="Logo" sx={{ height: 60, width: 'auto' }} />
             </IconButton>
           </Box>
-          <Box sx={{ display: 'flex', gap: 3 }}>
+          {/* Desktop buttons */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
             <IconButton onClick={handleContactClick} sx={{ color: '#3b4a6b' }}>
               <MailOutlineIcon />
               <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Contact</Typography>
@@ -62,6 +71,23 @@ const Login = () => {
               <AccountCircleIcon />
               <Typography sx={{ ml: 1, fontSize: 16, fontWeight: 500 }}>Connexion</Typography>
             </IconButton>
+          </Box>
+          {/* Mobile menu */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton onClick={handleMenuOpen} sx={{ color: '#3b4a6b' }}>
+              <MenuIcon />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
+              <MenuItem onClick={() => { handleContactClick(); handleMenuClose(); }}>
+                <MailOutlineIcon sx={{ mr: 1 }} /> Contact
+              </MenuItem>
+              <MenuItem onClick={() => { handleAideClick(); handleMenuClose(); }}>
+                <HelpOutlineIcon sx={{ mr: 1 }} /> Aide
+              </MenuItem>
+              <MenuItem onClick={() => { handleConnexionClick(); handleMenuClose(); }}>
+                <AccountCircleIcon sx={{ mr: 1 }} /> Connexion
+              </MenuItem>
+            </Menu>
           </Box>
         </Toolbar>
       </AppBar>
