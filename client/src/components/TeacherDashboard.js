@@ -38,7 +38,8 @@ import {
   TableRow,
   Paper,
   Switch,
-  FormControlLabel
+  FormControlLabel,
+  InputAdornment
 } from '@mui/material';
 import {
   Add,
@@ -60,7 +61,8 @@ import {
   Close as CloseIcon,
   ContactMail,
   People,
-  Person
+  Person,
+  Search as SearchIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -83,6 +85,7 @@ const TeacherDashboard = () => {
   const [openStudentsDialog, setOpenStudentsDialog] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [editingStudent, setEditingStudent] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     level: 'CM2',
@@ -449,6 +452,42 @@ const TeacherDashboard = () => {
     ? contents.filter(content => content.theme === selectedTheme)
     : contents;
 
+  // Filtrage par terme de recherche
+  const searchFilteredContents = filteredContents.filter(content =>
+    content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.type?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filtrage par terme de recherche pour les messages de contact
+  const searchFilteredContactMessages = contactMessages.filter(message =>
+    message.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    message.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    message.message?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filtrage par terme de recherche pour les élèves
+  const searchFilteredStudents = students.filter(student =>
+    student.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.level?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filtrage par terme de recherche pour l'historique des ajouts
+  const searchFilteredHistoriqueAjouts = historiqueAjouts.filter(content =>
+    content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.level?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Filtrage par terme de recherche pour l'historique de visibilité
+  const searchFilteredHistoriqueVisibilite = historiqueVisibilite.filter(content =>
+    content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.level?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   // Contenu de la sidebar
   const sidebarContent = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -803,83 +842,117 @@ const TeacherDashboard = () => {
 
           {/* Affichage des messages de contact */}
           {selectedCategory === 'CONTACT' && (
-            contactMessages.length === 0 ? (
-              <Card 
-                sx={{ 
-                  p: 4, 
-                  textAlign: 'center',
-                  background: '#ffffff',
-                  border: '1px solid #ecf0f1',
-                  borderRadius: 2,
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <Box sx={{ color: '#bdc3c7', mb: 2 }}>
-                  <ContactMail sx={{ fontSize: 48, opacity: 0.5 }} />
-                </Box>
-                <Typography variant="h6" color="#7f8c8d" gutterBottom>
-                  Aucun message de contact
-                </Typography>
-                <Typography variant="body2" color="#95a5a6">
-                  Les messages envoyés depuis la page de contact apparaîtront ici.
-                </Typography>
-              </Card>
-            ) : (
-              <Grid container spacing={2}>
-                {contactMessages.map((message) => (
-                  <Grid item xs={12} sm={6} lg={4} key={message.id}>
-                    <Card 
-                      sx={{ 
-                        height: '100%', 
-                        display: 'flex', 
-                        flexDirection: 'column',
-                        background: '#ffffff',
-                        border: '1px solid #ecf0f1',
-                        borderRadius: 2,
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        cursor: 'pointer',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                        },
-                      }}
-                      onClick={() => handleMessageClick(message)}
-                    >
-                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                          <Avatar sx={{ bgcolor: '#3498db', mr: 2 }}>
-                            <Person />
-                          </Avatar>
-                          <Box>
-                            <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50' }}>
-                              {message.name}
-                            </Typography>
-                            <Typography variant="body2" color="#7f8c8d">
-                              {new Date(message.createdAt).toLocaleDateString()}
-                            </Typography>
+            <>
+              {/* Barre de recherche pour les messages */}
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher dans les messages..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#7f8c8d' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: '#ffffff',
+                      '& fieldset': {
+                        borderColor: '#bdc3c7',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#3498db',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3498db',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+
+              {contactMessages.length === 0 ? (
+                <Card 
+                  sx={{ 
+                    p: 4, 
+                    textAlign: 'center',
+                    background: '#ffffff',
+                    border: '1px solid #ecf0f1',
+                    borderRadius: 2,
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                  }}
+                >
+                  <Box sx={{ color: '#bdc3c7', mb: 2 }}>
+                    <ContactMail sx={{ fontSize: 48, opacity: 0.5 }} />
+                  </Box>
+                  <Typography variant="h6" color="#7f8c8d" gutterBottom>
+                    Aucun message de contact
+                  </Typography>
+                  <Typography variant="body2" color="#95a5a6">
+                    Les messages envoyés depuis la page de contact apparaîtront ici.
+                  </Typography>
+                </Card>
+              ) : (
+                <Grid container spacing={2}>
+                  {searchFilteredContactMessages.map((message) => (
+                    <Grid item xs={12} sm={6} lg={4} key={message.id}>
+                      <Card 
+                        sx={{ 
+                          height: '100%', 
+                          display: 'flex', 
+                          flexDirection: 'column',
+                          background: '#ffffff',
+                          border: '1px solid #ecf0f1',
+                          borderRadius: 2,
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                          },
+                        }}
+                        onClick={() => handleMessageClick(message)}
+                      >
+                        <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                            <Avatar sx={{ bgcolor: '#3498db', mr: 2 }}>
+                              <Person />
+                            </Avatar>
+                            <Box>
+                              <Typography variant="h6" sx={{ fontWeight: 600, color: '#2c3e50' }}>
+                                {message.name}
+                              </Typography>
+                              <Typography variant="body2" color="#7f8c8d">
+                                {new Date(message.createdAt).toLocaleDateString()}
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                        <Typography variant="body2" color="#7f8c8d" sx={{ mb: 2 }}>
-                          {message.email}
-                        </Typography>
-                        <Typography 
-                          variant="body2" 
-                          color="#2c3e50"
-                          sx={{ 
-                            display: '-webkit-box',
-                            WebkitLineClamp: 3,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {message.message}
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            )
+                          <Typography variant="body2" color="#7f8c8d" sx={{ mb: 2 }}>
+                            {message.email}
+                          </Typography>
+                          <Typography 
+                            variant="body2" 
+                            color="#2c3e50"
+                            sx={{ 
+                              display: '-webkit-box',
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: 'vertical',
+                              overflow: 'hidden',
+                            }}
+                          >
+                            {message.message}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </>
           )}
 
           {/* Affichage de la gestion des comptes élèves */}
@@ -912,6 +985,38 @@ const TeacherDashboard = () => {
                 </Button>
               </Box>
               
+              {/* Barre de recherche pour les élèves */}
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher un élève..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#7f8c8d' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: '#ffffff',
+                      '& fieldset': {
+                        borderColor: '#bdc3c7',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#3498db',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3498db',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+
               <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
                 <Table>
                   <TableHead>
@@ -923,7 +1028,7 @@ const TeacherDashboard = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {students.map((student) => (
+                    {searchFilteredStudents.map((student) => (
                       <TableRow key={student.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
                         <TableCell sx={{ color: '#2c3e50' }}>{student.username}</TableCell>
                         <TableCell>
@@ -1000,6 +1105,38 @@ const TeacherDashboard = () => {
                 Historique des ajouts de contenu ({historiqueAjouts.length} élément(s))
               </Typography>
               
+              {/* Barre de recherche pour l'historique des ajouts */}
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher dans l'historique des ajouts..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#7f8c8d' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: '#ffffff',
+                      '& fieldset': {
+                        borderColor: '#bdc3c7',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#3498db',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3498db',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+
               <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
                 <Table>
                   <TableHead>
@@ -1013,14 +1150,14 @@ const TeacherDashboard = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {historiqueAjouts.length === 0 ? (
+                    {searchFilteredHistoriqueAjouts.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4, color: '#7f8c8d' }}>
                           Aucun contenu ajouté
                         </TableCell>
                       </TableRow>
                     ) : (
-                      historiqueAjouts.map((content) => (
+                      searchFilteredHistoriqueAjouts.map((content) => (
                         <TableRow key={content.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
                           <TableCell sx={{ color: '#2c3e50', fontWeight: 500 }}>{content.title}</TableCell>
                           <TableCell>
@@ -1077,6 +1214,38 @@ const TeacherDashboard = () => {
                 Historique des changements de visibilité ({historiqueVisibilite.length} élément(s))
               </Typography>
               
+              {/* Barre de recherche pour l'historique de visibilité */}
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher dans l'historique de visibilité..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#7f8c8d' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: '#ffffff',
+                      '& fieldset': {
+                        borderColor: '#bdc3c7',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#3498db',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3498db',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+
               <TableContainer component={Paper} sx={{ boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)' }}>
                 <Table>
                   <TableHead>
@@ -1090,14 +1259,14 @@ const TeacherDashboard = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {historiqueVisibilite.length === 0 ? (
+                    {searchFilteredHistoriqueVisibilite.length === 0 ? (
                       <TableRow>
                         <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4, color: '#7f8c8d' }}>
                           Aucun changement de visibilité
                         </TableCell>
                       </TableRow>
                     ) : (
-                      historiqueVisibilite.map((content) => (
+                      searchFilteredHistoriqueVisibilite.map((content) => (
                         <TableRow key={content.id} sx={{ '&:hover': { backgroundColor: '#f8f9fa' } }}>
                           <TableCell sx={{ color: '#2c3e50', fontWeight: 500 }}>{content.title}</TableCell>
                           <TableCell>
@@ -1159,242 +1328,276 @@ const TeacherDashboard = () => {
 
           {/* Affichage du contenu normal */}
           {selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
-            filteredContents.length === 0 ? (
-              <Card 
-                sx={{ 
-                  p: 4, 
-                  textAlign: 'center',
-                  background: '#ffffff',
-                  border: '1px solid #ecf0f1',
-                  borderRadius: 2,
-                  boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
-                }}
-              >
-                <Box sx={{ color: '#bdc3c7', mb: 2 }}>
-                  <School sx={{ fontSize: 48, opacity: 0.5 }} />
-                </Box>
-                <Typography variant="h6" color="#7f8c8d" gutterBottom>
-                  Aucun contenu pour cette catégorie
-                </Typography>
-                <Typography variant="body2" color="#95a5a6">
-                  Utilisez le bouton d'ajout pour créer du contenu.
-                </Typography>
-              </Card>
-            ) : (
-              <Grid container spacing={2}>
-                {filteredContents.map((content) => (
-                  <Grid item xs={12} sm={6} lg={4} key={content.id}>
-                    <Card 
-                      sx={{ 
-                        height: '100%', 
-                        display: 'flex', 
-                        flexDirection: 'column',
-                        background: '#ffffff',
-                        border: '1px solid #ecf0f1',
-                        borderRadius: 2,
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': {
-                          transform: 'translateY(-2px)',
-                          boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                        },
-                      }}
-                    >
-                      {content.miniature ? (
-                        <Box 
-                          sx={{ 
-                            height: 140, 
-                            borderRadius: '8px 8px 0 0',
-                            overflow: 'hidden',
-                              cursor: 'pointer',
-                              position: 'relative',
-                              '&:hover': {
-                                '&::after': {
-                                  content: '""',
-                                  position: 'absolute',
-                                  top: 0,
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 0,
-                                  background: 'rgba(0,0,0,0.3)',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                  color: 'white',
-                                  fontSize: '0.8rem',
-                                  fontWeight: 600,
-                                  textTransform: 'uppercase',
-                                  letterSpacing: '0.5px'
-                                }
-                              }
-                            }}
-                            onClick={() => handleContentView(content)}
-                        >
-                          <img 
-                            src={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
-                            alt={content.title}
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
-                            }}
-                          />
-                        </Box>
-                      ) : (
-                        <Box 
-                          sx={{ 
-                            height: 100, 
-                            background: '#3498db',
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center',
-                            borderRadius: '8px 8px 0 0',
-                          }}
-                        >
-                          <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
-                        </Box>
-                      )}
-                      
-                      <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                          <Typography 
-                            variant="h6" 
-                            component="h2"
+            <>
+              {/* Barre de recherche pour le contenu */}
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher dans le contenu..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#7f8c8d' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 3,
+                      backgroundColor: '#ffffff',
+                      '& fieldset': {
+                        borderColor: '#bdc3c7',
+                      },
+                      '&:hover fieldset': {
+                        borderColor: '#3498db',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3498db',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+
+              {searchFilteredContents.length === 0 ? (
+                <Card 
+                  sx={{ 
+                    p: 4, 
+                    textAlign: 'center',
+                    background: '#ffffff',
+                    border: '1px solid #ecf0f1',
+                    borderRadius: 2,
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+                  }}
+                >
+                  <Box sx={{ color: '#bdc3c7', mb: 2 }}>
+                    <School sx={{ fontSize: 48, opacity: 0.5 }} />
+                  </Box>
+                  <Typography variant="h6" color="#7f8c8d" gutterBottom>
+                    Aucun contenu pour cette catégorie
+                  </Typography>
+                  <Typography variant="body2" color="#95a5a6">
+                    Utilisez le bouton d'ajout pour créer du contenu.
+                  </Typography>
+                </Card>
+              ) : (
+                <Grid container spacing={2}>
+                  {searchFilteredContents.map((content) => (
+                    <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                      <Card 
+                        sx={{ 
+                          height: '100%', 
+                          display: 'flex', 
+                          flexDirection: 'column',
+                          background: '#ffffff',
+                          border: '1px solid #ecf0f1',
+                          borderRadius: 2,
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          '&:hover': {
+                            transform: 'translateY(-2px)',
+                            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
+                          },
+                        }}
+                      >
+                        {content.miniature ? (
+                          <Box 
                             sx={{ 
-                              fontWeight: 600,
-                              fontSize: '1rem',
-                              lineHeight: 1.3,
-                              color: '#2c3e50',
-                            }}
-                          >
-                            {content.title}
-                          </Typography>
-                          <Chip
-                            size="small"
-                            label={content.isVisible ? 'Visible' : 'Masqué'}
-                            color={content.isVisible ? 'success' : 'default'}
-                            sx={{
-                              fontWeight: 500,
-                              fontSize: '0.7rem',
-                            }}
-                          />
-                        </Box>
-                        
-                        <Typography 
-                          variant="body2" 
-                          color="#7f8c8d" 
-                          gutterBottom
-                          sx={{ fontWeight: 500, mb: 1.5 }}
-                        >
-                          {getContentTypes(selectedCategory).find(t => t === content.contentType) || content.contentType}
-                        </Typography>
-                        
-                        {content.description && (
-                          <Typography 
-                            variant="body2" 
-                            color="#95a5a6" 
-                            sx={{ 
-                              mb: 1.5,
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
+                              height: 140, 
+                              borderRadius: '8px 8px 0 0',
                               overflow: 'hidden',
+                                cursor: 'pointer',
+                                position: 'relative',
+                                '&:hover': {
+                                  '&::after': {
+                                    content: '""',
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    background: 'rgba(0,0,0,0.3)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    color: 'white',
+                                    fontSize: '0.8rem',
+                                    fontWeight: 600,
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px'
+                                  }
+                                }
+                              }}
+                              onClick={() => handleContentView(content)}
+                          >
+                            <img 
+                              src={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
+                              alt={content.title}
+                              style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                              }}
+                            />
+                          </Box>
+                        ) : (
+                          <Box 
+                            sx={{ 
+                              height: 100, 
+                              background: '#3498db',
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              borderRadius: '8px 8px 0 0',
                             }}
                           >
-                            {content.description}
-                          </Typography>
+                            <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
+                          </Box>
                         )}
                         
-                        <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                          {content.pdfFile && (
-                            <Chip 
-                              size="small" 
-                              icon={<PictureAsPdf />} 
-                              label="PDF" 
+                        <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                            <Typography 
+                              variant="h6" 
+                              component="h2"
                               sx={{ 
-                                background: 'rgba(231, 76, 60, 0.1)',
-                                color: '#e74c3c',
+                                fontWeight: 600,
+                                fontSize: '1rem',
+                                lineHeight: 1.3,
+                                color: '#2c3e50',
+                              }}
+                            >
+                              {content.title}
+                            </Typography>
+                            <Chip
+                              size="small"
+                              label={content.isVisible ? 'Visible' : 'Masqué'}
+                              color={content.isVisible ? 'success' : 'default'}
+                              sx={{
                                 fontWeight: 500,
                                 fontSize: '0.7rem',
                               }}
                             />
-                          )}
-                          {content.miniature && (
-                            <Chip 
-                              size="small" 
-                              icon={<Image />} 
-                              label="Image" 
+                          </Box>
+                          
+                          <Typography 
+                            variant="body2" 
+                            color="#7f8c8d" 
+                            gutterBottom
+                            sx={{ fontWeight: 500, mb: 1.5 }}
+                          >
+                            {getContentTypes(selectedCategory).find(t => t === content.contentType) || content.contentType}
+                          </Typography>
+                          
+                          {content.description && (
+                            <Typography 
+                              variant="body2" 
+                              color="#95a5a6" 
                               sx={{ 
-                                background: 'rgba(52, 152, 219, 0.1)',
+                                mb: 1.5,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {content.description}
+                            </Typography>
+                          )}
+                          
+                          <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                            {content.pdfFile && (
+                              <Chip 
+                                size="small" 
+                                icon={<PictureAsPdf />} 
+                                label="PDF" 
+                                sx={{ 
+                                  background: 'rgba(231, 76, 60, 0.1)',
+                                  color: '#e74c3c',
+                                  fontWeight: 500,
+                                  fontSize: '0.7rem',
+                                }}
+                              />
+                            )}
+                            {content.miniature && (
+                              <Chip 
+                                size="small" 
+                                icon={<Image />} 
+                                label="Image" 
+                                sx={{ 
+                                  background: 'rgba(52, 152, 219, 0.1)',
+                                  color: '#3498db',
+                                  fontWeight: 500,
+                                  fontSize: '0.7rem',
+                                }}
+                              />
+                            )}
+                          </Box>
+                        </CardContent>
+                        
+                        <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
+                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            <IconButton 
+                              onClick={() => handleEdit(content)} 
+                              size="small"
+                              sx={{
                                 color: '#3498db',
-                                fontWeight: 500,
-                                fontSize: '0.7rem',
+                                background: 'rgba(52, 152, 219, 0.1)',
+                                '&:hover': {
+                                  background: '#3498db',
+                                  color: '#ffffff',
+                                  transform: 'scale(1.1)',
+                                },
+                                transition: 'all 0.2s ease',
                               }}
-                            />
-                          )}
-                        </Box>
-                      </CardContent>
-                      
-                      <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
-                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                            >
+                              <Edit fontSize="small" />
+                            </IconButton>
+                            <IconButton 
+                              onClick={() => handleDelete(content.id)} 
+                              size="small"
+                              sx={{
+                                color: '#e74c3c',
+                                background: 'rgba(231, 76, 60, 0.1)',
+                                '&:hover': {
+                                  background: '#e74c3c',
+                                  color: '#ffffff',
+                                  transform: 'scale(1.1)',
+                                },
+                                transition: 'all 0.2s ease',
+                              }}
+                            >
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          </Box>
                           <IconButton 
-                            onClick={() => handleEdit(content)} 
+                            onClick={() => toggleVisibility(content.id)} 
                             size="small"
                             sx={{
-                              color: '#3498db',
-                              background: 'rgba(52, 152, 219, 0.1)',
-                              '&:hover': {
-                                background: '#3498db',
-                                color: '#ffffff',
-                                transform: 'scale(1.1)',
-                              },
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            <Edit fontSize="small" />
-                          </IconButton>
-                          <IconButton 
-                            onClick={() => handleDelete(content.id)} 
-                            size="small"
-                            sx={{
-                              color: '#e74c3c',
-                              background: 'rgba(231, 76, 60, 0.1)',
-                              '&:hover': {
-                                background: '#e74c3c',
-                                color: '#ffffff',
-                                transform: 'scale(1.1)',
-                              },
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            <Delete fontSize="small" />
-                          </IconButton>
-                        </Box>
-                        <IconButton 
-                          onClick={() => toggleVisibility(content.id)} 
-                          size="small"
-                          sx={{
-                            color: content.isVisible ? '#27ae60' : '#95a5a6',
-                            background: content.isVisible 
-                              ? 'rgba(39, 174, 96, 0.1)' 
-                              : 'rgba(149, 165, 166, 0.1)',
-                            '&:hover': {
+                              color: content.isVisible ? '#27ae60' : '#95a5a6',
                               background: content.isVisible 
-                                ? '#27ae60' 
-                                : '#95a5a6',
-                              color: '#ffffff',
-                              transform: 'scale(1.1)',
-                            },
-                            transition: 'all 0.2s ease',
-                          }}
-                        >
-                          {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                        </IconButton>
-                      </CardActions>
-                    </Card>
-                  </Grid>
-                ))}
-              </Grid>
-            )
+                                ? 'rgba(39, 174, 96, 0.1)' 
+                                : 'rgba(149, 165, 166, 0.1)',
+                              '&:hover': {
+                                background: content.isVisible 
+                                  ? '#27ae60' 
+                                  : '#95a5a6',
+                                color: '#ffffff',
+                                transform: 'scale(1.1)',
+                              },
+                              transition: 'all 0.2s ease',
+                            }}
+                          >
+                            {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                          </IconButton>
+                        </CardActions>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              )}
+            </>
           )}
 
           {/* Bouton d'ajout flottant - seulement pour les catégories de contenu */}

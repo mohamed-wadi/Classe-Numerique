@@ -23,7 +23,9 @@ import {
   Drawer,
   useTheme,
   useMediaQuery,
-  IconButton
+  IconButton,
+  TextField,
+  InputAdornment
 } from '@mui/material';
 import {
   School,
@@ -37,7 +39,8 @@ import {
   PictureAsPdf,
   GetApp,
   Menu as MenuIcon,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Search as SearchIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
@@ -53,6 +56,7 @@ const StudentDashboard = () => {
   const [selectedContent, setSelectedContent] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -111,6 +115,13 @@ const StudentDashboard = () => {
   const filteredContents = selectedCategory === 'THEMES' 
     ? contents.filter(content => content.theme === selectedTheme)
     : contents;
+
+  // Filtrage par terme de recherche
+  const searchFilteredContents = filteredContents.filter(content =>
+    content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    content.type?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getWelcomeMessage = () => {
     const hour = new Date().getHours();
@@ -433,9 +444,41 @@ const StudentDashboard = () => {
               {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
               {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
             </Typography>
+            
+            {/* Barre de recherche */}
+            <Box sx={{ mb: 3 }}>
+              <TextField
+                fullWidth
+                placeholder="Rechercher dans le contenu..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon sx={{ color: '#7f8c8d' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 3,
+                    backgroundColor: '#ffffff',
+                    '& fieldset': {
+                      borderColor: '#bdc3c7',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#3498db',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#3498db',
+                    },
+                  },
+                }}
+              />
+            </Box>
           </Box>
 
-          {filteredContents.length === 0 ? (
+          {searchFilteredContents.length === 0 ? (
             <Card 
               sx={{ 
                 p: 6, 
@@ -458,7 +501,7 @@ const StudentDashboard = () => {
             </Card>
           ) : (
             <Grid container spacing={{ xs: 2, md: 3 }}>
-              {filteredContents.map((content) => (
+              {searchFilteredContents.map((content) => (
                 <Grid item xs={12} sm={6} lg={4} key={content.id}>
                   <Card 
                     sx={{ 
