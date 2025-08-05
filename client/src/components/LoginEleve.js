@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 // Images
-import logo from '../public/logo (1).png';
+import logo from '../public/LOGO (2).png';
 import backgroundConnect from '../public/background-connect.png';
 
 export default function LoginEleve() {

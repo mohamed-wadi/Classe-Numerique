@@ -8,7 +8,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 // Images
-import logo from '../public/logo (1).png';
+import logo from '../public/LOGO (2).png';
 import accueilImg from '../public/accueil.png';
 
 const Login = () => {

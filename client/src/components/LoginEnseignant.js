@@ -29,7 +29,7 @@ import { useAuth } from '../contexts/AuthContext';
 import emailjs from '@emailjs/browser';
 
 // Images
-import logo from '../public/logo (1).png';
+import logo from '../public/LOGO (2).png';
 import backgroundConnect from '../public/background-connect.png';
 
 export default function LoginEnseignant() {

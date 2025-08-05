@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
-import logo from '../public/logo (1).png';
+import logo from '../public/LOGO (2).png';
 
 const Contact = () => {
   const navigate = useNavigate();

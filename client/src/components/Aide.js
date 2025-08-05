@@ -25,7 +25,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import PersonIcon from '@mui/icons-material/Person';
 import ComputerIcon from '@mui/icons-material/Computer';
 import SecurityIcon from '@mui/icons-material/Security';
-import logo from '../public/logo (1).png';
+import logo from '../public/LOGO (2).png';
 
 const Aide = () => {
   const navigate = useNavigate();
