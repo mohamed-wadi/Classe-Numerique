@@ -116,19 +116,117 @@ const StudentDashboard = () => {
     ? contents.filter(content => content.theme === selectedTheme)
     : contents;
 
-  // Filtrage par terme de recherche
-  const searchFilteredContents = filteredContents.filter(content =>
-    content.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    content.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    content.type?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const getWelcomeMessage = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Bonjour';
-    if (hour < 18) return 'Bon après-midi';
-    return 'Bonsoir';
+    switch (user?.level) {
+      case 'CM1':
+        return 'Bienvenue dans votre espace CM1 ! Découvrez les thèmes et commencez votre apprentissage.';
+      case 'CM2':
+        return 'Bienvenue dans votre espace CM2 ! Explorez les thèmes et progressez dans vos études.';
+      default:
+        return 'Bienvenue dans votre espace d\'apprentissage !';
+    }
   };
+
+  // Définition des thèmes avec leurs images et descriptions
+  const themes = [
+    {
+      id: 1,
+      title: "Thème 1",
+      subtitle: "Tout le bonheur !",
+      image: "/course/1.png",
+      description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
+    },
+    {
+      id: 2,
+      title: "Thème 2", 
+      subtitle: "Les contes détournés",
+      image: "/course/2.png",
+      description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
+    },
+    {
+      id: 3,
+      title: "Thème 3",
+      subtitle: "Notre monde en question",
+      image: "/course/3.png", 
+      description: "Interrogez le monde qui vous entoure et développez votre esprit critique."
+    },
+    {
+      id: 4,
+      title: "Thème 4",
+      subtitle: "Les romans policiers",
+      image: "/course/4.png",
+      description: "Plongez dans l'univers passionnant des enquêtes et de la résolution d'énigmes."
+    },
+    {
+      id: 5,
+      title: "Thème 5",
+      subtitle: "L'enfance en B.D",
+      image: "/course/5.png",
+      description: "Découvrez l'art de la bande dessinée et ses histoires captivantes."
+    },
+    {
+      id: 6,
+      title: "Thème 6",
+      subtitle: "Des journaux intimes",
+      image: "/course/6.png",
+      description: "Apprenez à exprimer vos pensées et vos émotions à travers l'écriture personnelle."
+    }
+  ];
+
+  // Images pour CM2 (thèmes 7-12)
+  const cm2Themes = [
+    {
+      id: 7,
+      title: "Thème 1",
+      subtitle: "Aventures et découvertes",
+      image: "/course/7.png",
+      description: "Partez à l'aventure et découvrez de nouveaux horizons."
+    },
+    {
+      id: 8,
+      title: "Thème 2",
+      subtitle: "Mystères et énigmes",
+      image: "/course/8.png",
+      description: "Résolvez des mystères passionnants et développez votre logique."
+    },
+    {
+      id: 9,
+      title: "Thème 3",
+      subtitle: "Créativité et imagination",
+      image: "/course/9.png",
+      description: "Libérez votre créativité et explorez votre imagination."
+    },
+    {
+      id: 10,
+      title: "Thème 4",
+      subtitle: "Sciences et nature",
+      image: "/course/10.png",
+      description: "Découvrez les merveilles de la science et de la nature."
+    },
+    {
+      id: 11,
+      title: "Thème 5",
+      subtitle: "Histoire et culture",
+      image: "/course/11.png",
+      description: "Voyagez dans le temps et explorez différentes cultures."
+    },
+    {
+      id: 12,
+      title: "Thème 6",
+      subtitle: "Technologie et innovation",
+      image: "/course/12.png",
+      description: "Découvrez les technologies modernes et les innovations."
+    }
+  ];
+
+  // Sélectionner les thèmes selon le niveau
+  const currentThemes = user?.level === 'CM1' ? themes : cm2Themes;
+
+  // Filtrer le contenu selon le terme de recherche
+  const searchFilteredContents = filteredContents.filter(content =>
+    content.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (content.description && content.description.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   // Contenu de la sidebar
   const sidebarContent = (
@@ -371,6 +469,111 @@ const StudentDashboard = () => {
             </Typography>
           </Box>
 
+          {/* Affichage des thèmes sur la page d'accueil */}
+          {selectedCategory === 'HOME' && (
+            <Box sx={{ mb: 6 }}>
+              <Typography 
+                variant="h3" 
+                gutterBottom 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#2c3e50',
+                  mb: 4,
+                  textAlign: 'center',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
+                }}
+              >
+                Découvrez nos thèmes d'apprentissage
+              </Typography>
+              
+              <Grid container spacing={{ xs: 2, md: 3 }}>
+                {currentThemes.map((theme) => (
+                  <Grid item xs={12} sm={6} lg={4} key={theme.id}>
+                    <Card 
+                      sx={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        background: '#ffffff',
+                        border: '2px solid #3498db',
+                        borderRadius: 3,
+                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'translateY(-8px)',
+                          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15)',
+                          borderColor: '#2980b9',
+                        },
+                      }}
+                      onClick={() => {
+                        setSelectedCategory('THEMES');
+                        setSelectedTheme(theme.id);
+                      }}
+                    >
+                      <CardMedia
+                        component="img"
+                        height="200"
+                        image={theme.image}
+                        alt={theme.title}
+                        sx={{ 
+                          borderRadius: '12px 12px 0 0',
+                          objectFit: 'cover'
+                        }}
+                      />
+                      
+                      <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                        <Typography 
+                          variant="h5" 
+                          component="h2"
+                          sx={{ 
+                            fontWeight: 700,
+                            fontSize: '1.3rem',
+                            lineHeight: 1.2,
+                            color: '#2c3e50',
+                            mb: 1,
+                          }}
+                        >
+                          {theme.title}
+                        </Typography>
+                        
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            fontWeight: 600,
+                            fontSize: '1.1rem',
+                            color: '#3498db',
+                            mb: 2,
+                            fontStyle: 'italic'
+                          }}
+                        >
+                          {theme.subtitle}
+                        </Typography>
+                        
+                        <Box sx={{ 
+                          display: 'flex', 
+                          justifyContent: 'center',
+                          mt: 'auto'
+                        }}>
+                          <Chip 
+                            label="Explorer ce thème"
+                            sx={{ 
+                              background: '#3498db',
+                              color: 'white',
+                              fontWeight: 600,
+                              '&:hover': {
+                                background: '#2980b9',
+                              }
+                            }}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          )}
+
           {/* Sélection des thèmes (si catégorie THEMES) */}
           {selectedCategory === 'THEMES' && (
             <Box sx={{ mb: 5 }}>
@@ -388,11 +591,11 @@ const StudentDashboard = () => {
                 Sélectionner un thème
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {[1, 2, 3, 4, 5, 6].map((theme) => (
+                {currentThemes.map((theme) => (
                   <Chip
-                    key={theme}
-                    label={`Thème ${theme}`}
-                    onClick={() => setSelectedTheme(theme)}
+                    key={theme.id}
+                    label={theme.title}
+                    onClick={() => setSelectedTheme(theme.id)}
                     sx={{
                       fontSize: '1.1rem',
                       fontWeight: 600,
@@ -400,11 +603,11 @@ const StudentDashboard = () => {
                       px: 3,
                       height: 48,
                       borderRadius: 3,
-                      background: selectedTheme === theme 
+                      background: selectedTheme === theme.id 
                         ? '#3498db'
                         : '#ffffff',
-                      color: selectedTheme === theme ? '#ffffff' : '#2c3e50',
-                      border: selectedTheme === theme 
+                      color: selectedTheme === theme.id ? '#ffffff' : '#2c3e50',
+                      border: selectedTheme === theme.id 
                         ? 'none'
                         : '2px solid #3498db',
                       transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -419,201 +622,208 @@ const StudentDashboard = () => {
             </Box>
           )}
 
-          {/* Liste du contenu */}
-          <Box sx={{ mb: 4 }}>
-            <Typography 
-              variant="h4" 
-              gutterBottom 
-              sx={{ 
-                fontWeight: 600, 
-                color: '#2c3e50',
-                mb: 2,
-                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
-              }}
-            >
-              Contenu disponible
-            </Typography>
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                mb: 3,
-                color: '#7f8c8d',
-                textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
-              }}
-            >
-              {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
-              {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
-            </Typography>
-            
-            {/* Barre de recherche */}
-            <Box sx={{ mb: 3 }}>
-              <TextField
-                fullWidth
-                placeholder="Rechercher dans le contenu..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#7f8c8d' }} />
-                    </InputAdornment>
-                  ),
+          {/* Liste du contenu - seulement si pas sur la page d'accueil */}
+          {selectedCategory !== 'HOME' && (
+            <Box sx={{ mb: 4 }}>
+              <Typography 
+                variant="h4" 
+                gutterBottom 
+                sx={{ 
+                  fontWeight: 600, 
+                  color: '#2c3e50',
+                  mb: 2,
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
                 }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: 3,
-                    backgroundColor: '#ffffff',
-                    '& fieldset': {
-                      borderColor: '#bdc3c7',
-                    },
-                    '&:hover fieldset': {
-                      borderColor: '#3498db',
-                    },
-                    '&.Mui-focused fieldset': {
-                      borderColor: '#3498db',
-                    },
-                  },
+              >
+                Contenu disponible
+              </Typography>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  mb: 3,
+                  color: '#7f8c8d',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.1)'
                 }}
-              />
-            </Box>
-          </Box>
-
-          {searchFilteredContents.length === 0 ? (
-            <Card 
-              sx={{ 
-                p: 6, 
-                textAlign: 'center',
-                background: '#ffffff',
-                border: '2px solid #3498db',
-                borderRadius: 3,
-                boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
-              }}
-            >
-              <Box sx={{ color: '#2c3e50', mb: 2 }}>
-                <School sx={{ fontSize: 64, opacity: 0.7 }} />
-              </Box>
-              <Typography variant="h6" color="#2c3e50" gutterBottom>
-                Aucun contenu disponible pour cette catégorie
+              >
+                {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
+                {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
               </Typography>
-              <Typography variant="body2" color="#7f8c8d">
-                Votre professeur n'a pas encore publié de contenu ici.
-              </Typography>
-            </Card>
-          ) : (
-            <Grid container spacing={{ xs: 2, md: 3 }}>
-              {searchFilteredContents.map((content) => (
-                <Grid item xs={12} sm={6} lg={4} key={content.id}>
-                  <Card 
-                    sx={{ 
-                      height: '100%', 
-                      display: 'flex', 
-                      flexDirection: 'column',
-                      background: '#ffffff',
-                      border: '2px solid #3498db',
+              
+              {/* Barre de recherche */}
+              <Box sx={{ mb: 3 }}>
+                <TextField
+                  fullWidth
+                  placeholder="Rechercher dans le contenu..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <SearchIcon sx={{ color: '#7f8c8d' }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
                       borderRadius: 3,
-                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        transform: 'translateY(-4px)',
-                        boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
+                      backgroundColor: '#ffffff',
+                      '& fieldset': {
+                        borderColor: '#bdc3c7',
                       },
-                    }}
-                    onClick={() => handleContentClick(content)}
-                  >
-                    {content.miniature ? (
-                      <CardMedia
-                        component="img"
-                        height="160"
-                        image={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
-                        alt={content.title}
-                        sx={{ borderRadius: '12px 12px 0 0' }}
-                      />
-                    ) : (
-                      <Box 
+                      '&:hover fieldset': {
+                        borderColor: '#3498db',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#3498db',
+                      },
+                    },
+                  }}
+                />
+              </Box>
+            </Box>
+          )}
+
+          {/* Affichage du contenu - seulement si pas sur la page d'accueil */}
+          {selectedCategory !== 'HOME' && (
+            <>
+              {searchFilteredContents.length === 0 ? (
+                <Card 
+                  sx={{ 
+                    p: 6, 
+                    textAlign: 'center',
+                    background: '#ffffff',
+                    border: '2px solid #3498db',
+                    borderRadius: 3,
+                    boxShadow: '0 8px 25px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  <Box sx={{ color: '#2c3e50', mb: 2 }}>
+                    <School sx={{ fontSize: 64, opacity: 0.7 }} />
+                  </Box>
+                  <Typography variant="h6" color="#2c3e50" gutterBottom>
+                    Aucun contenu disponible pour cette catégorie
+                  </Typography>
+                  <Typography variant="body2" color="#7f8c8d">
+                    Votre professeur n'a pas encore publié de contenu ici.
+                  </Typography>
+                </Card>
+              ) : (
+                <Grid container spacing={{ xs: 2, md: 3 }}>
+                  {searchFilteredContents.map((content) => (
+                    <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                      <Card 
                         sx={{ 
-                          height: 120, 
-                          background: '#3498db',
+                          height: '100%', 
                           display: 'flex', 
-                          alignItems: 'center', 
-                          justifyContent: 'center',
-                          borderRadius: '12px 12px 0 0',
+                          flexDirection: 'column',
+                          background: '#ffffff',
+                          border: '2px solid #3498db',
+                          borderRadius: 3,
+                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                          cursor: 'pointer',
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
+                            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
+                          },
                         }}
+                        onClick={() => handleContentClick(content)}
                       >
-                        <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
-                      </Box>
-                    )}
-                    
-                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                      <Typography 
-                        variant="h6" 
-                        component="h2"
-                        sx={{ 
-                          fontWeight: 600,
-                          fontSize: '1.1rem',
-                          lineHeight: 1.3,
-                          color: '#2c3e50',
-                          mb: 1,
-                        }}
-                      >
-                        {content.title}
-                      </Typography>
-                      
-                      <Typography 
-                        variant="body2" 
-                        color="#7f8c8d" 
-                        gutterBottom
-                        sx={{ fontWeight: 500, mb: 2 }}
-                      >
-                        {contentTypeLabels[content.type] || content.type}
-                      </Typography>
-                      
-                      {content.description && (
-                        <Typography 
-                          variant="body2" 
-                          color="#7f8c8d" 
-                          sx={{ 
-                            mb: 2,
-                            display: '-webkit-box',
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: 'vertical',
-                            overflow: 'hidden',
-                          }}
-                        >
-                          {content.description}
-                        </Typography>
-                      )}
-                      
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                        {content.pdfFile && (
-                          <Chip 
-                            size="small" 
-                            icon={<PictureAsPdf />} 
-                            label="PDF disponible" 
-                            sx={{ 
-                              background: 'rgba(231, 76, 60, 0.1)',
-                              color: '#e74c3c',
-                              fontWeight: 500,
-                            }}
+                        {content.miniature ? (
+                          <CardMedia
+                            component="img"
+                            height="160"
+                            image={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
+                            alt={content.title}
+                            sx={{ borderRadius: '12px 12px 0 0' }}
                           />
-                        )}
-                        {content.miniature && (
-                          <Chip 
-                            size="small" 
-                            icon={<School />} 
-                            label="Image" 
+                        ) : (
+                          <Box 
                             sx={{ 
-                              background: 'rgba(52, 152, 219, 0.1)',
-                              color: '#3498db',
-                              fontWeight: 500,
+                              height: 120, 
+                              background: '#3498db',
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              borderRadius: '12px 12px 0 0',
                             }}
-                          />
+                          >
+                            <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
+                          </Box>
                         )}
-                      </Box>
-                    </CardContent>
-                  </Card>
+                        
+                        <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                          <Typography 
+                            variant="h6" 
+                            component="h2"
+                            sx={{ 
+                              fontWeight: 600,
+                              fontSize: '1.1rem',
+                              lineHeight: 1.3,
+                              color: '#2c3e50',
+                              mb: 1,
+                            }}
+                          >
+                            {content.title}
+                          </Typography>
+                          
+                          <Typography 
+                            variant="body2" 
+                            color="#7f8c8d" 
+                            gutterBottom
+                            sx={{ fontWeight: 500, mb: 2 }}
+                          >
+                            {contentTypeLabels[content.type] || content.type}
+                          </Typography>
+                          
+                          {content.description && (
+                            <Typography 
+                              variant="body2" 
+                              color="#7f8c8d" 
+                              sx={{ 
+                                mb: 2,
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                            >
+                              {content.description}
+                            </Typography>
+                          )}
+                          
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            {content.pdfFile && (
+                              <Chip 
+                                size="small" 
+                                icon={<PictureAsPdf />} 
+                                label="PDF disponible" 
+                                sx={{ 
+                                  background: 'rgba(231, 76, 60, 0.1)',
+                                  color: '#e74c3c',
+                                  fontWeight: 500,
+                                }}
+                              />
+                            )}
+                            {content.miniature && (
+                              <Chip 
+                                size="small" 
+                                icon={<School />} 
+                                label="Image" 
+                                sx={{ 
+                                  background: 'rgba(52, 152, 219, 0.1)',
+                                  color: '#3498db',
+                                  fontWeight: 500,
+                                }}
+                              />
+                            )}
+                          </Box>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              )}
+            </>
           )}
 
           {/* Dialog de contenu */}
