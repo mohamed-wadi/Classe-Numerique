@@ -133,42 +133,42 @@ const StudentDashboard = () => {
       id: 1,
       title: "Thème 1",
       subtitle: "Tout le bonheur !",
-      image: `${process.env.PUBLIC_URL}/course/1.png`,
+      image: "./course/1.png",
       description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
     },
     {
       id: 2,
       title: "Thème 2", 
       subtitle: "Les contes détournés",
-      image: `${process.env.PUBLIC_URL}/course/2.png`,
+      image: "./course/2.png",
       description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
     },
     {
       id: 3,
       title: "Thème 3",
       subtitle: "Notre monde en question",
-      image: `${process.env.PUBLIC_URL}/course/3.png`, 
+      image: "./course/3.png", 
       description: "Interrogez le monde qui vous entoure et développez votre esprit critique."
     },
     {
       id: 4,
       title: "Thème 4",
       subtitle: "Les romans policiers",
-      image: `${process.env.PUBLIC_URL}/course/4.png`,
+      image: "./course/4.png",
       description: "Plongez dans l'univers passionnant des enquêtes et de la résolution d'énigmes."
     },
     {
       id: 5,
       title: "Thème 5",
       subtitle: "L'enfance en B.D",
-      image: `${process.env.PUBLIC_URL}/course/5.png`,
+      image: "./course/5.png",
       description: "Découvrez l'art de la bande dessinée et ses histoires captivantes."
     },
     {
       id: 6,
       title: "Thème 6",
       subtitle: "Des journaux intimes",
-      image: `${process.env.PUBLIC_URL}/course/6.png`,
+      image: "./course/6.png",
       description: "Apprenez à exprimer vos pensées et vos émotions à travers l'écriture personnelle."
     }
   ];
@@ -179,42 +179,42 @@ const StudentDashboard = () => {
       id: 7,
       title: "Thème 1",
       subtitle: "Aventures et découvertes",
-      image: `${process.env.PUBLIC_URL}/course/7.png`,
+      image: "./course/7.png",
       description: "Partez à l'aventure et découvrez de nouveaux horizons."
     },
     {
       id: 8,
       title: "Thème 2",
       subtitle: "Mystères et énigmes",
-      image: `${process.env.PUBLIC_URL}/course/8.png`,
+      image: "./course/8.png",
       description: "Résolvez des mystères passionnants et développez votre logique."
     },
     {
       id: 9,
       title: "Thème 3",
       subtitle: "Créativité et imagination",
-      image: `${process.env.PUBLIC_URL}/course/9.png`,
+      image: "./course/9.png",
       description: "Libérez votre créativité et explorez votre imagination."
     },
     {
       id: 10,
       title: "Thème 4",
       subtitle: "Sciences et nature",
-      image: `${process.env.PUBLIC_URL}/course/10.png`,
+      image: "./course/10.png",
       description: "Découvrez les merveilles de la science et de la nature."
     },
     {
       id: 11,
       title: "Thème 5",
       subtitle: "Histoire et culture",
-      image: `${process.env.PUBLIC_URL}/course/11.png`,
+      image: "./course/11.png",
       description: "Voyagez dans le temps et explorez différentes cultures."
     },
     {
       id: 12,
       title: "Thème 6",
       subtitle: "Technologie et innovation",
-      image: `${process.env.PUBLIC_URL}/course/12.png`,
+      image: "./course/12.png",
       description: "Découvrez les technologies modernes et les innovations."
     }
   ];
@@ -520,8 +520,12 @@ const StudentDashboard = () => {
                           objectFit: 'cover'
                         }}
                         onError={(e) => {
+                          console.error(`Erreur de chargement de l'image: ${theme.image}`, e);
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex';
+                        }}
+                        onLoad={() => {
+                          console.log(`Image chargée avec succès: ${theme.image}`);
                         }}
                       />
                       <Box 
