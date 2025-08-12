@@ -53,6 +53,26 @@ const loadContents = () => {
       console.log(`📁 Dossier créé: ${dataDir}`);
     }
     
+    // Attendre un peu que le volume persistant soit prêt en production
+    if (process.env.NODE_ENV === 'production') {
+      console.log('🌐 Mode production détecté, attente du volume persistant...');
+      // Attendre 2 secondes pour que le volume soit complètement monté
+      setTimeout(() => {
+        tryLoadContents();
+      }, 2000);
+      return;
+    }
+    
+    tryLoadContents();
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des contenus:', error);
+    console.log('🔄 Utilisation du stockage en mémoire par défaut');
+  }
+};
+
+// Fonction séparée pour essayer de charger les contenus
+const tryLoadContents = () => {
+  try {
     if (fs.existsSync(DATA_FILE)) {
       const data = fs.readFileSync(DATA_FILE, 'utf8');
       const parsed = JSON.parse(data);

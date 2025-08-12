@@ -3,6 +3,9 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+// Définir l'environnement de production pour Fly.io
+process.env.NODE_ENV = 'production';
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -17,7 +20,9 @@ app.get('/health', (req, res) => {
     status: 'OK', 
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
-    memory: process.memoryUsage()
+    memory: process.memoryUsage(),
+    environment: process.env.NODE_ENV,
+    volumePath: '/app/data'
   });
 });
 
