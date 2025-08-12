@@ -1,78 +1,63 @@
 const express = require('express');
 const cors = require('cors');
-const multer = require('multer');
 const path = require('path');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configuration CORS simplifiée pour accepter tous les domaines
-const corsOptions = {
-  origin: true, // Accepter tous les domaines
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
-
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));
+app.use(express.static('uploads'));
 
-// Middleware de logging pour déboguer les requêtes
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.headers.origin}`);
-  next();
+// Route de santé pour Fly.io
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
 });
-
-// Configuration multer pour upload de fichiers
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
-});
-
-const upload = multer({ storage });
 
 // Routes
-const { router: authRoutes } = require('./routes/auth');
-const contentRoutes = require('./routes/content');
-const contactRoutes = require('./routes/contact');
-const studentsRoutes = require('./routes/students');
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/content', require('./routes/content'));
+app.use('/api/contact', require('./routes/contact'));
+app.use('/api/students', require('./routes/students'));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/content', contentRoutes);
-app.use('/api/contact', contactRoutes);
-app.use('/api/students', studentsRoutes);
-
-// Route de test
-app.get('/api', (req, res) => {
-  res.json({ message: 'API École CM2/CM1 fonctionne!' });
-});
-
-// Route pour vérifier la santé du serveur
-app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// Route racine pour Fly.io
+// Route racine
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'API École CM2/CM1 - Backend déployé sur Fly.io',
+    message: 'API École CM2 & CM1', 
+    version: '1.0.0',
     status: 'running',
     timestamp: new Date().toISOString()
   });
 });
 
-// Utilisation du stockage en mémoire pour cette démo
-console.log('Utilisation du stockage en mémoire (pas de MongoDB)');
-console.log('Mode déploiement : sans redimensionnement d\'images');
+// Gestion des erreurs 404
+app.use('*', (req, res) => {
+  res.status(404).json({ 
+    message: 'Route non trouvée',
+    path: req.originalUrl,
+    method: req.method
+  });
+});
+
+// Gestion globale des erreurs
+app.use((error, req, res, next) => {
+  console.error('❌ Erreur globale:', error);
+  res.status(500).json({ 
+    message: 'Erreur interne du serveur',
+    error: process.env.NODE_ENV === 'development' ? error.message : 'Erreur interne'
+  });
+});
 
 app.listen(PORT, () => {
-  console.log(`Serveur démarré sur le port ${PORT}`);
-  console.log(`Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`);
+  console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+  console.log(`🌐 URL: http://localhost:${PORT}`);
+  console.log(`📊 Environnement: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`💾 Volume persistant: /app/data`);
 });

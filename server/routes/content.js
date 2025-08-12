@@ -38,8 +38,10 @@ const upload = multer({ storage });
 let contents = [];
 let nextId = 1;
 
-// Chemin du fichier de persistance
-const DATA_FILE = path.join(__dirname, '../data/contents.json');
+// Chemin du fichier de persistance - Utiliser le volume Fly.io en production
+const DATA_FILE = process.env.NODE_ENV === 'production' 
+  ? '/app/data/contents.json'
+  : path.join(__dirname, '../data/contents.json');
 
 // Fonction pour charger les données depuis le fichier
 const loadContents = () => {
@@ -48,6 +50,7 @@ const loadContents = () => {
     const dataDir = path.dirname(DATA_FILE);
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
+      console.log(`📁 Dossier créé: ${dataDir}`);
     }
     
     if (fs.existsSync(DATA_FILE)) {
@@ -55,9 +58,12 @@ const loadContents = () => {
       const parsed = JSON.parse(data);
       contents = parsed.contents || [];
       nextId = parsed.nextId || 1;
-      console.log(`✅ Contenus chargés depuis le stockage local: ${contents.length} éléments`);
+      console.log(`✅ Contenus chargés depuis le stockage persistant: ${contents.length} éléments`);
+      console.log(`💾 Fichier de données: ${DATA_FILE}`);
     } else {
-      console.log('📝 Aucun fichier de contenus trouvé, utilisation du stockage en mémoire');
+      console.log('📝 Aucun fichier de contenus trouvé, création d\'un nouveau fichier');
+      // Créer un fichier initial vide
+      saveContents();
     }
   } catch (error) {
     console.error('❌ Erreur lors du chargement des contenus:', error);
@@ -71,12 +77,16 @@ const saveContents = () => {
     const data = {
       contents,
       nextId,
-      lastUpdated: new Date().toISOString()
+      lastUpdated: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development',
+      serverId: process.env.FLY_ALLOC_ID || 'local'
     };
     fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
-    console.log('💾 Contenus sauvegardés avec succès');
+    console.log(`💾 Contenus sauvegardés avec succès dans: ${DATA_FILE}`);
+    console.log(`📊 ${contents.length} contenus sauvegardés`);
   } catch (error) {
     console.error('❌ Erreur lors de la sauvegarde des contenus:', error);
+    console.error(`💾 Chemin du fichier: ${DATA_FILE}`);
   }
 };
 
@@ -91,7 +101,7 @@ const resizeImageIfNeeded = async (filePath) => {
   return filePath;
 };
 
-// GET - Récupérer le contenu par niveau et catégorie
+// GET - Récupération des contenus par niveau et catégorie
 router.get('/:level/:category', (req, res) => {
   try {
     const { level, category } = req.params;
@@ -109,7 +119,7 @@ router.get('/:level/:category', (req, res) => {
   }
 });
 
-// GET - Récupérer tout le contenu
+// GET - Récupération de tout le contenu
 router.get('/', (req, res) => {
   try {
     console.log(`📚 Récupération de tous les contenus (${contents.length} éléments)`);
@@ -120,7 +130,7 @@ router.get('/', (req, res) => {
   }
 });
 
-// POST - Créer un nouveau contenu
+// POST - Création d'un nouveau contenu
 router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
@@ -181,7 +191,7 @@ router.post('/', verifyToken, upload.fields([
   }
 });
 
-// PUT - Modifier un contenu
+// PUT - Modification d'un contenu
 router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
@@ -214,7 +224,7 @@ router.put('/:id', verifyToken, upload.fields([
       ...contents[contentIndex],
       title: req.body.title || contents[contentIndex].title,
       level: req.body.level || contents[contentIndex].level,
-      category: req.body.category || contents[contentIndex].level,
+      category: req.body.category || contents[contentIndex].category,
       theme: req.body.theme ? parseInt(req.body.theme) : contents[contentIndex].theme,
       subcategory: req.body.subcategory || contents[contentIndex].subcategory,
       type: req.body.type || contents[contentIndex].type,
@@ -242,7 +252,7 @@ router.put('/:id', verifyToken, upload.fields([
   }
 });
 
-// PUT - Changer la visibilité
+// PUT - Changement de visibilité
 router.put('/:id/visibility', verifyToken, (req, res) => {
   try {
     const contentId = parseInt(req.params.id);
@@ -271,7 +281,7 @@ router.put('/:id/visibility', verifyToken, (req, res) => {
   }
 });
 
-// DELETE - Supprimer un contenu
+// DELETE - Suppression d'un contenu
 router.delete('/:id', verifyToken, (req, res) => {
   try {
     const contentId = parseInt(req.params.id);
