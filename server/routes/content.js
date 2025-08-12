@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 
 // Middleware de vérification du token
@@ -33,30 +34,90 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Stockage temporaire en mémoire
+// Stockage avec persistance locale
 let contents = [];
 let nextId = 1;
+
+// Chemin du fichier de persistance
+const DATA_FILE = path.join(__dirname, '../data/contents.json');
+
+// Fonction pour charger les données depuis le fichier
+const loadContents = () => {
+  try {
+    // Créer le dossier data s'il n'existe pas
+    const dataDir = path.dirname(DATA_FILE);
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    
+    if (fs.existsSync(DATA_FILE)) {
+      const data = fs.readFileSync(DATA_FILE, 'utf8');
+      const parsed = JSON.parse(data);
+      contents = parsed.contents || [];
+      nextId = parsed.nextId || 1;
+      console.log(`✅ Contenus chargés depuis le stockage local: ${contents.length} éléments`);
+    } else {
+      console.log('📝 Aucun fichier de contenus trouvé, utilisation du stockage en mémoire');
+    }
+  } catch (error) {
+    console.error('❌ Erreur lors du chargement des contenus:', error);
+    console.log('🔄 Utilisation du stockage en mémoire par défaut');
+  }
+};
+
+// Fonction pour sauvegarder les données
+const saveContents = () => {
+  try {
+    const data = {
+      contents,
+      nextId,
+      lastUpdated: new Date().toISOString()
+    };
+    fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+    console.log('💾 Contenus sauvegardés avec succès');
+  } catch (error) {
+    console.error('❌ Erreur lors de la sauvegarde des contenus:', error);
+  }
+};
+
+// Charger les données au démarrage
+loadContents();
 
 // Fonction pour redimensionner les images (version simplifiée sans sharp)
 const resizeImageIfNeeded = async (filePath) => {
   // En mode déploiement, on retourne le chemin original
   // Le redimensionnement sera fait côté client si nécessaire
-  console.log('Redimensionnement d\'image désactivé en mode déploiement');
+  console.log('🖼️  Redimensionnement d\'image désactivé en mode déploiement');
   return filePath;
 };
 
 // GET - Récupérer le contenu par niveau et catégorie
 router.get('/:level/:category', (req, res) => {
-  const { level, category } = req.params;
-  const filteredContents = contents.filter(content => 
-    content.level === level && content.category === category
-  );
-  res.json(filteredContents);
+  try {
+    const { level, category } = req.params;
+    console.log(`📚 Récupération des contenus pour ${level}/${category}`);
+    
+    const filteredContents = contents.filter(content => 
+      content.level === level && content.category === category
+    );
+    
+    console.log(`✅ ${filteredContents.length} contenus trouvés pour ${level}/${category}`);
+    res.json(filteredContents);
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération des contenus:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des contenus' });
+  }
 });
 
 // GET - Récupérer tout le contenu
 router.get('/', (req, res) => {
-  res.json(contents);
+  try {
+    console.log(`📚 Récupération de tous les contenus (${contents.length} éléments)`);
+    res.json(contents);
+  } catch (error) {
+    console.error('❌ Erreur lors de la récupération de tous les contenus:', error);
+    res.status(500).json({ message: 'Erreur lors de la récupération des contenus' });
+  }
 });
 
 // POST - Créer un nouveau contenu
@@ -65,15 +126,21 @@ router.post('/', verifyToken, upload.fields([
   { name: 'pdfFile', maxCount: 1 }
 ]), async (req, res) => {
   try {
+    console.log('🆕 Création d\'un nouveau contenu...');
+    console.log('📝 Données reçues:', req.body);
+    console.log('📁 Fichiers reçus:', req.files);
+    
     let miniaturePath = '';
     let pdfFilePath = '';
 
     if (req.files?.miniature) {
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
+      console.log('🖼️  Miniature traitée:', miniaturePath);
     }
 
     if (req.files?.pdfFile) {
       pdfFilePath = req.files.pdfFile[0].path;
+      console.log('📄 PDF traité:', pdfFilePath);
     }
 
     const newContent = {
@@ -95,9 +162,21 @@ router.post('/', verifyToken, upload.fields([
     };
 
     contents.push(newContent);
+    
+    // Sauvegarder immédiatement
+    saveContents();
+    
+    console.log('✅ Nouveau contenu créé:', {
+      id: newContent.id,
+      title: newContent.title,
+      level: newContent.level,
+      category: newContent.category,
+      miniature: newContent.miniature
+    });
+    
     res.status(201).json(newContent);
   } catch (error) {
-    console.error('Erreur lors de la création:', error);
+    console.error('❌ Erreur lors de la création:', error);
     res.status(500).json({ message: 'Erreur lors de la création du contenu' });
   }
 });
@@ -107,30 +186,35 @@ router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 }
 ]), async (req, res) => {
-  const contentId = parseInt(req.params.id);
-  const contentIndex = contents.findIndex(c => c.id === contentId);
-
-  if (contentIndex === -1) {
-    return res.status(404).json({ message: 'Contenu non trouvé' });
-  }
-
   try {
+    const contentId = parseInt(req.params.id);
+    console.log(`✏️  Modification du contenu ${contentId}...`);
+    
+    const contentIndex = contents.findIndex(c => c.id === contentId);
+
+    if (contentIndex === -1) {
+      console.log(`❌ Contenu ${contentId} non trouvé`);
+      return res.status(404).json({ message: 'Contenu non trouvé' });
+    }
+
     let miniaturePath = contents[contentIndex].miniature;
     let pdfFilePath = contents[contentIndex].pdfFile;
 
     if (req.files?.miniature) {
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
+      console.log('🖼️  Nouvelle miniature:', miniaturePath);
     }
 
     if (req.files?.pdfFile) {
       pdfFilePath = req.files.pdfFile[0].path;
+      console.log('📄 Nouveau PDF:', pdfFilePath);
     }
 
     const updatedContent = {
       ...contents[contentIndex],
       title: req.body.title || contents[contentIndex].title,
       level: req.body.level || contents[contentIndex].level,
-      category: req.body.category || contents[contentIndex].category,
+      category: req.body.category || contents[contentIndex].level,
       theme: req.body.theme ? parseInt(req.body.theme) : contents[contentIndex].theme,
       subcategory: req.body.subcategory || contents[contentIndex].subcategory,
       type: req.body.type || contents[contentIndex].type,
@@ -141,39 +225,77 @@ router.put('/:id', verifyToken, upload.fields([
     };
 
     contents[contentIndex] = updatedContent;
+    
+    // Sauvegarder immédiatement
+    saveContents();
+    
+    console.log('✅ Contenu modifié:', {
+      id: updatedContent.id,
+      title: updatedContent.title,
+      miniature: updatedContent.miniature
+    });
+    
     res.json(updatedContent);
   } catch (error) {
-    console.error('Erreur lors de la modification:', error);
+    console.error('❌ Erreur lors de la modification:', error);
     res.status(500).json({ message: 'Erreur lors de la modification du contenu' });
   }
 });
 
 // PUT - Changer la visibilité
 router.put('/:id/visibility', verifyToken, (req, res) => {
-  const contentId = parseInt(req.params.id);
-  const contentIndex = contents.findIndex(c => c.id === contentId);
+  try {
+    const contentId = parseInt(req.params.id);
+    console.log(`👁️  Changement de visibilité pour le contenu ${contentId}...`);
+    
+    const contentIndex = contents.findIndex(c => c.id === contentId);
 
-  if (contentIndex === -1) {
-    return res.status(404).json({ message: 'Contenu non trouvé' });
+    if (contentIndex === -1) {
+      console.log(`❌ Contenu ${contentId} non trouvé`);
+      return res.status(404).json({ message: 'Contenu non trouvé' });
+    }
+
+    contents[contentIndex].isVisible = !contents[contentIndex].isVisible;
+    contents[contentIndex].updatedAt = new Date();
+    contents[contentIndex].visibilityChangedAt = new Date();
+    
+    // Sauvegarder immédiatement
+    saveContents();
+    
+    console.log(`✅ Visibilité changée pour le contenu ${contentId}: ${contents[contentIndex].isVisible ? 'Visible' : 'Masqué'}`);
+    
+    res.json(contents[contentIndex]);
+  } catch (error) {
+    console.error('❌ Erreur lors du changement de visibilité:', error);
+    res.status(500).json({ message: 'Erreur lors du changement de visibilité' });
   }
-
-  contents[contentIndex].isVisible = !contents[contentIndex].isVisible;
-  contents[contentIndex].updatedAt = new Date();
-  contents[contentIndex].visibilityChangedAt = new Date();
-  res.json(contents[contentIndex]);
 });
 
 // DELETE - Supprimer un contenu
 router.delete('/:id', verifyToken, (req, res) => {
-  const contentId = parseInt(req.params.id);
-  const contentIndex = contents.findIndex(c => c.id === contentId);
+  try {
+    const contentId = parseInt(req.params.id);
+    console.log(`🗑️  Suppression du contenu ${contentId}...`);
+    
+    const contentIndex = contents.findIndex(c => c.id === contentId);
 
-  if (contentIndex === -1) {
-    return res.status(404).json({ message: 'Contenu non trouvé' });
+    if (contentIndex === -1) {
+      console.log(`❌ Contenu ${contentId} non trouvé`);
+      return res.status(404).json({ message: 'Contenu non trouvé' });
+    }
+
+    contents.splice(contentIndex, 1);
+    
+    // Sauvegarder immédiatement
+    saveContents();
+    
+    console.log(`✅ Contenu ${contentId} supprimé avec succès`);
+    
+    res.json({ message: 'Contenu supprimé avec succès' });
+  } catch (error) {
+    console.error('❌ Erreur lors de la suppression:', error);
+    res.status(500).json({ message: 'Erreur lors de la suppression du contenu' });
   }
-
-  contents.splice(contentIndex, 1);
-  res.json({ message: 'Contenu supprimé avec succès' });
 });
 
 module.exports = router;

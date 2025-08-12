@@ -445,10 +445,35 @@ const TeacherDashboard = () => {
 
   const fetchContents = useCallback(async () => {
     try {
+      console.log(`📚 Chargement des contenus pour ${selectedLevel}/${selectedCategory}...`);
       const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(selectedLevel, selectedCategory));
-      setContents(response.data);
+      
+      if (response.data && Array.isArray(response.data)) {
+        setContents(response.data);
+        console.log(`✅ ${response.data.length} contenus chargés avec succès pour ${selectedLevel}/${selectedCategory}`);
+        
+        // Vérifier les miniatures
+        const contentsWithMiniatures = response.data.filter(content => content.miniature);
+        const contentsWithoutMiniatures = response.data.filter(content => !content.miniature);
+        
+        if (contentsWithMiniatures.length > 0) {
+          console.log(`🖼️  ${contentsWithMiniatures.length} contenus avec miniatures`);
+        }
+        if (contentsWithoutMiniatures.length > 0) {
+          console.log(`⚠️  ${contentsWithoutMiniatures.length} contenus sans miniatures`);
+        }
+      } else {
+        console.warn('⚠️  Réponse invalide du serveur:', response.data);
+        setContents([]);
+      }
     } catch (error) {
-      console.error('Erreur lors du chargement du contenu:', error);
+      console.error('❌ Erreur lors du chargement du contenu:', error);
+      
+      // Tentative de rechargement automatique après 3 secondes
+      setTimeout(() => {
+        console.log('🔄 Tentative de rechargement automatique...');
+        fetchContents();
+      }, 3000);
     }
   }, [selectedLevel, selectedCategory]);
 
@@ -470,6 +495,9 @@ const TeacherDashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    console.log('📝 Soumission du formulaire...');
+    console.log('📋 Données du formulaire:', formData);
+    
     const submitData = new FormData();
     submitData.append('title', formData.title);
     submitData.append('level', formData.level);
@@ -481,27 +509,40 @@ const TeacherDashboard = () => {
     
     if (formData.pdfFile) {
       submitData.append('pdfFile', formData.pdfFile);
+      console.log('📄 PDF ajouté au formulaire');
     }
     if (formData.miniature) {
       submitData.append('miniature', formData.miniature);
+      console.log('🖼️  Miniature ajoutée au formulaire');
     }
     
     try {
       if (editingContent) {
+        console.log(`✏️  Modification du contenu ${editingContent.id}...`);
         await axios.put(API_ENDPOINTS.CONTENT.BY_ID(editingContent.id), submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
+        console.log('✅ Contenu modifié avec succès');
       } else {
+        console.log('🆕 Création d\'un nouveau contenu...');
         await axios.post(API_ENDPOINTS.CONTENT.BASE, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
+        console.log('✅ Nouveau contenu créé avec succès');
       }
       
-      fetchContents();
+      // Recharger les contenus et fermer le dialogue
+      await fetchContents();
       setOpenDialog(false);
       resetForm();
+      
+      console.log('🔄 Interface mise à jour avec succès');
     } catch (error) {
-      console.error('Erreur lors de la sauvegarde du contenu:', error);
+      console.error('❌ Erreur lors de la sauvegarde du contenu:', error);
+      
+      // Afficher un message d'erreur plus détaillé
+      const errorMessage = error.response?.data?.message || error.message || 'Erreur lors de la sauvegarde';
+      alert(`Erreur: ${errorMessage}`);
     }
   };
 
