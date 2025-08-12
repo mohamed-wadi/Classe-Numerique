@@ -110,9 +110,6 @@ const saveContents = () => {
   }
 };
 
-// Charger les données au démarrage
-loadContents();
-
 // Fonction pour redimensionner les images (version simplifiée sans sharp)
 const resizeImageIfNeeded = async (filePath) => {
   // En mode déploiement, on retourne le chemin original
@@ -120,6 +117,9 @@ const resizeImageIfNeeded = async (filePath) => {
   console.log('🖼️  Redimensionnement d\'image désactivé en mode déploiement');
   return filePath;
 };
+
+// Charger les données au démarrage
+loadContents();
 
 // GET - Récupération des contenus par niveau et catégorie
 router.get('/:level/:category', (req, res) => {
