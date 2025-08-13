@@ -2,7 +2,9 @@
 // Détection automatique de l'environnement local
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const localApiUrl = 'http://localhost:5000';
-const productionApiUrl = 'https://classe-numerique.fly.dev';
+// Permettre la configuration via variable d'env Netlify (REACT_APP_API_URL)
+const productionEnvApiUrl = process.env.REACT_APP_API_URL;
+const productionApiUrl = productionEnvApiUrl || 'https://classe-numerique.fly.dev';
 
 export const API_BASE_URL = isLocalhost ? localApiUrl : productionApiUrl;
 
@@ -30,11 +32,14 @@ export const API_ENDPOINTS = {
   UPLOADS: {
     FILE: (filePath) => {
       if (!filePath) return '';
+      // Si c'est déjà une URL absolue, la retourner telle quelle
+      if (/^https?:\/\//i.test(filePath)) return filePath;
       // Normaliser le chemin en remplaçant les backslashes par des forward slashes
       const normalizedPath = filePath.replace(/\\/g, '/');
-      // Extraire le nom de fichier pour l'endpoint /uploads
+      // Extraire le nom de fichier pour l'endpoint /uploads et encoder pour URL
       const fileName = normalizedPath.split('/').pop();
-      return `${API_BASE_URL}/uploads/${fileName}`;
+      const encoded = encodeURIComponent(fileName);
+      return `${API_BASE_URL}/uploads/${encoded}`;
     },
   },
 };

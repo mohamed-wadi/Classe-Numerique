@@ -1,13 +1,17 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const teacherStore = require('../utils/teacherStore');
 const router = express.Router();
 
-// Utilisateurs prédéfinis (peut être étendu avec une base de données)
+// Utilisateurs prédéfinis (configurables via variables d'environnement)
+const teacherUsername = process.env.TEACHER_USERNAME || 'prof';
+const teacherPassword = process.env.TEACHER_PASSWORD || 'prof123';
+
 const users = {
-  prof: {
-    username: 'prof',
-    password: 'prof123',
+  [teacherUsername]: {
+    username: teacherUsername,
+    password: teacherPassword,
     role: 'teacher'
   }
 };
@@ -48,18 +52,35 @@ const syncStudents = (newStudents) => {
 // Route de connexion
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
+  const normalizedUsername = (username || '').trim();
   
   console.log(`Tentative de connexion pour l'utilisateur: ${username}`);
   console.log('Corps de la requête:', req.body);
 
   try {
     // Vérifier d'abord si c'est un professeur
-    const teacher = users[username];
+    let teacher = users[normalizedUsername];
+
+    // Écrase avec valeur persistée si disponible
+    const persisted = teacherStore.loadTeacher();
+    if (persisted && persisted.username === normalizedUsername) {
+      const ok = await bcrypt.compare(password, persisted.passwordHash);
+      if (ok) {
+        console.log(`Connexion réussie (persistée) pour le professeur: ${normalizedUsername}`);
+        const token = jwt.sign(
+          { username: persisted.username, role: 'teacher' },
+          process.env.JWT_SECRET || 'secret_key',
+          { expiresIn: '24h' }
+        );
+        return res.json({ token, user: { username: persisted.username, role: 'teacher' } });
+      }
+    }
+
     if (teacher && teacher.password === password) {
-      console.log(`Connexion réussie pour le professeur: ${username}`);
+      console.log(`Connexion réussie pour le professeur: ${normalizedUsername}`);
       const token = jwt.sign(
-        { 
-          username: teacher.username, 
+        {
+          username: teacher.username,
           role: teacher.role
         },
         process.env.JWT_SECRET || 'secret_key',
@@ -76,9 +97,9 @@ router.post('/login', async (req, res) => {
     }
 
     // Vérifier si c'est un élève
-    const student = students.find(s => s.username === username);
+    const student = students.find(s => s.username === normalizedUsername);
     if (student) {
-      console.log(`Élève trouvé: ${username}, actif: ${student.isActive}`);
+      console.log(`Élève trouvé: ${normalizedUsername}, actif: ${student.isActive}`);
       // Vérifier si le compte est actif
       if (!student.isActive) {
         console.log(`Compte désactivé pour: ${username}`);
@@ -124,6 +145,30 @@ router.post('/login', async (req, res) => {
     console.error('Erreur lors de la connexion:', error);
     res.status(500).json({ message: 'Erreur lors de la connexion' });
   }
+});
+
+// Initier un reset: le client envoie un code (déjà envoyé par email côté client)
+router.post('/reset/init', (req, res) => {
+  const { code } = req.body;
+  if (!code) return res.status(400).json({ message: 'Code requis' });
+  const payload = teacherStore.initReset(code);
+  res.json({ success: true, expiresAt: payload.expiresAt });
+});
+
+// Appliquer le nouveau mot de passe avec le code
+router.post('/reset/confirm', async (req, res) => {
+  const { username, code, newPassword } = req.body;
+  const normalizedUsername = (username || '').trim();
+  if (!normalizedUsername || !code || !newPassword) {
+    return res.status(400).json({ message: 'Données manquantes' });
+  }
+  const current = teacherStore.getReset();
+  if (!current || current.code !== code) {
+    return res.status(400).json({ message: 'Code invalide ou expiré' });
+  }
+  await teacherStore.setTeacherCredentials(normalizedUsername, newPassword);
+  teacherStore.clearReset();
+  res.json({ success: true });
 });
 
 // Middleware de vérification du token
