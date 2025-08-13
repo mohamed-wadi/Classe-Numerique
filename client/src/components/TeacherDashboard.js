@@ -603,8 +603,10 @@ const TeacherDashboard = () => {
     });
   };
 
-  const openFileInBrowser = (filePath) => {
-    window.open(API_ENDPOINTS.UPLOADS.FILE(filePath), '_blank');
+  const openFileInBrowser = (filePath, pageNumber) => {
+    const url = API_ENDPOINTS.UPLOADS.FILE(filePath);
+    const anchor = pageNumber && Number(pageNumber) > 0 ? `#page=${Number(pageNumber)}` : '';
+    window.open(url + anchor, '_blank');
   };
 
   const downloadFile = async (filePath, fileName) => {
@@ -2528,7 +2530,8 @@ const TeacherDashboard = () => {
                             }
                           }}
                           onClick={() => openFileInBrowser(
-                            contentViewDialog.content.pdfFile + (contentViewDialog.content.pageNumber ? `#page=${contentViewDialog.content.pageNumber}` : '')
+                            contentViewDialog.content.pdfFile,
+                            contentViewDialog.content.pageNumber
                           )}
                         />
                         <Chip
