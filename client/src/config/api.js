@@ -13,6 +13,8 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: `${API_BASE_URL}/api/auth/login`,
     VERIFY: `${API_BASE_URL}/api/auth/verify`,
+    RESET_INIT: `${API_BASE_URL}/api/auth/reset/init`,
+    RESET_CONFIRM: `${API_BASE_URL}/api/auth/reset/confirm`,
   },
   CONTENT: {
     BASE: `${API_BASE_URL}/api/content`,

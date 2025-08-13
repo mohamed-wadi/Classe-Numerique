@@ -27,6 +27,8 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import emailjs from '@emailjs/browser';
+import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import MenuIcon from '@mui/icons-material/Menu';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -98,6 +100,8 @@ export default function LoginEnseignant() {
         templateParams,
         'OJU3Ymmtegp5Nahzs'
       );
+      // Informer l'API du code de reset (persistant côté serveur)
+      await axios.post(API_ENDPOINTS.AUTH.RESET_INIT, { code: generatedCode });
       
       setForgotPasswordSuccess('Email envoyé');
       setShowResetDialog(true);
@@ -122,7 +126,7 @@ export default function LoginEnseignant() {
     }
   };
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (newPassword !== confirmPassword) {
       setError('Les mots de passe ne correspondent pas.');
       return;
@@ -131,13 +135,21 @@ export default function LoginEnseignant() {
       setError('Le mot de passe doit contenir au moins 6 caractères.');
       return;
     }
-    
-    setForgotPasswordSuccess('Mot de passe mis à jour avec succès !');
-    setShowResetDialog(false);
-    setResetStep('code');
-    setEnteredCode('');
-    setNewPassword('');
-    setConfirmPassword('');
+    try {
+      await axios.post(API_ENDPOINTS.AUTH.RESET_CONFIRM, {
+        username: credentials.username || 'prof',
+        code: enteredCode,
+        newPassword
+      });
+      setForgotPasswordSuccess('Mot de passe mis à jour avec succès !');
+      setShowResetDialog(false);
+      setResetStep('code');
+      setEnteredCode('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Erreur lors de la mise à jour du mot de passe');
+    }
   };
 
   const handleLogoClick = () => {
