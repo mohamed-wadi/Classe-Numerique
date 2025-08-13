@@ -6,6 +6,8 @@ app = "classe-numerique"
 primary_region = "cdg"
 
 [build]
+  dockerfile = "server/Dockerfile"
+  build_context = "server"
 
 [env]
   PORT = "5000"

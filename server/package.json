@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "resize-images": "node scripts/resizeExistingImages.js"
+    "resize-images": "node scripts/resizeExistingImages.js",
+    "fix-paths": "node scripts/fixFilePaths.js"
   },
   "dependencies": {
     "express": "^4.18.2",

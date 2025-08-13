@@ -32,7 +32,9 @@ export const API_ENDPOINTS = {
       if (!filePath) return '';
       // Normaliser le chemin en remplaçant les backslashes par des forward slashes
       const normalizedPath = filePath.replace(/\\/g, '/');
-      return `${API_BASE_URL}/${normalizedPath}`;
+      // Extraire le nom de fichier pour l'endpoint /uploads
+      const fileName = normalizedPath.split('/').pop();
+      return `${API_BASE_URL}/uploads/${fileName}`;
     },
   },
 };

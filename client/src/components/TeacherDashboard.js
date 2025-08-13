@@ -1930,7 +1930,6 @@ const TeacherDashboard = () => {
           <Fab
             color="primary"
             aria-label="Ajouter du contenu"
-            aria-hidden="false"
             sx={{
               position: 'fixed',
               bottom: 20,
