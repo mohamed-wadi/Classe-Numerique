@@ -170,6 +170,7 @@ router.post('/', verifyToken, upload.fields([
     console.log('🆕 Création d\'un nouveau contenu...');
     console.log('📝 Données reçues:', req.body);
     console.log('📁 Fichiers reçus:', req.files);
+    console.log('🌍 Environnement:', process.env.NODE_ENV);
     
     let miniaturePath = '';
     let pdfFilePath = '';
@@ -177,11 +178,13 @@ router.post('/', verifyToken, upload.fields([
     if (req.files?.miniature) {
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
       console.log('🖼️  Miniature traitée:', miniaturePath);
+      console.log('🖼️  Miniature existe?', fs.existsSync(miniaturePath));
     }
 
     if (req.files?.pdfFile) {
       pdfFilePath = req.files.pdfFile[0].path;
       console.log('📄 PDF traité:', pdfFilePath);
+      console.log('📄 PDF existe?', fs.existsSync(pdfFilePath));
     }
 
     const newContent = {

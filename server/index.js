@@ -4,9 +4,14 @@ const path = require('path');
 const fs = require('fs');
 require('dotenv').config();
 
-// Détection automatique de l'environnement local
-const isLocalhost = process.env.NODE_ENV !== 'production' || process.env.LOCAL_DEV === 'true';
-if (isLocalhost) {
+// Détection automatique de l'environnement
+// Sur Fly.io, NODE_ENV n'est pas défini par défaut, donc on le force à 'production'
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
+
+// Forcer en développement seulement si LOCAL_DEV est explicitement défini
+if (process.env.LOCAL_DEV === 'true') {
   process.env.NODE_ENV = 'development';
 }
 
@@ -17,27 +22,68 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Route spécifique pour les PDF avec affichage inline
-app.get('/uploads/*.pdf', (req, res) => {
+// Route spécifique pour tous les fichiers uploads avec logs de débogage
+app.get('/uploads/:filename', (req, res) => {
+  const filename = req.params.filename;
+  console.log(`🔍 Demande de fichier: ${filename}`);
+  console.log(`🌍 Environnement: ${process.env.NODE_ENV}`);
+  
   // Utiliser le bon chemin pour les uploads selon l'environnement
   const uploadsBasePath = process.env.NODE_ENV === 'production'
     ? '/app/data/uploads'
     : path.join(__dirname, 'uploads');
     
-  const filePath = path.join(uploadsBasePath, req.params[0] + '.pdf');
+  const filePath = path.join(uploadsBasePath, filename);
+  console.log(`📁 Chemin du fichier: ${filePath}`);
   
   // Vérifier si le fichier existe
   if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ message: 'Fichier PDF non trouvé' });
+    console.log(`❌ Fichier non trouvé: ${filePath}`);
+    
+    // Lister les fichiers disponibles pour le débogage
+    try {
+      const files = fs.readdirSync(uploadsBasePath);
+      console.log(`📂 Fichiers disponibles dans ${uploadsBasePath}:`, files);
+    } catch (error) {
+      console.log(`❌ Impossible de lire le dossier ${uploadsBasePath}:`, error.message);
+    }
+    
+    return res.status(404).json({
+      message: 'Fichier non trouvé',
+      requestedFile: filename,
+      searchPath: filePath,
+      uploadsPath: uploadsBasePath
+    });
+  }
+  
+  console.log(`✅ Fichier trouvé: ${filePath}`);
+  
+  // Déterminer le type de contenu
+  const ext = path.extname(filename).toLowerCase();
+  let contentType = 'application/octet-stream';
+  let disposition = 'attachment';
+  
+  if (ext === '.pdf') {
+    contentType = 'application/pdf';
+    disposition = 'inline';
+  } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)) {
+    contentType = `image/${ext.substring(1)}`;
+    disposition = 'inline';
   }
   
   // Lire le fichier
   const fileStream = fs.createReadStream(filePath);
   
-  // Définir les headers pour forcer l'affichage inline
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'inline');
-  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache pour 1 heure
+  // Définir les headers
+  res.setHeader('Content-Type', contentType);
+  res.setHeader('Content-Disposition', disposition);
+  res.setHeader('Cache-Control', 'public, max-age=3600');
+  
+  // Gérer les erreurs de lecture
+  fileStream.on('error', (error) => {
+    console.log(`❌ Erreur de lecture du fichier: ${error.message}`);
+    res.status(500).json({ message: 'Erreur de lecture du fichier' });
+  });
   
   // Envoyer le fichier
   fileStream.pipe(res);
@@ -56,10 +102,90 @@ if (!fs.existsSync(uploadsPath)) {
 
 app.use('/uploads', express.static(uploadsPath));
 
+// Route de débogage pour lister les fichiers uploads
+app.get('/debug/uploads', (req, res) => {
+  const uploadsBasePath = process.env.NODE_ENV === 'production'
+    ? '/app/data/uploads'
+    : path.join(__dirname, 'uploads');
+  
+  try {
+    const files = fs.readdirSync(uploadsBasePath);
+    res.json({
+      uploadsPath: uploadsBasePath,
+      environment: process.env.NODE_ENV,
+      filesCount: files.length,
+      files: files.map(file => ({
+        name: file,
+        fullPath: path.join(uploadsBasePath, file),
+        stats: fs.statSync(path.join(uploadsBasePath, file))
+      }))
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message,
+      uploadsPath: uploadsBasePath,
+      environment: process.env.NODE_ENV
+    });
+  }
+});
+
+// Route de migration des fichiers (à utiliser une seule fois après déploiement)
+app.post('/migrate/uploads', (req, res) => {
+  const oldUploadsPath = '/app/uploads';
+  const newUploadsPath = '/app/data/uploads';
+  
+  try {
+    // Créer le nouveau dossier s'il n'existe pas
+    if (!fs.existsSync(newUploadsPath)) {
+      fs.mkdirSync(newUploadsPath, { recursive: true });
+    }
+    
+    // Lister les fichiers dans l'ancien dossier
+    const files = fs.readdirSync(oldUploadsPath);
+    let migratedCount = 0;
+    let errors = [];
+    
+    for (const file of files) {
+      if (file === '.gitkeep') continue;
+      
+      const oldPath = path.join(oldUploadsPath, file);
+      const newPath = path.join(newUploadsPath, file);
+      
+      try {
+        // Copier le fichier (ne pas déplacer pour éviter les erreurs)
+        fs.copyFileSync(oldPath, newPath);
+        migratedCount++;
+        console.log(`✅ Fichier migré: ${file}`);
+      } catch (error) {
+        errors.push({ file, error: error.message });
+        console.log(`❌ Erreur migration ${file}: ${error.message}`);
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: 'Migration terminée',
+      migratedCount,
+      totalFiles: files.length - 1, // -1 pour .gitkeep
+      errors,
+      oldPath: oldUploadsPath,
+      newPath: newUploadsPath
+    });
+    
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      oldPath: oldUploadsPath,
+      newPath: newUploadsPath
+    });
+  }
+});
+
 // Route de santé pour Fly.io
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'OK', 
+  res.status(200).json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     memory: process.memoryUsage(),
