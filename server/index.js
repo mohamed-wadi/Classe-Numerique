@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 // Détection automatique de l'environnement local
@@ -15,6 +16,28 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Route spécifique pour les PDF avec affichage inline
+app.get('/uploads/*.pdf', (req, res) => {
+  const filePath = path.join(__dirname, req.path);
+  
+  // Vérifier si le fichier existe
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ message: 'Fichier PDF non trouvé' });
+  }
+  
+  // Lire le fichier
+  const fileStream = fs.createReadStream(filePath);
+  
+  // Définir les headers pour forcer l'affichage inline
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', 'inline');
+  res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache pour 1 heure
+  
+  // Envoyer le fichier
+  fileStream.pipe(res);
+});
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Route de santé pour Fly.io

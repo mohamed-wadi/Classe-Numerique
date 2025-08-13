@@ -121,6 +121,10 @@ const StudentDashboard = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  const openFileInBrowser = (filePath) => {
+    window.open(API_ENDPOINTS.UPLOADS.FILE(filePath), '_blank');
+  };
+
   const handleCategorySelect = (categoryKey) => {
     setSelectedCategory(categoryKey);
     if (isMobile) {
@@ -883,19 +887,36 @@ const StudentDashboard = () => {
                       <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50' }}>
                         Document PDF
                       </Typography>
-                      <Button
-                        variant="contained"
-                        startIcon={<GetApp />}
-                        onClick={() => downloadFile(selectedContent.pdfFile, selectedContent.title)}
-                        sx={{
-                          backgroundColor: '#3498db',
-                          '&:hover': {
-                            backgroundColor: '#2980b9',
-                          }
-                        }}
-                      >
-                        Télécharger le PDF
-                      </Button>
+                      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                        <Button
+                          variant="contained"
+                          startIcon={<GetApp />}
+                          onClick={() => downloadFile(selectedContent.pdfFile, selectedContent.title)}
+                          sx={{
+                            backgroundColor: '#3498db',
+                            '&:hover': {
+                              backgroundColor: '#2980b9',
+                            }
+                          }}
+                        >
+                          Télécharger le PDF
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          startIcon={<PictureAsPdf />}
+                          onClick={() => openFileInBrowser(selectedContent.pdfFile)}
+                          sx={{
+                            borderColor: '#27ae60',
+                            color: '#27ae60',
+                            '&:hover': {
+                              borderColor: '#229954',
+                              backgroundColor: 'rgba(39, 174, 96, 0.05)',
+                            }
+                          }}
+                        >
+                          Ouvrir dans le navigateur
+                        </Button>
+                      </Box>
                     </Box>
                   )}
                   

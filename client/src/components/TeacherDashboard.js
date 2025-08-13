@@ -599,6 +599,10 @@ const TeacherDashboard = () => {
     });
   };
 
+  const openFileInBrowser = (filePath) => {
+    window.open(API_ENDPOINTS.UPLOADS.FILE(filePath), '_blank');
+  };
+
   const filteredContents = selectedCategory === 'THEMES' 
     ? contents.filter(content => content.theme === selectedTheme)
     : contents;
@@ -2455,20 +2459,41 @@ const TeacherDashboard = () => {
                   </Typography>
                   <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                     {contentViewDialog.content.pdfFile && (
-                      <Chip 
-                        icon={<PictureAsPdf />} 
-                        label="Fichier PDF" 
-                        sx={{ 
-                          background: 'rgba(231, 76, 60, 0.1)',
-                          color: '#e74c3c',
-                          fontWeight: 500,
-                          cursor: 'pointer',
-                          '&:hover': {
-                            background: 'rgba(231, 76, 60, 0.2)',
-                          }
-                        }}
-                        onClick={() => window.open(API_ENDPOINTS.UPLOADS.FILE(contentViewDialog.content.pdfFile), '_blank')}
-                      />
+                      <>
+                        <Chip
+                          icon={<PictureAsPdf />}
+                          label="Ouvrir PDF"
+                          sx={{
+                            background: 'rgba(231, 76, 60, 0.1)',
+                            color: '#e74c3c',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            '&:hover': {
+                              background: 'rgba(231, 76, 60, 0.2)',
+                            }
+                          }}
+                          onClick={() => openFileInBrowser(contentViewDialog.content.pdfFile)}
+                        />
+                        <Chip
+                          icon={<GetApp />}
+                          label="Télécharger PDF"
+                          sx={{
+                            background: 'rgba(52, 152, 219, 0.1)',
+                            color: '#3498db',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            '&:hover': {
+                              background: 'rgba(52, 152, 219, 0.2)',
+                            }
+                          }}
+                          onClick={() => {
+                            const link = document.createElement('a');
+                            link.href = API_ENDPOINTS.UPLOADS.FILE(contentViewDialog.content.pdfFile);
+                            link.download = contentViewDialog.content.title + '.pdf';
+                            link.click();
+                          }}
+                        />
+                      </>
                     )}
                     {contentViewDialog.content.miniature && (
                       <Chip 
