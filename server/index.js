@@ -24,7 +24,7 @@ app.use(express.json());
 
 // Route spécifique pour tous les fichiers uploads avec logs de débogage
 app.get('/uploads/:filename', (req, res) => {
-  const filename = req.params.filename;
+  const filename = decodeURIComponent(req.params.filename);
   console.log(`🔍 Demande de fichier: ${filename}`);
   console.log(`🌍 Environnement: ${process.env.NODE_ENV}`);
   
@@ -40,10 +40,27 @@ app.get('/uploads/:filename', (req, res) => {
   if (!fs.existsSync(filePath)) {
     console.log(`❌ Fichier non trouvé: ${filePath}`);
     
-    // Lister les fichiers disponibles pour le débogage
+    // Essayer de trouver des fichiers similaires (pour les problèmes d'encodage)
     try {
       const files = fs.readdirSync(uploadsBasePath);
       console.log(`📂 Fichiers disponibles dans ${uploadsBasePath}:`, files);
+      
+      // Chercher des fichiers avec des noms similaires
+      const similarFiles = files.filter(file => {
+        const baseRequested = filename.replace(/^\d+-/, '');
+        const baseFile = file.replace(/^\d+-/, '');
+        return baseFile.includes(baseRequested.split('.')[0]) || baseRequested.includes(baseFile.split('.')[0]);
+      });
+      
+      if (similarFiles.length > 0) {
+        console.log(`🔍 Fichiers similaires trouvés:`, similarFiles);
+        // Essayer le premier fichier similaire
+        const similarFilePath = path.join(uploadsBasePath, similarFiles[0]);
+        if (fs.existsSync(similarFilePath)) {
+          console.log(`✅ Utilisation du fichier similaire: ${similarFiles[0]}`);
+          return serveFile(similarFilePath, similarFiles[0], res);
+        }
+      }
     } catch (error) {
       console.log(`❌ Impossible de lire le dossier ${uploadsBasePath}:`, error.message);
     }
@@ -57,7 +74,11 @@ app.get('/uploads/:filename', (req, res) => {
   }
   
   console.log(`✅ Fichier trouvé: ${filePath}`);
-  
+  return serveFile(filePath, filename, res);
+});
+
+// Fonction helper pour servir les fichiers
+function serveFile(filePath, filename, res) {
   // Déterminer le type de contenu
   const ext = path.extname(filename).toLowerCase();
   let contentType = 'application/octet-stream';
@@ -74,20 +95,23 @@ app.get('/uploads/:filename', (req, res) => {
   // Lire le fichier
   const fileStream = fs.createReadStream(filePath);
   
-  // Définir les headers
+  // Définir les headers avec support UTF-8
   res.setHeader('Content-Type', contentType);
-  res.setHeader('Content-Disposition', disposition);
+  res.setHeader('Content-Disposition', `${disposition}; filename*=UTF-8''${encodeURIComponent(filename)}`);
   res.setHeader('Cache-Control', 'public, max-age=3600');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   
   // Gérer les erreurs de lecture
   fileStream.on('error', (error) => {
     console.log(`❌ Erreur de lecture du fichier: ${error.message}`);
-    res.status(500).json({ message: 'Erreur de lecture du fichier' });
+    if (!res.headersSent) {
+      res.status(500).json({ message: 'Erreur de lecture du fichier' });
+    }
   });
   
   // Envoyer le fichier
   fileStream.pipe(res);
-});
+}
 
 // Servir les fichiers statiques depuis le dossier uploads (local et production)
 const uploadsPath = process.env.NODE_ENV === 'production'

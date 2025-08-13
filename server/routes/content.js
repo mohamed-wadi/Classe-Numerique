@@ -48,7 +48,14 @@ const storage = multer.diskStorage({
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.originalname);
+    // Properly encode the filename to handle special characters
+    const sanitizedName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+    const timestamp = Date.now();
+    const filename = `${timestamp}-${sanitizedName}`;
+    console.log(`📝 Original filename: ${file.originalname}`);
+    console.log(`📝 Sanitized filename: ${sanitizedName}`);
+    console.log(`📝 Final filename: ${filename}`);
+    cb(null, filename);
   }
 });
 

@@ -1929,12 +1929,14 @@ const TeacherDashboard = () => {
           {selectedCategory !== 'HOME' && selectedCategory !== 'CONTACT' && selectedCategory !== 'STUDENTS' && selectedCategory !== 'HISTORIQUE_AJOUTS' && selectedCategory !== 'HISTORIQUE_VISIBILITE' && (
           <Fab
             color="primary"
-            aria-label="add"
-            sx={{ 
-              position: 'fixed', 
-              bottom: 20, 
+            aria-label="Ajouter du contenu"
+            aria-hidden="false"
+            sx={{
+              position: 'fixed',
+              bottom: 20,
               right: 20,
               background: '#3498db',
+              zIndex: 1000,
               '&:hover': {
                 background: '#2980b9',
                 transform: 'scale(1.1)',
