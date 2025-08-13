@@ -1869,8 +1869,8 @@ const TeacherDashboard = () => {
                         <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
                           <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
                             {/* Affichage et édition rapide du numéro de page */}
-                            <Chip 
-                              label={`Page ${content.pageNumber || 1}`} 
+                            <Chip
+                              label={`Page ${content.pageNumber || 1}`}
                               sx={{
                                 background: 'linear-gradient(135deg, rgba(52,152,219,0.15), rgba(41,128,185,0.15))',
                                 color: '#2c3e50',
@@ -1883,17 +1883,25 @@ const TeacherDashboard = () => {
                               size="small"
                               value={content.pageNumber || 1}
                               onChange={(e) => {
-                                content.pageNumber = parseInt(e.target.value || '1', 10);
-                                setContents([...contents]);
+                                const newPageNumber = parseInt(e.target.value || '1', 10);
+                                // Update local state immediately for responsive UI
+                                const updatedContents = contents.map(c =>
+                                  c.id === content.id ? {...c, pageNumber: newPageNumber} : c
+                                );
+                                setContents(updatedContents);
                               }}
                               onBlur={async (e) => {
                                 try {
+                                  const pageNumber = parseInt(e.target.value || '1', 10);
                                   const fd = new FormData();
-                                  fd.append('pageNumber', String(content.pageNumber || 1));
+                                  fd.append('pageNumber', String(pageNumber));
                                   await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id), fd);
+                                  // Refresh contents to ensure server state is synchronized
                                   fetchContents();
                                 } catch (err) {
                                   console.error('Erreur MAJ pageNumber:', err);
+                                  // Revert to previous value on error
+                                  fetchContents();
                                 }
                               }}
                               inputProps={{ min: 1 }}
