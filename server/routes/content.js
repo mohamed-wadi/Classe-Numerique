@@ -32,10 +32,19 @@ const storage = multer.diskStorage({
     
     // Créer le dossier s'il n'existe pas
     if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-      console.log(`📁 Dossier d'uploads créé: ${uploadDir}`);
+      console.log(`Attempting to create upload directory: ${uploadDir}`); // Added log
+      try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+        console.log(`📁 Dossier d'uploads créé: ${uploadDir}`);
+      } catch (mkdirError) {
+        console.error(`❌ Erreur lors de la création du dossier d'uploads ${uploadDir}:`, mkdirError);
+        return cb(mkdirError); // Pass the error to multer
+      }
+    } else {
+      console.log(`📁 Dossier d'uploads existe déjà: ${uploadDir}`); // Added log
     }
     
+    console.log(`📤 Multer destination set to: ${uploadDir}`); // Added log
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
