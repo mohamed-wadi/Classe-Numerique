@@ -1,7 +1,42 @@
 {
-  "contents": [],
-  "nextId": 1,
-  "lastUpdated": "2025-08-12T22:54:31.666Z",
+  "contents": [
+    {
+      "id": 1,
+      "title": "Les petites filles modèles",
+      "level": "CM2",
+      "category": "LECTURE_SUIVIE",
+      "theme": 1,
+      "subcategory": "",
+      "type": "cours_manuel",
+      "description": "",
+      "miniature": "uploads\\1755098235645-images.jpeg",
+      "pdfFile": "",
+      "isVisible": true,
+      "createdBy": "prof",
+      "createdAt": "2025-08-13T15:17:15.647Z",
+      "updatedAt": "2025-08-13T15:30:23.910Z",
+      "visibilityChangedAt": "2025-08-13T15:30:23.910Z"
+    },
+    {
+      "id": 2,
+      "title": "cm1",
+      "level": "CM2",
+      "category": "LECTURE_SUIVIE",
+      "theme": 1,
+      "subcategory": "",
+      "type": "cours_manuel",
+      "description": "",
+      "miniature": "uploads\\1755098582758-pexels-zafer-erdogan-49915050-8319308.jpg",
+      "pdfFile": "",
+      "isVisible": false,
+      "createdBy": "prof",
+      "createdAt": "2025-08-13T15:23:02.764Z",
+      "updatedAt": "2025-08-13T15:23:02.764Z",
+      "visibilityChangedAt": "2025-08-13T15:23:02.764Z"
+    }
+  ],
+  "nextId": 3,
+  "lastUpdated": "2025-08-13T15:30:23.910Z",
   "environment": "development",
   "serverId": "local"
 }

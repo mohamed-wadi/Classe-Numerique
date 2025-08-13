@@ -3,8 +3,11 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-// Définir l'environnement de production pour Fly.io
-process.env.NODE_ENV = 'production';
+// Détection automatique de l'environnement local
+const isLocalhost = process.env.NODE_ENV !== 'production' || process.env.LOCAL_DEV === 'true';
+if (isLocalhost) {
+  process.env.NODE_ENV = 'development';
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -12,7 +15,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Route de santé pour Fly.io
 app.get('/health', (req, res) => {

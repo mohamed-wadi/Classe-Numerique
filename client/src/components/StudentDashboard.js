@@ -93,7 +93,9 @@ const StudentDashboard = () => {
   const fetchContents = useCallback(async () => {
     try {
       const response = await axios.get(API_ENDPOINTS.CONTENT.BY_LEVEL_CATEGORY(user.level, selectedCategory));
-      setContents(response.data);
+      // Filtrer seulement les contenus visibles
+      const visibleContents = response.data.filter(content => content.isVisible);
+      setContents(visibleContents);
     } catch (error) {
       console.error('Erreur lors du chargement du contenu:', error);
     }

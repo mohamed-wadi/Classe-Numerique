@@ -1,5 +1,10 @@
 // Configuration centralisée pour l'API
-export const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://classe-numerique.fly.dev';
+// Détection automatique de l'environnement local
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const localApiUrl = 'http://localhost:5000';
+const productionApiUrl = 'https://classe-numerique.fly.dev';
+
+export const API_BASE_URL = isLocalhost ? localApiUrl : productionApiUrl;
 
 // URLs pour les différents endpoints
 export const API_ENDPOINTS = {
@@ -23,7 +28,12 @@ export const API_ENDPOINTS = {
     MESSAGE_BY_ID: (id) => `${API_BASE_URL}/api/contact/messages/${id}`,
   },
   UPLOADS: {
-    FILE: (filePath) => `${API_BASE_URL}/${filePath}`,
+    FILE: (filePath) => {
+      if (!filePath) return '';
+      // Normaliser le chemin en remplaçant les backslashes par des forward slashes
+      const normalizedPath = filePath.replace(/\\/g, '/');
+      return `${API_BASE_URL}/${normalizedPath}`;
+    },
   },
 };
 

@@ -1717,7 +1717,30 @@ const TeacherDashboard = () => {
                                 height: '100%',
                                 objectFit: 'cover',
                               }}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const fallbackBox = e.target.nextSibling;
+                                if (fallbackBox) fallbackBox.style.display = 'flex';
+                              }}
                             />
+                            {/* Fallback box en cas d'erreur de chargement */}
+                            <Box 
+                              sx={{ 
+                                height: 140, 
+                                background: '#3498db',
+                                display: 'none',
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                borderRadius: '8px 8px 0 0',
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                              }}
+                            >
+                              <Image sx={{ fontSize: 48, color: 'white', opacity: 0.9 }} />
+                            </Box>
                           </Box>
                         ) : (
                           <Box 
