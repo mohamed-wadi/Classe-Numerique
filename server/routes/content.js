@@ -214,6 +214,7 @@ router.post('/', verifyToken, upload.fields([
       description: req.body.description || '',
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
+      pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : 1,
       isVisible: false,
       createdBy: req.user.username,
       createdAt: new Date(),
@@ -281,6 +282,7 @@ router.put('/:id', verifyToken, upload.fields([
       description: req.body.description || contents[contentIndex].description,
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
+      pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : contents[contentIndex].pageNumber || 1,
       updatedAt: new Date()
     };
 

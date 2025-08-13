@@ -507,6 +507,9 @@ const TeacherDashboard = () => {
     submitData.append('subcategory', formData.subcategory);
     submitData.append('type', formData.type);
     submitData.append('description', formData.description);
+    if (formData.pageNumber) {
+      submitData.append('pageNumber', String(formData.pageNumber));
+    }
     
     if (formData.pdfFile) {
       submitData.append('pdfFile', formData.pdfFile);
@@ -2478,7 +2481,7 @@ const TeacherDashboard = () => {
                   <Typography variant="h6" sx={{ color: '#2c3e50', mb: 2, fontWeight: 600 }}>
                     Fichiers attachés
                   </Typography>
-                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                  <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
                     {contentViewDialog.content.pdfFile && (
                       <>
                         <Chip
@@ -2493,7 +2496,9 @@ const TeacherDashboard = () => {
                               background: 'rgba(231, 76, 60, 0.2)',
                             }
                           }}
-                          onClick={() => openFileInBrowser(contentViewDialog.content.pdfFile)}
+                          onClick={() => openFileInBrowser(
+                            contentViewDialog.content.pdfFile + (contentViewDialog.content.pageNumber ? `#page=${contentViewDialog.content.pageNumber}` : '')
+                          )}
                         />
                         <Chip
                           icon={<GetApp />}
@@ -2520,6 +2525,27 @@ const TeacherDashboard = () => {
                           color: '#3498db',
                           fontWeight: 500
                         }}
+                      />
+                    )}
+                    {contentViewDialog.content && (
+                      <TextField
+                        type="number"
+                        size="small"
+                        label="Page"
+                        value={contentViewDialog.content.pageNumber || 1}
+                        onChange={(e) => setContentViewDialog({ open: true, content: { ...contentViewDialog.content, pageNumber: parseInt(e.target.value || '1', 10) } })}
+                        onBlur={async () => {
+                          try {
+                            const fd = new FormData();
+                            fd.append('pageNumber', String(contentViewDialog.content.pageNumber || 1));
+                            await axios.put(API_ENDPOINTS.CONTENT.BY_ID(contentViewDialog.content.id), fd);
+                            fetchContents();
+                          } catch (err) {
+                            console.error('Erreur MAJ pageNumber:', err);
+                          }
+                        }}
+                        inputProps={{ min: 1 }}
+                        sx={{ width: 100 }}
                       />
                     )}
                   </Box>

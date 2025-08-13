@@ -133,8 +133,10 @@ const StudentDashboard = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  const openFileInBrowser = (filePath) => {
-    window.open(API_ENDPOINTS.UPLOADS.FILE(filePath), '_blank');
+  const openFileInBrowser = (filePath, pageNumber) => {
+    const url = API_ENDPOINTS.UPLOADS.FILE(filePath);
+    const anchor = pageNumber && Number(pageNumber) > 0 ? `#page=${Number(pageNumber)}` : '';
+    window.open(url + anchor, '_blank');
   };
 
   const handleCategorySelect = (categoryKey) => {
@@ -916,7 +918,7 @@ const StudentDashboard = () => {
                         <Button
                           variant="outlined"
                           startIcon={<PictureAsPdf />}
-                          onClick={() => openFileInBrowser(selectedContent.pdfFile)}
+                          onClick={() => openFileInBrowser(selectedContent.pdfFile, selectedContent.pageNumber)}
                           sx={{
                             borderColor: '#27ae60',
                             color: '#27ae60',
