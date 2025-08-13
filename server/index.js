@@ -19,7 +19,12 @@ app.use(express.json());
 
 // Route spécifique pour les PDF avec affichage inline
 app.get('/uploads/*.pdf', (req, res) => {
-  const filePath = path.join(__dirname, req.path);
+  // Utiliser le bon chemin pour les uploads selon l'environnement
+  const uploadsBasePath = process.env.NODE_ENV === 'production'
+    ? '/app/data/uploads'
+    : path.join(__dirname, 'uploads');
+    
+  const filePath = path.join(uploadsBasePath, req.params[0] + '.pdf');
   
   // Vérifier si le fichier existe
   if (!fs.existsSync(filePath)) {
@@ -38,7 +43,18 @@ app.get('/uploads/*.pdf', (req, res) => {
   fileStream.pipe(res);
 });
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Servir les fichiers statiques depuis le dossier uploads (local et production)
+const uploadsPath = process.env.NODE_ENV === 'production'
+  ? '/app/data/uploads'
+  : path.join(__dirname, 'uploads');
+  
+// Créer le dossier s'il n'existe pas
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+  console.log(`📁 Dossier d'uploads créé: ${uploadsPath}`);
+}
+
+app.use('/uploads', express.static(uploadsPath));
 
 // Route de santé pour Fly.io
 app.get('/health', (req, res) => {

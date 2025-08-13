@@ -25,7 +25,18 @@ const verifyToken = (req, res, next) => {
 // Configuration multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    // Utiliser le volume persistant pour les uploads en production
+    const uploadDir = process.env.NODE_ENV === 'production'
+      ? '/app/data/uploads'
+      : 'uploads/';
+    
+    // Créer le dossier s'il n'existe pas
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      console.log(`📁 Dossier d'uploads créé: ${uploadDir}`);
+    }
+    
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + '-' + file.originalname);

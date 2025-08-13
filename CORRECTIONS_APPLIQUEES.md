@@ -1,27 +1,20 @@
-# 📁 Solution pour la persistance des fichiers sur Fly.io
+# 📋 Corrections Appliquées - Problème de Fichiers sur Fly.io
 
-## 🎯 Problème identifié
+## 📋 Résumé des Corrections
 
-Lors du déploiement sur Fly.io, les fichiers uploadés (PDF et images) disparaissaient après le redémarrage du conteneur. Cela se produisait car :
+Ce document résume toutes les corrections appliquées pour résoudre le problème de disparition des fichiers uploadés sur Fly.io.
 
-1. Les fichiers étaient stockés dans le système de fichiers éphémère du conteneur (`/app/uploads`)
-2. Lors du redémarrage du conteneur (opération courante sur Fly.io), ces fichiers étaient perdus
-3. Seules les métadonnées des contenus restaient persistantes dans `/app/data/contents.json`
+## 🎯 Problème Initial
 
-## 🔧 Solution implémentée
+Lors du déploiement sur Fly.io, les fichiers uploadés (PDF et images) disparaissaient après le redémarrage du conteneur, empêchant leur affichage dans l'application déployée.
 
-### 1. Modification du stockage des fichiers
+## 🔧 Corrections Appliquées
 
-Les fichiers uploadés sont maintenant stockés dans le volume persistant monté sur `/app/data` :
+### 1. server/routes/content.js
 
-- **Avant** : `uploads/` (dossier éphémère)
-- **Après** : `/app/data/uploads` (volume persistant)
+Modification du système de stockage pour utiliser le volume persistant :
 
-### 2. Changements dans le code
-
-#### server/routes/content.js
 ```javascript
-// Configuration multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Utiliser le volume persistant pour les uploads en production
@@ -43,7 +36,10 @@ const storage = multer.diskStorage({
 });
 ```
 
-#### server/index.js
+### 2. server/index.js
+
+Mise à jour du service de fichiers statiques et de la route PDF :
+
 ```javascript
 // Servir les fichiers statiques depuis le dossier uploads (local et production)
 const uploadsPath = process.env.NODE_ENV === 'production' 
@@ -85,27 +81,38 @@ app.get('/uploads/*.pdf', (req, res) => {
 });
 ```
 
-#### server/Dockerfile
+### 3. server/Dockerfile
+
+Mise à jour du dossier de création :
+
 ```dockerfile
 # Créer le dossier uploads s'il n'existe pas
 RUN mkdir -p /app/data/uploads
 ```
 
-## ✅ Résultat
+## ✅ Résultat Final
 
 - Les fichiers uploadés sont maintenant stockés dans le volume persistant
 - Ils survivent aux redémarrages du conteneur
 - Les PDF et miniatures s'affichent correctement dans l'application déployée
 - La persistance des données est assurée
 
-## 🧪 Test de la solution
+## 📚 Documentation Complémentaire
 
-1. Déployer sur Fly.io avec `flyctl deploy`
-2. Accéder à l'interface professeur
-3. Ajouter un contenu avec PDF et miniature
-4. Vérifier que les fichiers s'affichent correctement
-5. Redémarrer le conteneur avec `flyctl apps restart classe-numerique`
-6. Vérifier que les fichiers sont toujours accessibles
+- [SOLUTION_PERSISTANCE_FLY.md](SOLUTION_PERSISTANCE_FLY.md) - Solution détaillée pour la persistance des fichiers
+- [GUIDE_DEPLOIEMENT_CORRECTIONS.md](GUIDE_DEPLOIEMENT_CORRECTIONS.md) - Guide complet de déploiement et corrections
+- [FLY_DEPLOYMENT.md](FLY_DEPLOYMENT.md) - Guide de déploiement sur Fly.io
+- [NETLIFY_DEPLOYMENT.md](NETLIFY_DEPLOYMENT.md) - Guide de déploiement sur Netlify
+
+## 🧪 Procédure de Vérification
+
+1. Déployer sur Fly.io : `cd server && flyctl deploy`
+2. Accéder à l'application : https://wadi-fz.netlify.app/teacher
+3. Se connecter avec les identifiants professeur
+4. Ajouter un contenu avec PDF et miniature
+5. Vérifier que les fichiers s'affichent correctement
+6. Redémarrer le conteneur : `flyctl apps restart classe-numerique`
+7. Vérifier que les fichiers sont toujours accessibles
 
 ## 📞 Support
 

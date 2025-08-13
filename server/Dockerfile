@@ -14,7 +14,7 @@ RUN npm ci --only=production
 COPY . .
 
 # Créer le dossier uploads s'il n'existe pas
-RUN mkdir -p uploads
+RUN mkdir -p /app/data/uploads
 
 # Exposer le port
 EXPOSE 5000
