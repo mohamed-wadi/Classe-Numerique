@@ -1865,7 +1865,38 @@ const TeacherDashboard = () => {
                         </CardContent>
                         
                         <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
-                          <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                            {/* Affichage et édition rapide du numéro de page */}
+                            <Chip 
+                              label={`Page ${content.pageNumber || 1}`} 
+                              sx={{
+                                background: 'linear-gradient(135deg, rgba(52,152,219,0.15), rgba(41,128,185,0.15))',
+                                color: '#2c3e50',
+                                fontWeight: 600,
+                                mr: 1
+                              }}
+                            />
+                            <TextField
+                              type="number"
+                              size="small"
+                              value={content.pageNumber || 1}
+                              onChange={(e) => {
+                                content.pageNumber = parseInt(e.target.value || '1', 10);
+                                setContents([...contents]);
+                              }}
+                              onBlur={async (e) => {
+                                try {
+                                  const fd = new FormData();
+                                  fd.append('pageNumber', String(content.pageNumber || 1));
+                                  await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id), fd);
+                                  fetchContents();
+                                } catch (err) {
+                                  console.error('Erreur MAJ pageNumber:', err);
+                                }
+                              }}
+                              inputProps={{ min: 1 }}
+                              sx={{ width: 80, mr: 1 }}
+                            />
                             <IconButton 
                               onClick={() => handleEdit(content)} 
                               size="small"
