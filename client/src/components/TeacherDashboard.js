@@ -1893,9 +1893,7 @@ const TeacherDashboard = () => {
                               onBlur={async (e) => {
                                 try {
                                   const pageNumber = parseInt(e.target.value || '1', 10);
-                                  const fd = new FormData();
-                                  fd.append('pageNumber', String(pageNumber));
-                                  await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id), fd);
+                            await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id) + '/page', { pageNumber });
                                   // Refresh contents to ensure server state is synchronized
                                   fetchContents();
                                 } catch (err) {
@@ -2576,11 +2574,10 @@ const TeacherDashboard = () => {
                         label="Page"
                         value={contentViewDialog.content.pageNumber || 1}
                         onChange={(e) => setContentViewDialog({ open: true, content: { ...contentViewDialog.content, pageNumber: parseInt(e.target.value || '1', 10) } })}
-                        onBlur={async () => {
+                        onBlur={async (e) => {
                           try {
-                            const fd = new FormData();
-                            fd.append('pageNumber', String(contentViewDialog.content.pageNumber || 1));
-                            await axios.put(API_ENDPOINTS.CONTENT.BY_ID(contentViewDialog.content.id), fd);
+                            const pageNumber = parseInt(e.target.value || '1', 10);
+                            await axios.put(API_ENDPOINTS.CONTENT.BY_ID(contentViewDialog.content.id) + '/page', { pageNumber });
                             fetchContents();
                           } catch (err) {
                             console.error('Erreur MAJ pageNumber:', err);

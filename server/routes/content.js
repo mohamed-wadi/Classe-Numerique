@@ -333,6 +333,29 @@ router.put('/:id/visibility', verifyToken, (req, res) => {
   }
 });
 
+// PUT - Mise à jour uniquement du numéro de page (JSON, sans multipart)
+router.put('/:id/page', verifyToken, (req, res) => {
+  try {
+    const contentId = parseInt(req.params.id);
+    const { pageNumber } = req.body || {};
+    const contentIndex = contents.findIndex(c => c.id === contentId);
+    if (contentIndex === -1) {
+      return res.status(404).json({ message: 'Contenu non trouvé' });
+    }
+    const page = Number.parseInt(pageNumber, 10);
+    if (!Number.isFinite(page) || page < 1) {
+      return res.status(400).json({ message: 'Numéro de page invalide' });
+    }
+    contents[contentIndex].pageNumber = page;
+    contents[contentIndex].updatedAt = new Date();
+    saveContents();
+    res.json({ success: true, id: contentId, pageNumber: contents[contentIndex].pageNumber });
+  } catch (error) {
+    console.error('❌ Erreur lors de la mise à jour du numéro de page:', error);
+    res.status(500).json({ message: 'Erreur lors de la mise à jour du numéro de page' });
+  }
+});
+
 // DELETE - Suppression d'un contenu
 router.delete('/:id', verifyToken, (req, res) => {
   try {
