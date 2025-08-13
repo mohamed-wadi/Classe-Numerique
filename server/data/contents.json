@@ -10,11 +10,11 @@
       "type": "cours_manuel",
       "description": "",
       "miniature": "uploads\\1755098235645-images.jpeg",
-      "pdfFile": "",
+      "pdfFile": "uploads\\1755100294454-mom.pdf",
       "isVisible": true,
       "createdBy": "prof",
       "createdAt": "2025-08-13T15:17:15.647Z",
-      "updatedAt": "2025-08-13T15:30:23.910Z",
+      "updatedAt": "2025-08-13T15:51:34.459Z",
       "visibilityChangedAt": "2025-08-13T15:30:23.910Z"
     },
     {
@@ -36,7 +36,7 @@
     }
   ],
   "nextId": 3,
-  "lastUpdated": "2025-08-13T15:30:23.910Z",
+  "lastUpdated": "2025-08-13T15:51:34.459Z",
   "environment": "development",
   "serverId": "local"
 }

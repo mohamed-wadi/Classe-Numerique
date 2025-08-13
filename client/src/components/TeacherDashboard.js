@@ -58,6 +58,7 @@ import {
   Create,
   Quiz,
   Assessment,
+  GetApp,
   Menu as MenuIcon,
   Close as CloseIcon,
   ContactMail,
