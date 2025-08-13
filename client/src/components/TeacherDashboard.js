@@ -604,6 +604,25 @@ const TeacherDashboard = () => {
     window.open(API_ENDPOINTS.UPLOADS.FILE(filePath), '_blank');
   };
 
+  const downloadFile = async (filePath, fileName) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.UPLOADS.FILE(filePath));
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName || filePath.split('/').pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur lors du téléchargement du fichier:', error);
+      // Fallback to opening in browser if download fails
+      openFileInBrowser(filePath);
+    }
+  };
+
   const filteredContents = selectedCategory === 'THEMES' 
     ? contents.filter(content => content.theme === selectedTheme)
     : contents;
@@ -2487,12 +2506,7 @@ const TeacherDashboard = () => {
                               background: 'rgba(52, 152, 219, 0.2)',
                             }
                           }}
-                          onClick={() => {
-                            const link = document.createElement('a');
-                            link.href = API_ENDPOINTS.UPLOADS.FILE(contentViewDialog.content.pdfFile);
-                            link.download = contentViewDialog.content.title + '.pdf';
-                            link.click();
-                          }}
+                          onClick={() => downloadFile(contentViewDialog.content.pdfFile, contentViewDialog.content.title + '.pdf')}
                         />
                       </>
                     )}

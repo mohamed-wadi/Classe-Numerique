@@ -110,11 +110,23 @@ const StudentDashboard = () => {
     setOpenDialog(true);
   };
 
-  const downloadFile = (filePath, filename) => {
-    const link = document.createElement('a');
-    link.href = API_ENDPOINTS.UPLOADS.FILE(filePath);
-    link.download = filename;
-    link.click();
+  const downloadFile = async (filePath, fileName) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.UPLOADS.FILE(filePath));
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName || filePath.split('/').pop();
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Erreur lors du téléchargement du fichier:', error);
+      // Fallback to opening in browser if download fails
+      openFileInBrowser(filePath);
+    }
   };
 
   const handleDrawerToggle = () => {

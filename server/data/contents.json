@@ -28,15 +28,15 @@
       "description": "",
       "miniature": "uploads\\1755098582758-pexels-zafer-erdogan-49915050-8319308.jpg",
       "pdfFile": "",
-      "isVisible": false,
+      "isVisible": true,
       "createdBy": "prof",
       "createdAt": "2025-08-13T15:23:02.764Z",
-      "updatedAt": "2025-08-13T15:23:02.764Z",
-      "visibilityChangedAt": "2025-08-13T15:23:02.764Z"
+      "updatedAt": "2025-08-13T15:59:12.636Z",
+      "visibilityChangedAt": "2025-08-13T15:59:12.636Z"
     }
   ],
   "nextId": 3,
-  "lastUpdated": "2025-08-13T15:51:34.459Z",
+  "lastUpdated": "2025-08-13T15:59:12.636Z",
   "environment": "development",
   "serverId": "local"
 }
