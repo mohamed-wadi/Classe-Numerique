@@ -67,6 +67,7 @@ import {
   Person,
   Search as SearchIcon
 } from '@mui/icons-material';
+  import SeyesBoard from './SeyesBoard';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config/api';
@@ -103,6 +104,7 @@ const TeacherDashboard = () => {
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [editingStudent, setEditingStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [seyesShowMenu, setSeyesShowMenu] = useState(true);
   const [formData, setFormData] = useState({
     title: '',
     level: 'CM2',
@@ -150,6 +152,7 @@ const TeacherDashboard = () => {
         <path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1m0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5z"></path>
       </SvgIcon>
     ), description: 'Cours par themes' },
+    { key: 'SEYES', label: 'CAHIER SEYES', icon: <Create />, description: 'Écrire au stylo sur un cahier Seyes' },
     { key: 'THEMES', label: 'THÈMES', icon: <MenuBook />, description: 'Cours par thème' },
     { key: 'LECTURE_SUIVIE', label: 'LECTURE SUIVIE', icon: <AutoStories />, description: 'Page d\'accueil' },
     { key: 'PRODUCTION_ECRIT', label: 'PRODUCTION ÉCRITE', icon: <Create />, description: 'Page d\'accueil' },
@@ -1152,6 +1155,20 @@ const TeacherDashboard = () => {
                  selectedCategory === 'STUDENTS' ? `${students.length} compte(s) élève(s)` :
                  `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${selectedTheme}` : ''}`}
               </Typography>
+            </Box>
+          )}
+
+          {/* Cahier Seyes (éditeur externe intégré) */}
+          {selectedCategory === 'SEYES' && (
+            <Box sx={{ position: 'fixed', inset: 0, zIndex: 1200, bgcolor: '#fff', display: 'flex' }}>
+              {seyesShowMenu && (
+                <Box sx={{ width: { xs: 0, md: SIDEBAR_WIDTH }, display: { xs: 'none', md: 'block' } }}>
+                  {sidebarContent}
+                </Box>
+              )}
+              <Box sx={{ flexGrow: 1 }}>
+                <SeyesBoard fullScreen onToggleMenu={() => setSeyesShowMenu((v) => !v)} isMenuVisible={seyesShowMenu} />
+              </Box>
             </Box>
           )}
 
