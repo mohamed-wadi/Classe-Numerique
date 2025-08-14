@@ -1698,279 +1698,226 @@ const TeacherDashboard = () => {
                   </Typography>
                 </Card>
               ) : (
-                <Grid container spacing={2}>
-                  {searchFilteredContents.map((content) => (
-                    <Grid item xs={12} sm={6} lg={4} key={content.id}>
-                      <Card 
-                        sx={{ 
-                          height: '100%', 
-                          display: 'flex', 
-                          flexDirection: 'column',
-                          background: '#ffffff',
-                          border: '1px solid #ecf0f1',
-                          borderRadius: 2,
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                          '&:hover': {
-                            transform: 'translateY(-2px)',
-                            boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)',
-                          },
-                        }}
-                      >
-                        {content.miniature ? (
-                          <Box 
-                            sx={{ 
-                              height: 140, 
-                              borderRadius: '8px 8px 0 0',
-                              overflow: 'hidden',
-                                cursor: 'pointer',
-                                position: 'relative',
-                                '&:hover': {
-                                  '&::after': {
-                                    content: '""',
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    background: 'rgba(0,0,0,0.3)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    color: 'white',
-                                    fontSize: '0.8rem',
-                                    fontWeight: 600,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px'
-                                  }
-                                }
-                              }}
-                              onClick={() => handleContentView(content)}
-                          >
-                            <img 
-                              src={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
-                              alt={content.title}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                              }}
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                const fallbackBox = e.target.nextSibling;
-                                if (fallbackBox) fallbackBox.style.display = 'flex';
-                              }}
-                            />
-                            {/* Fallback box en cas d'erreur de chargement */}
-                            <Box 
-                              sx={{ 
-                                height: 140, 
-                                background: '#3498db',
-                                display: 'none',
-                                alignItems: 'center', 
-                                justifyContent: 'center',
-                                borderRadius: '8px 8px 0 0',
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                bottom: 0,
-                              }}
-                            >
-                              <Image sx={{ fontSize: 48, color: 'white', opacity: 0.9 }} />
-                            </Box>
-                          </Box>
-                        ) : (
-                          <Box 
-                            sx={{ 
-                              height: 100, 
-                              background: '#3498db',
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              justifyContent: 'center',
-                              borderRadius: '8px 8px 0 0',
-                            }}
-                          >
-                            <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
-                          </Box>
-                        )}
-                        
-                        <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
-                            <Typography 
-                              variant="h6" 
-                              component="h2"
-                              sx={{ 
-                                fontWeight: 600,
-                                fontSize: '1rem',
-                                lineHeight: 1.3,
-                                color: '#2c3e50',
-                              }}
-                            >
-                              {content.title}
-                            </Typography>
-                            <Chip
-                              size="small"
-                              label={content.isVisible ? 'Visible' : 'Masqué'}
-                              color={content.isVisible ? 'success' : 'default'}
-                              sx={{
-                                fontWeight: 500,
-                                fontSize: '0.7rem',
-                              }}
-                            />
-                          </Box>
-                          
-                          <Typography 
-                            variant="body2" 
-                            color="#7f8c8d" 
-                            gutterBottom
-                            sx={{ fontWeight: 500, mb: 1.5 }}
-                          >
-                            {getContentTypes(selectedCategory).find(t => t === content.contentType) || content.contentType}
-                          </Typography>
-                          
-                          {content.description && (
-                            <Typography 
-                              variant="body2" 
-                              color="#95a5a6" 
-                              sx={{ 
-                                mb: 1.5,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                              }}
-                            >
-                              {content.description}
-                            </Typography>
-                          )}
-                          
-                          <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                            {content.pdfFile && (
-                              <Chip 
-                                size="small" 
-                                icon={<PictureAsPdf />} 
-                                label="PDF" 
-                                sx={{ 
-                                  background: 'rgba(231, 76, 60, 0.1)',
-                                  color: '#e74c3c',
-                                  fontWeight: 500,
-                                  fontSize: '0.7rem',
-                                }}
-                              />
-                            )}
-                            {content.miniature && (
-                              <Chip 
-                                size="small" 
-                                icon={<Image />} 
-                                label="Image" 
-                                sx={{ 
-                                  background: 'rgba(52, 152, 219, 0.1)',
-                                  color: '#3498db',
-                                  fontWeight: 500,
-                                  fontSize: '0.7rem',
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </CardContent>
-                        
-                        <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
-                          <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
-                            {/* Affichage et édition rapide du numéro de page */}
-                            <Chip
-                              label={`Page ${content.pageNumber || 1}`}
-                              sx={{
-                                background: 'linear-gradient(135deg, rgba(52,152,219,0.15), rgba(41,128,185,0.15))',
-                                color: '#2c3e50',
-                                fontWeight: 600,
-                                mr: 1
-                              }}
-                            />
-                            <TextField
-                              type="number"
-                              size="small"
-                              value={content.pageNumber || 1}
-                              onChange={(e) => {
-                                const newPageNumber = parseInt(e.target.value || '1', 10);
-                                // Update local state immediately for responsive UI
-                                const updatedContents = contents.map(c =>
-                                  c.id === content.id ? {...c, pageNumber: newPageNumber} : c
-                                );
-                                setContents(updatedContents);
-                              }}
-                              onBlur={async (e) => {
-                                try {
-                                  const pageNumber = parseInt(e.target.value || '1', 10);
-                            await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id) + '/page', { pageNumber });
-                                  // Refresh contents to ensure server state is synchronized
-                                  fetchContents();
-                                } catch (err) {
-                                  console.error('Erreur MAJ pageNumber:', err);
-                                  // Revert to previous value on error
-                                  fetchContents();
-                                }
-                              }}
-                              inputProps={{ min: 1 }}
-                              sx={{ width: 80, mr: 1 }}
-                            />
-                            <IconButton 
-                              onClick={() => handleEdit(content)} 
-                              size="small"
-                              sx={{
-                                color: '#3498db',
-                                background: 'rgba(52, 152, 219, 0.1)',
-                                '&:hover': {
-                                  background: '#3498db',
-                                  color: '#ffffff',
-                                  transform: 'scale(1.1)',
-                                },
-                                transition: 'all 0.2s ease',
-                              }}
-                            >
-                              <Edit fontSize="small" />
-                            </IconButton>
-                            <IconButton 
-                              onClick={() => handleDelete(content.id)} 
-                              size="small"
-                              sx={{
-                                color: '#e74c3c',
-                                background: 'rgba(231, 76, 60, 0.1)',
-                                '&:hover': {
-                                  background: '#e74c3c',
-                                  color: '#ffffff',
-                                  transform: 'scale(1.1)',
-                                },
-                                transition: 'all 0.2s ease',
-                              }}
-                            >
-                              <Delete fontSize="small" />
-                            </IconButton>
-                          </Box>
-                          <IconButton 
-                            onClick={() => toggleVisibility(content.id)} 
-                            size="small"
-                            sx={{
-                              color: content.isVisible ? '#27ae60' : '#95a5a6',
-                              background: content.isVisible 
-                                ? 'rgba(39, 174, 96, 0.1)' 
-                                : 'rgba(149, 165, 166, 0.1)',
-                              '&:hover': {
-                                background: content.isVisible 
-                                  ? '#27ae60' 
-                                  : '#95a5a6',
-                                color: '#ffffff',
-                                transform: 'scale(1.1)',
-                              },
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                          </IconButton>
-                        </CardActions>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
+                (selectedCategory === 'THEMES' ? contentTypes : [{ key: 'all', label: '' }]).map((typeDef) => {
+                  const items = searchFilteredContents.filter((c) => c.type === typeDef.key);
+                  // Pour les autres catégories, afficher tous les contenus non groupés
+                  if (selectedCategory !== 'THEMES') {
+                    const flatItems = searchFilteredContents;
+                    return (
+                      <Grid container spacing={2} key="flat-list">
+                        {flatItems.map((content) => (
+                          <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#ffffff', border: '1px solid #ecf0f1', borderRadius: 2, transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)' } }}>
+                              {content.miniature ? (
+                                <Box sx={{ height: 140, borderRadius: '8px 8px 0 0', overflow: 'hidden', cursor: 'pointer', position: 'relative', '&:hover': { '&::after': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' } } }} onClick={() => handleContentView(content)}>
+                                  <img src={API_ENDPOINTS.UPLOADS.FILE(content.miniature)} alt={content.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; const fb = e.target.nextSibling; if (fb) fb.style.display = 'flex'; }} />
+                                  <Box sx={{ height: 140, background: '#3498db', display: 'none', alignItems: 'center', justifyContent: 'center', borderRadius: '8px 8px 0 0', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                                    <Image sx={{ fontSize: 48, color: 'white', opacity: 0.9 }} />
+                                  </Box>
+                                </Box>
+                              ) : (
+                                <Box sx={{ height: 100, background: '#3498db', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px 8px 0 0' }}>
+                                  <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
+                                </Box>
+                              )}
+                              <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, fontSize: '1rem', lineHeight: 1.3, color: '#2c3e50' }}>
+                                    {content.title}
+                                  </Typography>
+                                  <Chip size="small" label={content.isVisible ? 'Visible' : 'Masqué'} color={content.isVisible ? 'success' : 'default'} sx={{ fontWeight: 500, fontSize: '0.7rem' }} />
+                                </Box>
+                                {content.description && (
+                                  <Typography variant="body2" color="#95a5a6" sx={{ mb: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                    {content.description}
+                                  </Typography>
+                                )}
+                                <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                                  {content.pdfFile && (
+                                    <Chip 
+                                      size="small" 
+                                      icon={<PictureAsPdf />} 
+                                      label="PDF" 
+                                      sx={{ 
+                                        background: 'rgba(231, 76, 60, 0.1)',
+                                        color: '#e74c3c',
+                                        fontWeight: 500,
+                                        fontSize: '0.7rem',
+                                      }}
+                                    />
+                                  )}
+                                  {content.miniature && (
+                                    <Chip 
+                                      size="small" 
+                                      icon={<Image />} 
+                                      label="Image" 
+                                      sx={{ 
+                                        background: 'rgba(52, 152, 219, 0.1)',
+                                        color: '#3498db',
+                                        fontWeight: 500,
+                                        fontSize: '0.7rem',
+                                      }}
+                                    />
+                                  )}
+                                </Box>
+                              </CardContent>
+                              <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
+                                <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                                  <Chip
+                                    label={`Page ${content.pageNumber || 1}`}
+                                    sx={{
+                                      background: 'linear-gradient(135deg, rgba(52,152,219,0.15), rgba(41,128,185,0.15))',
+                                      color: '#2c3e50',
+                                      fontWeight: 600,
+                                      mr: 1
+                                    }}
+                                  />
+                                  <TextField
+                                    type="number"
+                                    size="small"
+                                    value={content.pageNumber || 1}
+                                    onChange={(e) => {
+                                      const newPageNumber = parseInt(e.target.value || '1', 10);
+                                      const updatedContents = contents.map(c =>
+                                        c.id === content.id ? { ...c, pageNumber: newPageNumber } : c
+                                      );
+                                      setContents(updatedContents);
+                                    }}
+                                    onBlur={async (e) => {
+                                      try {
+                                        const pageNumber = parseInt(e.target.value || '1', 10);
+                                        await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id) + '/page', { pageNumber });
+                                        fetchContents();
+                                      } catch (err) {
+                                        console.error('Erreur MAJ pageNumber:', err);
+                                        fetchContents();
+                                      }
+                                    }}
+                                    inputProps={{ min: 1 }}
+                                    sx={{ width: 80, mr: 1 }}
+                                  />
+                                  <IconButton 
+                                    onClick={() => handleEdit(content)} 
+                                    size="small"
+                                    sx={{
+                                      color: '#3498db',
+                                      background: 'rgba(52, 152, 219, 0.1)',
+                                      '&:hover': {
+                                        background: '#3498db',
+                                        color: '#ffffff',
+                                        transform: 'scale(1.1)',
+                                      },
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <Edit fontSize="small" />
+                                  </IconButton>
+                                  <IconButton 
+                                    onClick={() => handleDelete(content.id)} 
+                                    size="small"
+                                    sx={{
+                                      color: '#e74c3c',
+                                      background: 'rgba(231, 76, 60, 0.1)',
+                                      '&:hover': {
+                                        background: '#e74c3c',
+                                        color: '#ffffff',
+                                        transform: 'scale(1.1)',
+                                      },
+                                      transition: 'all 0.2s ease',
+                                    }}
+                                  >
+                                    <Delete fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                                <IconButton 
+                                  onClick={() => toggleVisibility(content.id)} 
+                                  size="small"
+                                  sx={{
+                                    color: content.isVisible ? '#27ae60' : '#95a5a6',
+                                    background: content.isVisible 
+                                      ? 'rgba(39, 174, 96, 0.1)' 
+                                      : 'rgba(149, 165, 166, 0.1)',
+                                    '&:hover': {
+                                      background: content.isVisible 
+                                        ? '#27ae60' 
+                                        : '#95a5a6',
+                                      color: '#ffffff',
+                                      transform: 'scale(1.1)',
+                                    },
+                                    transition: 'all 0.2s ease',
+                                  }}
+                                >
+                                  {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                </IconButton>
+                              </CardActions>
+                            </Card>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    );
+                  }
+                  if (!items.length) return null;
+                  return (
+                    <Box key={typeDef.key} sx={{ mb: 4 }}>
+                      <Typography variant="h5" sx={{ fontWeight: 700, color: '#2c3e50' }}>
+                        {typeDef.label}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#7f8c8d', mb: 2 }}>Semaine 1-5</Typography>
+                      <Grid container spacing={2}>
+                        {items.map((content) => (
+                          <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#ffffff', border: '1px solid #ecf0f1', borderRadius: 2, transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 20px rgba(0, 0, 0, 0.1)' } }}>
+                              {content.miniature ? (
+                                <Box sx={{ height: 140, borderRadius: '8px 8px 0 0', overflow: 'hidden', cursor: 'pointer', position: 'relative', '&:hover': { '&::after': { content: '""', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' } } }} onClick={() => handleContentView(content)}>
+                                  <img src={API_ENDPOINTS.UPLOADS.FILE(content.miniature)} alt={content.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} onError={(e) => { e.target.style.display = 'none'; const fb = e.target.nextSibling; if (fb) fb.style.display = 'flex'; }} />
+                                  <Box sx={{ height: 140, background: '#3498db', display: 'none', alignItems: 'center', justifyContent: 'center', borderRadius: '8px 8px 0 0', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+                                    <Image sx={{ fontSize: 48, color: 'white', opacity: 0.9 }} />
+                                  </Box>
+                                </Box>
+                              ) : (
+                                <Box sx={{ height: 100, background: '#3498db', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '8px 8px 0 0' }}>
+                                  <School sx={{ fontSize: 32, color: 'white', opacity: 0.9 }} />
+                                </Box>
+                              )}
+                              <CardContent sx={{ flexGrow: 1, p: 2.5 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
+                                  <Typography variant="h6" component="h2" sx={{ fontWeight: 600, fontSize: '1rem', lineHeight: 1.3, color: '#2c3e50' }}>
+                                    {content.title}
+                                  </Typography>
+                                  <Chip size="small" label={content.isVisible ? 'Visible' : 'Masqué'} color={content.isVisible ? 'success' : 'default'} sx={{ fontWeight: 500, fontSize: '0.7rem' }} />
+                                </Box>
+                                {content.description && (
+                                  <Typography variant="body2" color="#95a5a6" sx={{ mb: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                    {content.description}
+                                  </Typography>
+                                )}
+                                <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                                  {content.pdfFile && (<Chip size="small" icon={<PictureAsPdf />} label="PDF" sx={{ background: 'rgba(231, 76, 60, 0.1)', color: '#e74c3c', fontWeight: 500, fontSize: '0.7rem' }} />)}
+                                  {content.miniature && (<Chip size="small" icon={<Image />} label="Image" sx={{ background: 'rgba(52, 152, 219, 0.1)', color: '#3498db', fontWeight: 500, fontSize: '0.7rem' }} />)}
+                                </Box>
+                              </CardContent>
+                              <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
+                                <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
+                                  <Chip label={`Page ${content.pageNumber || 1}`} sx={{ background: 'linear-gradient(135deg, rgba(52,152,219,0.15), rgba(41,128,185,0.15))', color: '#2c3e50', fontWeight: 600, mr: 1 }} />
+                                  <TextField type="number" size="small" value={content.pageNumber || 1} onChange={(e) => { const newPage = parseInt(e.target.value || '1', 10); const updated = contents.map(c => c.id === content.id ? { ...c, pageNumber: newPage } : c); setContents(updated); }} onBlur={async (e) => { try { const pageNumber = parseInt(e.target.value || '1', 10); await axios.put(API_ENDPOINTS.CONTENT.BY_ID(content.id) + '/page', { pageNumber }); fetchContents(); } catch (err) { console.error('Erreur MAJ pageNumber:', err); fetchContents(); } }} inputProps={{ min: 1 }} sx={{ width: 80, mr: 1 }} />
+                                  <IconButton onClick={() => handleEdit(content)} size="small" sx={{ color: '#3498db', background: 'rgba(52, 152, 219, 0.1)', '&:hover': { background: '#3498db', color: '#ffffff', transform: 'scale(1.1)' }, transition: 'all 0.2s ease' }}>
+                                    <Edit fontSize="small" />
+                                  </IconButton>
+                                  <IconButton onClick={() => handleDelete(content.id)} size="small" sx={{ color: '#e74c3c', background: 'rgba(231, 76, 60, 0.1)', '&:hover': { background: '#e74c3c', color: '#ffffff', transform: 'scale(1.1)' }, transition: 'all 0.2s ease' }}>
+                                    <Delete fontSize="small" />
+                                  </IconButton>
+                                </Box>
+                                <IconButton onClick={() => toggleVisibility(content.id)} size="small" sx={{ color: content.isVisible ? '#27ae60' : '#95a5a6', background: content.isVisible ? 'rgba(39, 174, 96, 0.1)' : 'rgba(149, 165, 166, 0.1)', '&:hover': { background: content.isVisible ? '#27ae60' : '#95a5a6', color: '#ffffff', transform: 'scale(1.1)' }, transition: 'all 0.2s ease' }}>
+                                  {content.isVisible ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                                </IconButton>
+                              </CardActions>
+                            </Card>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  );
+                })
               )}
             </>
           )}
