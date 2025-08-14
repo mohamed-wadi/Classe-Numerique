@@ -770,120 +770,254 @@ const StudentDashboard = () => {
                   </Typography>
                 </Card>
               ) : (
-                <Grid container spacing={{ xs: 2, md: 3 }}>
-                  {searchFilteredContents.map((content) => (
-                    <Grid item xs={12} sm={6} lg={4} key={content.id}>
-                      <Card 
-                        sx={{ 
-                          height: '100%', 
-                          display: 'flex', 
-                          flexDirection: 'column',
-                          background: '#ffffff',
-                          border: '2px solid #3498db',
-                          borderRadius: 3,
-                          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                          cursor: 'pointer',
-                          '&:hover': {
-                            transform: 'translateY(-4px)',
-                            boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
-                          },
-                        }}
-                        onClick={() => handleContentClick(content)}
-                      >
-                        {content.miniature ? (
-                          <CardMedia
-                            component="img"
-                            height="160"
-                            image={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
-                            alt={content.title}
-                            sx={{ borderRadius: '12px 12px 0 0' }}
-                          />
-                        ) : (
-                          <Box 
-                            sx={{ 
-                              height: 120, 
-                              background: '#3498db',
-                              display: 'flex', 
-                              alignItems: 'center', 
-                              justifyContent: 'center',
-                              borderRadius: '12px 12px 0 0',
-                            }}
-                          >
-                            <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
-                          </Box>
-                        )}
-                        
-                        <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                selectedCategory === 'THEMES' ? (
+                  <>
+                    {['cours_manuel', 'cours_a_ecrire', 'exercice'].map((typeKey) => {
+                      const items = searchFilteredContents.filter(c => c.type === typeKey);
+                      if (!items.length) return null;
+                      return (
+                        <Box key={typeKey} sx={{ mb: 4 }}>
                           <Typography 
-                            variant="h6" 
-                            component="h2"
-                            sx={{ 
-                              fontWeight: 600,
-                              fontSize: '1.1rem',
-                              lineHeight: 1.3,
-                              color: '#2c3e50',
-                              mb: 1,
-                            }}
+                            variant="h4" 
+                            sx={{ fontWeight: 700, color: '#2c3e50', mb: 0.5 }}
                           >
-                            {content.title}
+                            {contentTypeLabels[typeKey] || typeKey}
                           </Typography>
+                          <Typography variant="body2" sx={{ color: '#7f8c8d', mb: 2 }}>Semaine 1-5</Typography>
+                          <Grid container spacing={{ xs: 2, md: 3 }}>
+                            {items.map((content) => (
+                              <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                                <Card 
+                                  sx={{ 
+                                    height: '100%', 
+                                    display: 'flex', 
+                                    flexDirection: 'column',
+                                    background: '#ffffff',
+                                    border: '2px solid #3498db',
+                                    borderRadius: 3,
+                                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                      transform: 'translateY(-4px)',
+                                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
+                                    },
+                                  }}
+                                  onClick={() => handleContentClick(content)}
+                                >
+                                  {content.miniature ? (
+                                    <CardMedia
+                                      component="img"
+                                      height="160"
+                                      image={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
+                                      alt={content.title}
+                                      sx={{ borderRadius: '12px 12px 0 0' }}
+                                    />
+                                  ) : (
+                                    <Box 
+                                      sx={{ 
+                                        height: 120, 
+                                        background: '#3498db',
+                                        display: 'flex', 
+                                        alignItems: 'center', 
+                                        justifyContent: 'center',
+                                        borderRadius: '12px 12px 0 0',
+                                      }}
+                                    >
+                                      <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
+                                    </Box>
+                                  )}
+                                  
+                                  <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                                    <Typography 
+                                      variant="h6" 
+                                      component="h2"
+                                      sx={{ 
+                                        fontWeight: 600,
+                                        fontSize: '1.1rem',
+                                        lineHeight: 1.3,
+                                        color: '#2c3e50',
+                                        mb: 1,
+                                      }}
+                                    >
+                                      {content.title}
+                                    </Typography>
+                                    
+                                    <Typography 
+                                      variant="body2" 
+                                      color="#7f8c8d" 
+                                      gutterBottom
+                                      sx={{ fontWeight: 500, mb: 2 }}
+                                    >
+                                      {contentTypeLabels[content.type] || content.type}
+                                    </Typography>
+                                    
+                                    {content.description && (
+                                      <Typography 
+                                        variant="body2" 
+                                        color="#7f8c8d" 
+                                        sx={{ 
+                                          mb: 2,
+                                          display: '-webkit-box',
+                                          WebkitLineClamp: 2,
+                                          WebkitBoxOrient: 'vertical',
+                                          overflow: 'hidden',
+                                        }}
+                                      >
+                                        {content.description}
+                                      </Typography>
+                                    )}
+                                    
+                                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                      {content.pdfFile && (
+                                        <Chip 
+                                          size="small" 
+                                          icon={<PictureAsPdf />} 
+                                          label="PDF disponible" 
+                                          sx={{ 
+                                            background: 'rgba(231, 76, 60, 0.1)',
+                                            color: '#e74c3c',
+                                            fontWeight: 500,
+                                          }}
+                                        />
+                                      )}
+                                      {content.miniature && (
+                                        <Chip 
+                                          size="small" 
+                                          icon={<School />} 
+                                          label="Image" 
+                                          sx={{ 
+                                            background: 'rgba(52, 152, 219, 0.1)',
+                                            color: '#3498db',
+                                            fontWeight: 500,
+                                          }}
+                                        />
+                                      )}
+                                    </Box>
+                                  </CardContent>
+                                </Card>
+                              </Grid>
+                            ))}
+                          </Grid>
+                        </Box>
+                      );
+                    })}
+                  </>
+                ) : (
+                  <Grid container spacing={{ xs: 2, md: 3 }}>
+                    {searchFilteredContents.map((content) => (
+                      <Grid item xs={12} sm={6} lg={4} key={content.id}>
+                        <Card 
+                          sx={{ 
+                            height: '100%', 
+                            display: 'flex', 
+                            flexDirection: 'column',
+                            background: '#ffffff',
+                            border: '2px solid #3498db',
+                            borderRadius: 3,
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            cursor: 'pointer',
+                            '&:hover': {
+                              transform: 'translateY(-4px)',
+                              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.15)',
+                            },
+                          }}
+                          onClick={() => handleContentClick(content)}
+                        >
+                          {content.miniature ? (
+                            <CardMedia
+                              component="img"
+                              height="160"
+                              image={API_ENDPOINTS.UPLOADS.FILE(content.miniature)}
+                              alt={content.title}
+                              sx={{ borderRadius: '12px 12px 0 0' }}
+                            />
+                          ) : (
+                            <Box 
+                              sx={{ 
+                                height: 120, 
+                                background: '#3498db',
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                borderRadius: '12px 12px 0 0',
+                              }}
+                            >
+                              <School sx={{ fontSize: 40, color: 'white', opacity: 0.9 }} />
+                            </Box>
+                          )}
                           
-                          <Typography 
-                            variant="body2" 
-                            color="#7f8c8d" 
-                            gutterBottom
-                            sx={{ fontWeight: 500, mb: 2 }}
-                          >
-                            {contentTypeLabels[content.type] || content.type}
-                          </Typography>
-                          
-                          {content.description && (
+                          <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                            <Typography 
+                              variant="h6" 
+                              component="h2"
+                              sx={{ 
+                                fontWeight: 600,
+                                fontSize: '1.1rem',
+                                lineHeight: 1.3,
+                                color: '#2c3e50',
+                                mb: 1,
+                              }}
+                            >
+                              {content.title}
+                            </Typography>
+                            
                             <Typography 
                               variant="body2" 
                               color="#7f8c8d" 
-                              sx={{ 
-                                mb: 2,
-                                display: '-webkit-box',
-                                WebkitLineClamp: 2,
-                                WebkitBoxOrient: 'vertical',
-                                overflow: 'hidden',
-                              }}
+                              gutterBottom
+                              sx={{ fontWeight: 500, mb: 2 }}
                             >
-                              {content.description}
+                              {contentTypeLabels[content.type] || content.type}
                             </Typography>
-                          )}
-                          
-                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                            {content.pdfFile && (
-                              <Chip 
-                                size="small" 
-                                icon={<PictureAsPdf />} 
-                                label="PDF disponible" 
+                            
+                            {content.description && (
+                              <Typography 
+                                variant="body2" 
+                                color="#7f8c8d" 
                                 sx={{ 
-                                  background: 'rgba(231, 76, 60, 0.1)',
-                                  color: '#e74c3c',
-                                  fontWeight: 500,
+                                  mb: 2,
+                                  display: '-webkit-box',
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: 'vertical',
+                                  overflow: 'hidden',
                                 }}
-                              />
+                              >
+                                {content.description}
+                              </Typography>
                             )}
-                            {content.miniature && (
-                              <Chip 
-                                size="small" 
-                                icon={<School />} 
-                                label="Image" 
-                                sx={{ 
-                                  background: 'rgba(52, 152, 219, 0.1)',
-                                  color: '#3498db',
-                                  fontWeight: 500,
-                                }}
-                              />
-                            )}
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
+                            
+                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                              {content.pdfFile && (
+                                <Chip 
+                                  size="small" 
+                                  icon={<PictureAsPdf />} 
+                                  label="PDF disponible" 
+                                  sx={{ 
+                                    background: 'rgba(231, 76, 60, 0.1)',
+                                    color: '#e74c3c',
+                                    fontWeight: 500,
+                                  }}
+                                />
+                              )}
+                              {content.miniature && (
+                                <Chip 
+                                  size="small" 
+                                  icon={<School />} 
+                                  label="Image" 
+                                  sx={{ 
+                                    background: 'rgba(52, 152, 219, 0.1)',
+                                    color: '#3498db',
+                                    fontWeight: 500,
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                )
               )}
             </>
           )}
