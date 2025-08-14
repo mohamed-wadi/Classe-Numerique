@@ -521,26 +521,22 @@ const TeacherDashboard = () => {
     }
     
     if (formData.pdfFile) {
-      submitData.append('pdfFile', formData.pdfFile);
+      submitData.append('pdfFile', formData.pdfFile, formData.pdfFile.name);
       console.log('📄 PDF ajouté au formulaire');
     }
     if (formData.miniature) {
-      submitData.append('miniature', formData.miniature);
+      submitData.append('miniature', formData.miniature, formData.miniature.name);
       console.log('🖼️  Miniature ajoutée au formulaire');
     }
     
     try {
       if (editingContent) {
         console.log(`✏️  Modification du contenu ${editingContent.id}...`);
-        await axios.put(API_ENDPOINTS.CONTENT.BY_ID(editingContent.id), submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await axios.put(API_ENDPOINTS.CONTENT.BY_ID(editingContent.id), submitData);
         console.log('✅ Contenu modifié avec succès');
       } else {
         console.log('🆕 Création d\'un nouveau contenu...');
-        await axios.post(API_ENDPOINTS.CONTENT.BASE, submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await axios.post(API_ENDPOINTS.CONTENT.BASE, submitData);
         console.log('✅ Nouveau contenu créé avec succès');
       }
       
