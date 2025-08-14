@@ -230,44 +230,44 @@ const TeacherDashboard = () => {
     {
       id: 7,
       title: "Thème 1",
-      subtitle: "Aventures et découvertes",
+      subtitle: "Mes amis",
       image: image7,
-      description: "Partez à l'aventure et découvrez de nouveaux horizons."
+      description: "Partez à l'aventure avec tes amis et découvre de nouveaux horizons."
     },
     {
       id: 8,
       title: "Thème 2",
-      subtitle: "Mystères et énigmes",
+      subtitle: "Relève le défi",
       image: image8,
-      description: "Résolvez des mystères passionnants et développez votre logique."
+      description: "Relève des défis passionnants et développe ta logique."
     },
     {
       id: 9,
       title: "Thème 3",
-      subtitle: "Créativité et imagination",
+      subtitle: "Nos loisirs",
       image: image9,
-      description: "Libérez votre créativité et explorez votre imagination."
+      description: "Explore tes loisirs et libère ta créativité."
     },
     {
       id: 10,
       title: "Thème 4",
-      subtitle: "Sciences et nature",
+      subtitle: "Les histoires qui font peur",
       image: image10,
-      description: "Découvrez les merveilles de la science et de la nature."
+      description: "Découvre des histoires qui donnent des frissons."
     },
     {
       id: 11,
       title: "Thème 5",
-      subtitle: "Histoire et culture",
+      subtitle: "Réaliser mon rêve d'enfant",
       image: image11,
-      description: "Voyagez dans le temps et explorez différentes cultures."
+      description: "Imagine et réalise ton rêve d'enfant."
     },
     {
       id: 12,
       title: "Thème 6",
-      subtitle: "Technologie et innovation",
+      subtitle: "À la découverte du monde!",
       image: image12,
-      description: "Découvrez les technologies modernes et les innovations."
+      description: "Pars à la découverte du monde qui t'entoure."
     }
   ];
 
