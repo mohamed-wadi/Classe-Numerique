@@ -90,7 +90,7 @@ const SIDEBAR_WIDTH = 280;
 const TeacherDashboard = () => {
   const { user, logout } = useAuth();
   const [selectedLevel, setSelectedLevel] = useState('CM2');
-  const [selectedCategory, setSelectedCategory] = useState('HOME');
+  const [selectedCategory, setSelectedCategory] = useState('EXERCICES');
   const [selectedTheme, setSelectedTheme] = useState(1);
   const [contents, setContents] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);

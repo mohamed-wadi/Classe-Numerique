@@ -65,7 +65,7 @@ const SIDEBAR_WIDTH = 280;
 
 const StudentDashboard = () => {
   const { user, logout } = useAuth();
-  const [selectedCategory, setSelectedCategory] = useState('HOME');
+  const [selectedCategory, setSelectedCategory] = useState('EXERCICES');
   const [selectedTheme, setSelectedTheme] = useState(1);
   const [contents, setContents] = useState([]);
   const [selectedContent, setSelectedContent] = useState(null);
