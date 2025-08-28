@@ -1,7 +1,7 @@
 {
   "name": "ecole-server",
   "version": "1.0.0",
-  "description": "Backend pour l'application école CM2/CM1",
+  "description": "Backend pour l'application école CM2/CE6",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

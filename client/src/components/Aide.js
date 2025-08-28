@@ -175,8 +175,8 @@ const Aide = () => {
                     <ListItem>
                       <ListItemIcon><SchoolIcon /></ListItemIcon>
                       <ListItemText 
-                        primary="Connexion CM1" 
-                        secondary="Utilisez : cm1 / ecole"
+                        primary="Connexion CE6" 
+                        secondary="Utilisez : ce6 / ecole"
                       />
                     </ListItem>
                     <ListItem>

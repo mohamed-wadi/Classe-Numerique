@@ -1,4 +1,4 @@
-# 🚀 Guide de Déploiement - École CM2/CM1
+# 🚀 Guide de Déploiement - École CM2/CE6
 
 ## 📋 Vue d'ensemble
 Ce projet utilise :

@@ -68,7 +68,7 @@ To create a production build, use npm run build.
 ### **Identifiants de test :**
 - **Professeur :** `prof` / `prof123`
 - **CM2 :** `cm2` / `ecole`
-- **CM1 :** `cm1` / `ecole`
+- **CE6 :** `ce6` / `ecole`
 
 ## 🛠️ **Démarrage automatique (Recommandé)**
 

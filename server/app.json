@@ -1,13 +1,13 @@
 {
   "name": "ecole-backend",
-  "description": "Backend pour l'application école CM2/CM1",
+  "description": "Backend pour l'application école CM2/CE6",
   "repository": "https://github.com/mohamed-wadi/Classe-Numerique",
   "logo": "https://node-js-sample.herokuapp.com/node.png",
   "keywords": ["node", "express", "ecole", "education"],
   "env": {
     "JWT_SECRET": {
       "description": "Secret pour signer les tokens JWT",
-      "value": "ecole_cm2_cm1_2024_mohamed_wadi_jwt_secret_key_abcdefghijklmnopqrstuvwxyz_123456789"
+      "value": "ecole_cm2_ce6_2024_mohamed_wadi_jwt_secret_key_abcdefghijklmnopqrstuvwxyz_123456789"
     },
     "NODE_ENV": {
       "description": "Environnement de production",

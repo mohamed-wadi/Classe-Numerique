@@ -1,12 +1,12 @@
-# 🏫 École CM2 & CM1 - Plateforme d'Apprentissage
+# 🏫 École CM2 & CE6 - Plateforme d'Apprentissage
 
-Une plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, permettant aux professeurs de gérer le contenu éducatif et aux élèves d'accéder aux cours et exercices.
+Une plateforme scolaire moderne et interactive pour les niveaux CM2 et CE6, permettant aux professeurs de gérer le contenu éducatif et aux élèves d'accéder aux cours et exercices.
 
 ## ✨ Fonctionnalités
 
 ### 👨‍🏫 Interface Professeur
 - **Gestion complète du contenu** : Ajouter, modifier, supprimer cours et exercices
-- **Organisation par niveaux** : CM2 et CM1 avec structure identique
+- **Organisation par niveaux** : CM2 et CE6 avec structure identique
 - **Catégories disponibles** :
   - 🏠 HOME
   - 📚 THÈMES (6 thèmes avec sous-catégories)
@@ -18,7 +18,7 @@ Une plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, perm
 - **Contrôle de visibilité** : Publier/masquer le contenu pour les élèves
 
 ### 👥 Interface Classe (Élèves)
-- **Accès par niveau** : Contenu spécifique CM2 ou CM1
+- **Accès par niveau** : Contenu spécifique CM2 ou CE6
 - **Navigation intuitive** : Interface adaptée aux enfants
 - **Consultation des cours** : Visualisation du contenu publié par le professeur
 - **Téléchargement de documents** : Accès aux PDF mis à disposition
@@ -31,7 +31,7 @@ Une plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, perm
 
 ### Classes
 - **CM2** : nom = `cm2`, mot de passe = `ecole`
-- **CM1** : nom = `cm1`, mot de passe = `ecole`
+- **CE6** : nom = `ce6`, mot de passe = `ecole`
 
 ## 🚀 Installation et Démarrage
 
@@ -43,7 +43,7 @@ Une plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, perm
 ```bash
 # Cloner le projet
 git clone [URL_DU_REPO]
-cd ecole-cm2-cm1-platform
+cd ecole-cm2-ce6-platform
 
 # Installer les dépendances
 npm run install-all
@@ -77,7 +77,7 @@ L'application sera accessible sur :
 ## 📁 Structure du Projet
 
 ```
-ecole-cm2-cm1-platform/
+ecole-cm2-ce6-platform/
 ├── server/                 # Backend Node.js
 │   ├── models/            # Modèles de données
 │   ├── routes/            # Routes API
@@ -149,4 +149,4 @@ Pour toute question ou problème :
 
 ---
 
-**Développé avec ❤️ pour l'éducation des enfants CM2 et CM1**
+**Développé avec ❤️ pour l'éducation des enfants CM2 et CE6**

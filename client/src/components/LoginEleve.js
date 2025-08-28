@@ -300,7 +300,7 @@ export default function LoginEleve() {
                   CM2 : cm2 / ecole
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#292b40', fontWeight: 500 }}>
-                  CM1 : cm1 / ecole
+                  CE6 : ce6 / ecole
                 </Typography>
               </Box>
             </Box>

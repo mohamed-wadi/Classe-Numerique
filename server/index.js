@@ -232,7 +232,7 @@ app.use('/api/students', require('./routes/students'));
 // Route racine
 app.get('/', (req, res) => {
   res.json({ 
-    message: 'API École CM2 & CM1', 
+    message: 'API École CM2 & CE6', 
     version: '1.0.0',
     status: 'running',
     timestamp: new Date().toISOString()
