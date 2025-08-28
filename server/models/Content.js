@@ -5,7 +5,7 @@ const contentSchema = new mongoose.Schema({
   description: { type: String },
   category: { type: String, required: true },
   subcategory: { type: String },
-  level: { type: String, required: true, enum: ['CM2', 'CE6'] },
+  level: { type: String, required: true, enum: ['CM2', 'CM1'] },
   type: { type: String, required: true, enum: ['cours', 'exercice'] },
   content: { type: String },
   fileUrl: { type: String },

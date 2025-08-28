@@ -275,7 +275,7 @@ const TeacherDashboard = () => {
   ];
 
   // Sélectionner les thèmes selon le niveau sélectionné
-  const currentThemes = selectedLevel === 'CE6' ? themes : cm2Themes;
+  const currentThemes = selectedLevel === 'CM1' ? themes : cm2Themes;
 
   const getContentTypes = (category) => {
     if (category === 'THEMES') {
@@ -738,7 +738,7 @@ const TeacherDashboard = () => {
           NIVEAU SCOLAIRE
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          {['CM2', 'CE6'].map((level) => (
+          {['CM2', 'CM1'].map((level) => (
             <Chip
               key={level}
               label={level}
@@ -1997,7 +1997,7 @@ const TeacherDashboard = () => {
                         }}
                       >
                         <MenuItem value="CM2">CM2</MenuItem>
-                        <MenuItem value="CE6">CE6</MenuItem>
+                        <MenuItem value="CM1">CM1</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -2282,7 +2282,7 @@ const TeacherDashboard = () => {
                     }}
                   >
                     <MenuItem value="CM2">CM2</MenuItem>
-                    <MenuItem value="CE6">CE6</MenuItem>
+                    <MenuItem value="CM1">CM1</MenuItem>
                   </Select>
                 </FormControl>
               </Box>

@@ -29,9 +29,9 @@ let students = [
   },
   {
     id: 2,
-    username: 'ce6',
+    username: 'cm1',
     password: '$2a$10$QXA0rYAmC9QzxkrB8XoCW.k59FB9e7B/ueAXiMmwQzce2Y6bjTo0m', // "ecole" hashé
-    level: 'CE6',
+    level: 'CM1',
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()

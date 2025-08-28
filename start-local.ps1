@@ -1,5 +1,5 @@
-# Script PowerShell pour lancer le projet École CM2 & CE6 localement
-Write-Host "🚀 Démarrage de l'École CM2 & CE6..." -ForegroundColor Green
+# Script PowerShell pour lancer le projet École CM2 & CM1 localement
+Write-Host "🚀 Démarrage de l'École CM2 & CM1..." -ForegroundColor Green
 
 # Vérifier si Node.js est installé
 try {
@@ -67,7 +67,7 @@ Write-Host ""
 Write-Host "📝 Identifiants de test:" -ForegroundColor Yellow
 Write-Host "   - Professeur: prof / prof123" -ForegroundColor White
 Write-Host "   - CM2: cm2 / ecole" -ForegroundColor White
-Write-Host "   - CE6: ce6 / ecole" -ForegroundColor White
+Write-Host "   - CM1: cm1 / ecole" -ForegroundColor White
 Write-Host ""
 Write-Host "💡 Pour arrêter les serveurs, fermez les fenêtres PowerShell ouvertes" -ForegroundColor Yellow
 Write-Host "💡 Ou utilisez Ctrl+C dans chaque fenêtre" -ForegroundColor Yellow

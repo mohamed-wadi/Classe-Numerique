@@ -1,0 +1,166 @@
+warning: in the working copy of 'package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/data/contents.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'server/models/Content.js', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/DEPLOYMENT.md b/DEPLOYMENT.md[m
+[1mindex e89b673..b87ed89 100644[m
+[1m--- a/DEPLOYMENT.md[m
+[1m+++ b/DEPLOYMENT.md[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-# 🚀 Guide de Déploiement - École CM2/CM1[m
+[32m+[m[32m# 🚀 Guide de Déploiement - École CM2/CE6[m
+ [m
+ ## 📋 Vue d'ensemble[m
+ Ce projet utilise :[m
+[1mdiff --git a/JWT_SECRET.txt b/JWT_SECRET.txt[m
+[1mindex dde2497..890383b 100644[m
+[1m--- a/JWT_SECRET.txt[m
+[1m+++ b/JWT_SECRET.txt[m
+[36m@@ -1,6 +1,6 @@[m
+ SECRET JWT UTILISÉ POUR LE DÉPLOIEMENT :[m
+ [m
+[31m-JWT_SECRET=ecole_cm2_cm1_2024_mohamed_wadi_jwt_secret_key_abcdefghijklmnopqrstuvwxyz_123456789[m
+[32m+[m[32mJWT_SECRET=ecole_cm2_ce6_2024_mohamed_wadi_jwt_secret_key_abcdefghijklmnopqrstuvwxyz_123456789[m
+ [m
+ ⚠️ IMPORTANT : [m
+ - Ce secret est utilisé pour signer les tokens d'authentification[m
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 09fb566..465eb22 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,12 +1,12 @@[m
+[31m-# 🏫 École CM2 & CM1 - Plateforme d'Apprentissage[m
+[32m+[m[32m# 🏫 École CM2 & CE6 - Plateforme d'Apprentissage[m
+ [m
+[31m-Une plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, permettant aux professeurs de gérer le contenu éducatif et aux élèves d'accéder aux cours et exercices.[m
+[32m+[m[32mUne plateforme scolaire moderne et interactive pour les niveaux CM2 et CE6, permettant aux professeurs de gérer le contenu éducatif et aux élèves d'accéder aux cours et exercices.[m
+ [m
+ ## ✨ Fonctionnalités[m
+ [m
+ ### 👨‍🏫 Interface Professeur[m
+ - **Gestion complète du contenu** : Ajouter, modifier, supprimer cours et exercices[m
+[31m-- **Organisation par niveaux** : CM2 et CM1 avec structure identique[m
+[32m+[m[32m- **Organisation par niveaux** : CM2 et CE6 avec structure identique[m
+ - **Catégories disponibles** :[m
+   - 🏠 HOME[m
+   - 📚 THÈMES (6 thèmes avec sous-catégories)[m
+[36m@@ -18,7 +18,7 @@[m [mUne plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, perm[m
+ - **Contrôle de visibilité** : Publier/masquer le contenu pour les élèves[m
+ [m
+ ### 👥 Interface Classe (Élèves)[m
+[31m-- **Accès par niveau** : Contenu spécifique CM2 ou CM1[m
+[32m+[m[32m- **Accès par niveau** : Contenu spécifique CM2 ou CE6[m
+ - **Navigation intuitive** : Interface adaptée aux enfants[m
+ - **Consultation des cours** : Visualisation du contenu publié par le professeur[m
+ - **Téléchargement de documents** : Accès aux PDF mis à disposition[m
+[36m@@ -31,7 +31,7 @@[m [mUne plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, perm[m
+ [m
+ ### Classes[m
+ - **CM2** : nom = `cm2`, mot de passe = `ecole`[m
+[31m-- **CM1** : nom = `cm1`, mot de passe = `ecole`[m
+[32m+[m[32m- **CE6** : nom = `ce6`, mot de passe = `ecole`[m
+ [m
+ ## 🚀 Installation et Démarrage[m
+ [m
+[36m@@ -43,7 +43,7 @@[m [mUne plateforme scolaire moderne et interactive pour les niveaux CM2 et CM1, perm[m
+ ```bash[m
+ # Cloner le projet[m
+ git clone [URL_DU_REPO][m
+[31m-cd ecole-cm2-cm1-platform[m
+[32m+[m[32mcd ecole-cm2-ce6-platform[m
+ [m
+ # Installer les dépendances[m
+ npm run install-all[m
+[36m@@ -77,7 +77,7 @@[m [mL'application sera accessible sur :[m
+ ## 📁 Structure du Projet[m
+ [m
+ ```[m
+[31m-ecole-cm2-cm1-platform/[m
+[32m+[m[32mecole-cm2-ce6-platform/[m
+ ├── server/                 # Backend Node.js[m
+ │   ├── models/            # Modèles de données[m
+ │   ├── routes/            # Routes API[m
+[36m@@ -149,4 +149,4 @@[m [mPour toute question ou problème :[m
+ [m
+ ---[m
+ [m
+[31m-**Développé avec ❤️ pour l'éducation des enfants CM2 et CM1**[m
+[32m+[m[32m**Développé avec ❤️ pour l'éducation des enfants CM2 et CE6**[m
+[1mdiff --git a/TEST_GUIDE.md b/TEST_GUIDE.md[m
+[1mindex 5e1c8b0..ec4b121 100644[m
+[1m--- a/TEST_GUIDE.md[m
+[1m+++ b/TEST_GUIDE.md[m
+[36m@@ -11,7 +11,7 @@[m
+ [m
+ ### 2. **Test de Connexion Élève**[m
+ - **Identifiants** :[m
+[31m-  - Username : `cm2` ou `cm1`[m
+[32m+[m[32m  - Username : `cm2` ou `ce6`[m
+   - Password : `ecole`[m
+ - **Résultat attendu** : Connexion réussie, accès au dashboard élève[m
+ [m
+[1mdiff --git a/client/src/components/Aide.js b/client/src/components/Aide.js[m
+[1mindex 053d8a3..016b5c7 100644[m
+[1m--- a/client/src/components/Aide.js[m
+[1m+++ b/client/src/components/Aide.js[m
+[36m@@ -175,8 +175,8 @@[m [mconst Aide = () => {[m
+                     <ListItem>[m
+                       <ListItemIcon><SchoolIcon /></ListItemIcon>[m
+                       <ListItemText [m
+[31m-                        primary="Connexion CM1" [m
+[31m-                        secondary="Utilisez : cm1 / ecole"[m
+[32m+[m[32m                        primary="Connexion CE6"[m[41m [m
+[32m+[m[32m                        secondary="Utilisez : ce6 / ecole"[m
+                       />[m
+                     </ListItem>[m
+                     <ListItem>[m
+[1mdiff --git a/client/src/components/Contact.js b/client/src/components/Contact.js[m
+[1mindex bc43107..5601e64 100644[m
+[1m--- a/client/src/components/Contact.js[m
+[1m+++ b/client/src/components/Contact.js[m
+[36m@@ -288,7 +288,7 @@[m [mconst Contact = () => {[m
+                     </ListItemIcon>[m
+                     <ListItemText[m
+                       primary="Email"[m
+[31m-                      secondary="contact@ecole-cm2-cm1.fr"[m
+[32m+[m[32m                      secondary="contact@ecole-cm2-ce6.fr"[m
+                       primaryTypographyProps={{ fontWeight: 600 }}[m
+                       secondaryTypographyProps={{ color: '#64748b' }}[m
+                     />[m
+[1mdiff --git a/client/src/components/LoginEleve.js b/client/src/components/LoginEleve.js[m
+[1mindex 02883d3..97771a7 100644[m
+[1m--- a/client/src/components/LoginEleve.js[m
+[1m+++ b/client/src/components/LoginEleve.js[m
+[36m@@ -300,7 +300,7 @@[m [mexport default function LoginEleve() {[m
+                   CM2 : cm2 / ecole[m
+                 </Typography>[m
+                 <Typography variant="body2" sx={{ color: '#292b40', fontWeight: 500 }}>[m
+[31m-                  CM1 : cm1 / ecole[m
+[32m+[m[32m                  CE6 : ce6 / ecole[m
+                 </Typography>[m
+               </Box>[m
+             </Box>[m
+[1mdiff --git a/client/src/components/StudentDashboard.js b/client/src/components/StudentDashboard.js[m
+[1mindex 14e40ce..d12e4f4 100644[m
+[1m--- a/client/src/components/StudentDashboard.js[m
+[1m+++ b/client/src/components/StudentDashboard.js[m
+[36m@@ -158,8 +158,8 @@[m [mconst StudentDashboard = () => {[m
+ [m
+   const getWelcomeMessage = () => {[m
+     switch (user?.level) {[m
+[31m-      case 'CM1':[m
+[31m-        return 'Bienvenue dans votre espace CM1 ! Découvrez les thèmes et commencez votre apprentissage.';[m
+[32m+[m[32m      case 'CE6':[m
+[32m+[m[32m        return 'Bienvenue dans votre espace CE6 ! Découvrez les thèmes et commencez votre apprentissage.';[m
+       case 'CM2':[m
+         return 'Bienvenue dans votre espace CM2 ! Explorez les thèmes et progressez dans vos études.';[m
+       default:[m
+[36m@@ -260,7 +260,7 @@[m [mconst StudentDashboard = () => {[m
+   ];[m
+ [m
+   // Sélectionner les thèmes selon le niveau[m
+[31m-  const currentThemes = user?.level === 'CM1' ? themes : cm2Themes;[m
+[32m+[m[32m  const currentThemes = user?.level === 'CE6' ? themes : cm2Themes;[m
+ [m
+   // Filtrer le contenu selon le terme de recherche[m
+   const searchFilteredContents = filteredContents.filter(content =>[m

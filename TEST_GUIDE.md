@@ -11,7 +11,7 @@
 
 ### 2. **Test de Connexion Élève**
 - **Identifiants** :
-  - Username : `cm2` ou `ce6`
+  - Username : `cm2` ou `cm1`
   - Password : `ecole`
 - **Résultat attendu** : Connexion réussie, accès au dashboard élève
 

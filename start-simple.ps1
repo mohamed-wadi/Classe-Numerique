@@ -1,5 +1,5 @@
 # Script PowerShell simple pour lancer le projet
-Write-Host "Starting Ecole CM2 & CE6 project..." -ForegroundColor Green
+Write-Host "Starting Ecole CM2 & CM1 project..." -ForegroundColor Green
 
 # Check if Node.js is installed
 try {
@@ -54,7 +54,7 @@ Write-Host ""
 Write-Host "Test credentials:" -ForegroundColor Yellow
 Write-Host "   - Teacher: prof / prof123" -ForegroundColor White
 Write-Host "   - CM2: cm2 / ecole" -ForegroundColor White
-Write-Host "   - CE6: ce6 / ecole" -ForegroundColor White
+Write-Host "   - CM1: cm1 / ecole" -ForegroundColor White
 Write-Host ""
 Write-Host "To stop servers, close the PowerShell windows" -ForegroundColor Yellow
 Write-Host "Or use Ctrl+C in each window" -ForegroundColor Yellow

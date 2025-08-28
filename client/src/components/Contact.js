@@ -288,7 +288,7 @@ const Contact = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary="Email"
-                      secondary="contact@ecole-cm2-ce6.fr"
+                      secondary="contact@ecole-cm2-cm1.fr"
                       primaryTypographyProps={{ fontWeight: 600 }}
                       secondaryTypographyProps={{ color: '#64748b' }}
                     />

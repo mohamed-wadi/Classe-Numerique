@@ -1,7 +1,7 @@
 {
-  "name": "ecole-cm2-ce6-platform",
+  "name": "ecole-cm2-cm1-platform",
   "version": "1.0.0",
-  "description": "Plateforme scolaire pour CM2 et CE6",
+  "description": "Plateforme scolaire pour CM2 et CM1",
   "main": "server/index.js",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run client\"",
