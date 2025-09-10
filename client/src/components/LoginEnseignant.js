@@ -131,10 +131,6 @@ export default function LoginEnseignant() {
       setError('Les mots de passe ne correspondent pas.');
       return;
     }
-    if (newPassword.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères.');
-      return;
-    }
     try {
       await axios.post(API_ENDPOINTS.AUTH.RESET_CONFIRM, {
         username: credentials.username || 'prof',
