@@ -110,7 +110,7 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     fetchContents();
-  }, [fetchContents]);
+  }, [fetchContents, selectedTheme]);
 
   const handleContentClick = (content) => {
     setSelectedContent(content);
