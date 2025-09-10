@@ -193,8 +193,8 @@ const TeacherDashboard = () => {
       description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
     },
     {
-      id: 2,
-      title: "Thème 2", 
+      id: 2, 
+      title: "Thème 2",
       subtitle: "Les contes détournés",
       image: image2,
       description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
@@ -739,7 +739,7 @@ const TeacherDashboard = () => {
           NIVEAU SCOLAIRE
         </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          {['CM2', 'CM1'].map((level) => (
+          {['CM2', 'CM1', 'CE6'].map((level) => (
             <Chip
               key={level}
               label={level}
@@ -1999,6 +1999,7 @@ const TeacherDashboard = () => {
                       >
                         <MenuItem value="CM2">CM2</MenuItem>
                         <MenuItem value="CM1">CM1</MenuItem>
+                        <MenuItem value="CE6">CE6</MenuItem>
                       </Select>
                     </FormControl>
                   </Grid>
@@ -2284,6 +2285,7 @@ const TeacherDashboard = () => {
                   >
                     <MenuItem value="CM2">CM2</MenuItem>
                     <MenuItem value="CM1">CM1</MenuItem>
+                    <MenuItem value="CE6">CE6</MenuItem>
                   </Select>
                 </FormControl>
               </Box>

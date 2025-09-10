@@ -180,6 +180,13 @@ const Aide = () => {
                       />
                     </ListItem>
                     <ListItem>
+                      <ListItemIcon><SchoolIcon /></ListItemIcon>
+                      <ListItemText 
+                        primary="Connexion CE6" 
+                        secondary="Utilisez : ce6 / ecole"
+                      />
+                    </ListItem>
+                    <ListItem>
                       <ListItemIcon><ComputerIcon /></ListItemIcon>
                       <ListItemText 
                         primary="Navigation" 

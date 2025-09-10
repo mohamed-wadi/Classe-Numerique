@@ -163,6 +163,8 @@ const StudentDashboard = () => {
         return 'Bienvenue dans votre espace CM1 ! Découvrez les thèmes et commencez votre apprentissage.';
       case 'CM2':
         return 'Bienvenue dans votre espace CM2 ! Explorez les thèmes et progressez dans vos études.';
+      case 'CE6':
+        return 'Bienvenue dans votre espace CE6 ! Découvrez les thèmes et commencez votre apprentissage.';
       default:
         return 'Bienvenue dans votre espace d\'apprentissage !';
     }
@@ -261,7 +263,7 @@ const StudentDashboard = () => {
   ];
 
   // Sélectionner les thèmes selon le niveau
-  const currentThemes = user?.level === 'CM1' ? themes : cm2Themes;
+  const currentThemes = user?.level === 'CM1' || user?.level === 'CE6' ? themes : cm2Themes;
 
   // Filtrer le contenu selon le terme de recherche
   const searchFilteredContents = filteredContents.filter(content =>

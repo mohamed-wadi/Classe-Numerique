@@ -35,6 +35,15 @@ let students = [
     isActive: true,
     createdAt: new Date(),
     updatedAt: new Date()
+  },
+  {
+    id: 3,
+    username: 'ce6',
+    password: '$2a$10$QXA0rYAmC9QzxkrB8XoCW.k59FB9e7B/ueAXiMmwQzce2Y6bjTo0m', // "ecole" hashé
+    level: 'CE6',
+    isActive: true,
+    createdAt: new Date(),
+    updatedAt: new Date()
   }
 ];
 
