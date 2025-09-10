@@ -70,7 +70,7 @@ router.post('/login', async (req, res) => {
         const token = jwt.sign(
           { username: persisted.username, role: 'teacher' },
           process.env.JWT_SECRET || 'secret_key',
-          { expiresIn: '24h' }
+          { expiresIn: '30d' }
         );
         return res.json({ token, user: { username: persisted.username, role: 'teacher' } });
       }
@@ -84,7 +84,7 @@ router.post('/login', async (req, res) => {
           role: teacher.role
         },
         process.env.JWT_SECRET || 'secret_key',
-        { expiresIn: '24h' }
+        { expiresIn: '30d' }
       );
 
       return res.json({

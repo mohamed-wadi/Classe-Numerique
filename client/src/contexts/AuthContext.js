@@ -20,13 +20,32 @@ export const AuthProvider = ({ children }) => {
   // axios.defaults.baseURL = API_BASE_URL;
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    // Priorité au token de session (durée de la session navigateur)
+    const sessionToken = sessionStorage.getItem('token');
+    if (sessionToken) {
+      axios.defaults.headers.common['Authorization'] = `Bearer ${sessionToken}`;
       verifyToken();
-    } else {
-      setLoading(false);
+      return;
     }
+
+    // Sinon, vérifier le token persistant avec expiration (30 jours)
+    const rawTokenData = localStorage.getItem('tokenData');
+    if (rawTokenData) {
+      try {
+        const tokenData = JSON.parse(rawTokenData);
+        if (tokenData?.token && tokenData?.expiresAt && Date.now() < tokenData.expiresAt) {
+          axios.defaults.headers.common['Authorization'] = `Bearer ${tokenData.token}`;
+          verifyToken();
+          return;
+        }
+      } catch (e) {
+        // ignore JSON errors
+      }
+      // Expiré ou invalide
+      localStorage.removeItem('tokenData');
+    }
+
+    setLoading(false);
   }, []);
 
   const verifyToken = async () => {
@@ -42,13 +61,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (username, password) => {
+  const login = async (username, password, options = {}) => {
+    const { rememberMe = false } = options;
     try {
       console.log('Tentative de connexion avec:', { username, API_URL: API_BASE_URL });
       const response = await axios.post(API_ENDPOINTS.AUTH.LOGIN, { username, password });
       const { token, user } = response.data;
-      
-      localStorage.setItem('token', token);
+
+      // Stockage selon l'option "Se souvenir de moi"
+      if (rememberMe) {
+        const expiresAt = Date.now() + 30 * 24 * 60 * 60 * 1000; // 30 jours
+        localStorage.setItem('tokenData', JSON.stringify({ token, expiresAt }));
+      } else {
+        sessionStorage.setItem('token', token);
+      }
+
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
       
@@ -64,7 +91,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
+    // Nettoyer les deux types de stockage
+    sessionStorage.removeItem('token');
+    localStorage.removeItem('tokenData');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };

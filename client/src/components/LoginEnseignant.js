@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Button, 
@@ -60,15 +60,28 @@ export default function LoginEnseignant() {
   const handleMenuOpen = (event) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
+  useEffect(() => {
+    const storedRemember = localStorage.getItem('rememberMe') === 'true';
+    const storedUsername = localStorage.getItem('rememberedUsername') || '';
+    if (storedRemember) {
+      setRememberMe(true);
+      setCredentials((prev) => ({ ...prev, username: storedUsername }));
+    }
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     
-    const result = await login(credentials.username, credentials.password);
+    const result = await login(credentials.username, credentials.password, { rememberMe });
     if (result.success) {
       if (rememberMe) {
         localStorage.setItem('rememberMe', 'true');
+        localStorage.setItem('rememberedUsername', credentials.username || 'prof');
+      } else {
+        localStorage.removeItem('rememberMe');
+        localStorage.removeItem('rememberedUsername');
       }
       navigate('/teacher');
     } else {
