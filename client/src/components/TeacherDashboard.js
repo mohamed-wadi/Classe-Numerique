@@ -1365,7 +1365,7 @@ const TeacherDashboard = () => {
                             label={student.level} 
                             size="small"
                             sx={{ 
-                              backgroundColor: student.level === 'CM2' ? '#3498db' : '#e67e22',
+                              backgroundColor: student.level === 'CM2' ? '#3498db' : (student.level === 'CM1' ? '#e67e22' : '#8e44ad'),
                               color: 'white',
                               fontWeight: 500
                             }}
