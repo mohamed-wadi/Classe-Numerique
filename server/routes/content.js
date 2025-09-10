@@ -432,28 +432,4 @@ router.post('/maintenance/normalize/ce6-themes', verifyToken, (req, res) => {
   }
 });
 
-// MAINTENANCE - Normaliser les thèmes CM2 (7–12 -> 1–6) pour la catégorie THEMES
-router.post('/maintenance/normalize/cm2-themes', verifyToken, (req, res) => {
-  try {
-    if (!req.user || req.user.role !== 'teacher') {
-      return res.status(403).json({ message: 'Accès interdit' });
-    }
-
-    let normalized = 0;
-    contents = contents.map((c) => {
-      if (c.level === 'CM2' && c.category === 'THEMES' && Number(c.theme) >= 7 && Number(c.theme) <= 12) {
-        normalized += 1;
-        return { ...c, theme: Number(c.theme) - 6 };
-      }
-      return c;
-    });
-
-    saveContents();
-    return res.json({ success: true, normalized });
-  } catch (error) {
-    console.error('❌ Erreur normalisation CM2:', error);
-    return res.status(500).json({ message: 'Erreur lors de la normalisation CM2' });
-  }
-});
-
 module.exports = router;
