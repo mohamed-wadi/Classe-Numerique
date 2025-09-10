@@ -154,10 +154,11 @@ const StudentDashboard = () => {
   };
 
   const normalizeThemeForLevel = (level, theme) => {
-    if (level === 'CE6' && Number(theme) > 6) {
-      return Number(theme) - 6;
+    const numeric = Number(theme);
+    if ((level === 'CE6' || level === 'CM2') && numeric > 6) {
+      return numeric - 6;
     }
-    return Number(theme);
+    return numeric;
   };
 
   const filteredContents = selectedCategory === 'THEMES'
@@ -718,7 +719,7 @@ const StudentDashboard = () => {
                 }}
               >
                 {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
-                {selectedCategory === 'THEMES' && ` • Thème ${user?.level === 'CM2' && Number(selectedTheme) > 6 ? Number(selectedTheme) - 6 : Number(selectedTheme)}`}
+                {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
               </Typography>
               
               {/* Barre de recherche */}
