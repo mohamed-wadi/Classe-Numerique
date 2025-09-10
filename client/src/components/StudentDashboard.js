@@ -718,7 +718,7 @@ const StudentDashboard = () => {
                 }}
               >
                 {user?.level} • {categories.find(c => c.key === selectedCategory)?.label}
-                {selectedCategory === 'THEMES' && ` • Thème ${selectedTheme}`}
+                {selectedCategory === 'THEMES' && ` • Thème ${user?.level === 'CM2' && Number(selectedTheme) > 6 ? Number(selectedTheme) - 6 : Number(selectedTheme)}`}
               </Typography>
               
               {/* Barre de recherche */}
