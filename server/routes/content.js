@@ -383,4 +383,29 @@ router.delete('/:id', verifyToken, (req, res) => {
   }
 });
 
+// MAINTENANCE - Purge des contenus CE6 pour les thèmes 1 à 7 (catégorie THEMES)
+// Protégé: nécessite un token et le rôle teacher
+router.delete('/maintenance/purge/ce6-themes', verifyToken, (req, res) => {
+  try {
+    if (!req.user || req.user.role !== 'teacher') {
+      return res.status(403).json({ message: 'Accès interdit' });
+    }
+
+    const beforeCount = contents.length;
+    contents = contents.filter((c) => {
+      const isCE6 = c.level === 'CE6';
+      const isThemes = c.category === 'THEMES';
+      const isThemeInRange = Number(c.theme) >= 1 && Number(c.theme) <= 7;
+      return !(isCE6 && isThemes && isThemeInRange);
+    });
+
+    const removed = beforeCount - contents.length;
+    saveContents();
+    return res.json({ success: true, removed });
+  } catch (error) {
+    console.error('❌ Erreur purge CE6:', error);
+    return res.status(500).json({ message: 'Erreur lors de la purge CE6' });
+  }
+});
+
 module.exports = router;
