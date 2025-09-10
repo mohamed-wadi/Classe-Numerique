@@ -1094,37 +1094,33 @@ const TeacherDashboard = () => {
                 Sélectionner un thème
               </Typography>
               <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {currentThemes.map((theme) => {
-                  const displayNum = selectedLevel === 'CM2' ? (Number(theme.id) - 6) : Number(theme.id);
-                  const isSelected = selectedTheme === displayNum;
-                  return (
-                    <Chip
-                      key={theme.id}
-                      label={`Thème ${displayNum}`}
-                      onClick={() => setSelectedTheme(displayNum)}
-                      sx={{
-                        fontSize: '0.9rem',
-                        fontWeight: 600,
-                        py: 1.5,
-                        px: 2,
-                        height: 40,
-                        borderRadius: 2,
-                        background: isSelected 
-                          ? '#3498db'
-                          : '#ecf0f1',
-                        color: isSelected ? '#ffffff' : '#2c3e50',
-                        border: isSelected 
-                          ? 'none'
-                          : '1px solid #bdc3c7',
-                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                        '&:hover': { 
-                          transform: 'translateY(-1px) scale(1.02)',
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                        },
-                      }}
-                    />
-                  );
-                })}
+                {currentThemes.map((theme) => (
+                  <Chip
+                    key={theme.id}
+                    label={`Thème ${theme.id}`}
+                    onClick={() => setSelectedTheme(theme.id)}
+                    sx={{
+                      fontSize: '0.9rem',
+                      fontWeight: 600,
+                      py: 1.5,
+                      px: 2,
+                      height: 40,
+                      borderRadius: 2,
+                      background: selectedTheme === theme.id 
+                        ? '#3498db'
+                        : '#ecf0f1',
+                      color: selectedTheme === theme.id ? '#ffffff' : '#2c3e50',
+                      border: selectedTheme === theme.id 
+                        ? 'none'
+                        : '1px solid #bdc3c7',
+                      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                      '&:hover': { 
+                        transform: 'translateY(-1px) scale(1.02)',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                      },
+                    }}
+                  />
+                ))}
               </Box>
             </Box>
           )}
@@ -1154,12 +1150,7 @@ const TeacherDashboard = () => {
               >
                 {selectedCategory === 'CONTACT' ? `${contactMessages.length} message(s) reçu(s)` :
                  selectedCategory === 'STUDENTS' ? `${students.length} compte(s) élève(s)` :
-                 (() => {
-                   const displayTheme = selectedLevel === 'CM2' && Number(selectedTheme) > 6
-                     ? Number(selectedTheme) - 6
-                     : Number(selectedTheme);
-                   return `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${displayTheme}` : ''}`;
-                 })()}
+                 `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${selectedTheme}` : ''}`}
               </Typography>
             </Box>
           )}

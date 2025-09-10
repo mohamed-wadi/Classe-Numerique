@@ -162,7 +162,14 @@ const StudentDashboard = () => {
   };
 
   const filteredContents = selectedCategory === 'THEMES'
-    ? contents.filter(content => normalizeThemeForLevel(user?.level, content.theme) === Number(selectedTheme))
+    ? contents.filter(content => {
+        // Pour CM2, on doit comparer avec le thème sélectionné directement
+        if (user?.level === 'CM2') {
+          return Number(content.theme) === Number(selectedTheme);
+        }
+        // Pour les autres niveaux, on utilise la normalisation
+        return normalizeThemeForLevel(user?.level, content.theme) === Number(selectedTheme);
+      })
     : contents;
 
   const getWelcomeMessage = () => {
