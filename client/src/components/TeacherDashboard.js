@@ -154,6 +154,7 @@ const TeacherDashboard = () => {
     ), description: 'Cours par themes' },
     { key: 'SEYES', label: 'CAHIER SEYES', icon: <Create />, description: 'Écrire au stylo sur un cahier Seyes' },
     { key: 'THEMES', label: 'THÈMES', icon: <MenuBook />, description: 'Cours par thème' },
+    { key: 'CAHIER_EXERCICE', label: 'CAHIER EXERCICE', icon: <Create />, description: 'Cahier d\'exercice' },
     { key: 'LECTURE_SUIVIE', label: 'LECTURE SUIVIE', icon: <AutoStories />, description: 'Page d\'accueil' },
     { key: 'PRODUCTION_ECRIT', label: 'PRODUCTION ÉCRITE', icon: <Create />, description: 'Page d\'accueil' },
     { key: 'EVALUATIONS', label: 'ÉVALUATIONS', icon: <Quiz />, description: 'Page d\'accueil' },
