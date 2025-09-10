@@ -276,7 +276,7 @@ const TeacherDashboard = () => {
   ];
 
   // Sélectionner les thèmes selon le niveau sélectionné
-  const currentThemes = selectedLevel === 'CM1' ? themes : cm2Themes;
+  const currentThemes = (selectedLevel === 'CM1' || selectedLevel === 'CE6') ? themes : cm2Themes;
 
   const getContentTypes = (category) => {
     if (category === 'THEMES') {
