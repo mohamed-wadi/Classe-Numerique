@@ -153,8 +153,15 @@ const StudentDashboard = () => {
     }
   };
 
-  const filteredContents = selectedCategory === 'THEMES' 
-    ? contents.filter(content => content.theme === selectedTheme)
+  const normalizeThemeForLevel = (level, theme) => {
+    if (level === 'CE6' && Number(theme) > 6) {
+      return Number(theme) - 6;
+    }
+    return Number(theme);
+  };
+
+  const filteredContents = selectedCategory === 'THEMES'
+    ? contents.filter(content => normalizeThemeForLevel(user?.level, content.theme) === Number(selectedTheme))
     : contents;
 
   const getWelcomeMessage = () => {
