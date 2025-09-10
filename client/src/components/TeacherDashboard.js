@@ -1154,7 +1154,12 @@ const TeacherDashboard = () => {
               >
                 {selectedCategory === 'CONTACT' ? `${contactMessages.length} message(s) reçu(s)` :
                  selectedCategory === 'STUDENTS' ? `${students.length} compte(s) élève(s)` :
-                 `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${selectedTheme}` : ''}`}
+                 (() => {
+                   const displayTheme = selectedLevel === 'CM2' && Number(selectedTheme) > 6
+                     ? Number(selectedTheme) - 6
+                     : Number(selectedTheme);
+                   return `${selectedLevel} • ${categories.find(c => c.key === selectedCategory)?.label}${selectedCategory === 'THEMES' ? ` • Thème ${displayTheme}` : ''}`;
+                 })()}
               </Typography>
             </Box>
           )}
