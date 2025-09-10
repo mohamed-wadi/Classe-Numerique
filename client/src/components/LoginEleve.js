@@ -297,13 +297,13 @@ export default function LoginEleve() {
               </Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'center' }}>
                 <Typography variant="body2" sx={{ color: '#292b40', fontWeight: 500 }}>
-                  CM2 : cm2 / ecole
+                  CM2 : cm2 / 1234
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#292b40', fontWeight: 500 }}>
-                  CM1 : cm1 / ecole
+                  CM1 : cm1 / 1234
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#292b40', fontWeight: 500 }}>
-                  CE6 : ce6 / ecole
+                  CE6 : ce6 / 1234
                 </Typography>
               </Box>
             </Box>
@@ -312,4 +312,4 @@ export default function LoginEleve() {
       </Box>
     </Box>
   );
-} 
+}

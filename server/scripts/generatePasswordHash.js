@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
 
 async function generateHash() {
-  const password = 'ecole';
+  const password = '1234';
   const hash = await bcrypt.hash(password, 10);
   console.log('Mot de passe:', password);
   console.log('Hash généré:', hash);
@@ -11,4 +11,4 @@ async function generateHash() {
   console.log('Vérification du hash:', isValid);
 }
 
-generateHash(); 
+generateHash();

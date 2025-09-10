@@ -7,7 +7,7 @@ let students = [
   {
     id: 1,
     username: 'cm2',
-    password: '$2a$10$QXA0rYAmC9QzxkrB8XoCW.k59FB9e7B/ueAXiMmwQzce2Y6bjTo0m', // "ecole" hashé
+    password: '$2a$10$H1WMx5jaFd4hns9kM4gmjOoYbVuwYQwbjbPcQ9IuUTpkF8zfMOYdu', // "1234" hashé
     level: 'CM2',
     isActive: true,
     createdAt: new Date(),
@@ -16,7 +16,7 @@ let students = [
   {
     id: 2,
     username: 'cm1',
-    password: '$2a$10$QXA0rYAmC9QzxkrB8XoCW.k59FB9e7B/ueAXiMmwQzce2Y6bjTo0m', // "ecole" hashé
+    password: '$2a$10$H1WMx5jaFd4hns9kM4gmjOoYbVuwYQwbjbPcQ9IuUTpkF8zfMOYdu', // "1234" hashé
     level: 'CM1',
     isActive: true,
     createdAt: new Date(),
@@ -25,7 +25,7 @@ let students = [
   {
     id: 3,
     username: 'ce6',
-    password: '$2a$10$QXA0rYAmC9QzxkrB8XoCW.k59FB9e7B/ueAXiMmwQzce2Y6bjTo0m', // "ecole" hashé
+    password: '$2a$10$H1WMx5jaFd4hns9kM4gmjOoYbVuwYQwbjbPcQ9IuUTpkF8zfMOYdu', // "1234" hashé
     level: 'CE6',
     isActive: true,
     createdAt: new Date(),
@@ -193,4 +193,4 @@ router.delete('/:id', (req, res) => {
   res.json({ message: 'Compte élève supprimé avec succès' });
 });
 
-module.exports = router; 
+module.exports = router;
