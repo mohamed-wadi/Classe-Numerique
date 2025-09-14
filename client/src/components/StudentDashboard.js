@@ -61,6 +61,14 @@ const image10 = require('../assets/course/10.png');
 const image11 = require('../assets/course/11.png');
 const image12 = require('../assets/course/12.png');
 
+// Import des images CE6
+const ce6Theme1 = require('../assets/Ce6/theme1.jpg');
+const ce6Theme2 = require('../assets/Ce6/theme2.jpg');
+const ce6Theme3 = require('../assets/Ce6/theme3.png');
+const ce6Theme4 = require('../assets/Ce6/theme4.jpg');
+const ce6Theme5 = require('../assets/Ce6/theme5.jpg');
+const ce6Theme6 = require('../assets/Ce6/theme6.jpg');
+
 const SIDEBAR_WIDTH = 280;
 
 const StudentDashboard = () => {
@@ -185,49 +193,49 @@ const StudentDashboard = () => {
     }
   };
 
-  // Définition des thèmes avec leurs images et descriptions
+  // Définition des thèmes CE6 avec leurs images et descriptions
   const themes = [
     {
       id: 1,
       title: "Thème 1",
-      subtitle: "Tout le bonheur !",
-      image: image1,
-      description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
+      subtitle: "Les grandes civilisations",
+      image: ce6Theme1,
+      description: "Découvrez les grandes civilisations qui ont marqué l'histoire de l'humanité."
     },
     {
       id: 2,
       title: "Thème 2", 
-      subtitle: "Les contes détournés",
-      image: image2,
-      description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
+      subtitle: "Citoyenneté et le comportement civique",
+      image: ce6Theme2,
+      description: "Apprenez les valeurs de la citoyenneté et les comportements civiques essentiels."
     },
     {
       id: 3,
       title: "Thème 3",
-      subtitle: "Notre monde en question",
-      image: image3, 
-      description: "Interrogez le monde qui vous entoure et développez votre esprit critique."
+      subtitle: "Sciences et technologies",
+      image: ce6Theme3, 
+      description: "Explorez le monde fascinant des sciences et des technologies modernes."
     },
     {
       id: 4,
       title: "Thème 4",
-      subtitle: "Les romans policiers",
-      image: image4,
-      description: "Plongez dans l'univers passionnant des enquêtes et de la résolution d'énigmes."
+      subtitle: "L'énergie dans nos vies",
+      image: ce6Theme4,
+      description: "Comprenez l'importance de l'énergie et son impact sur notre quotidien."
     },
     {
       id: 5,
       title: "Thème 5",
-      subtitle: "L'enfance en B.D",
-      image: image5,
-      description: "Découvrez l'art de la bande dessinée et ses histoires captivantes."
+      subtitle: "Les défis de la vie contemporaine",
+      image: ce6Theme5,
+      description: "Réfléchissez aux enjeux et défis de notre société moderne."
     },
     {
       id: 6,
       title: "Thème 6",
-      subtitle: "Des journaux intimes",
-      image: image6,
-      description: "Apprenez à exprimer vos pensées et vos émotions à travers l'écriture personnelle."
+      subtitle: "Art et créativité !",
+      image: ce6Theme6,
+      description: "Développez votre créativité et explorez les différentes formes d'art."
     }
   ];
 
