@@ -192,7 +192,7 @@ const TeacherDashboard = () => {
   ];
 
   // Définition des thèmes CE6 avec leurs images et descriptions
-  const themes = [
+  const ce6Themes = [
     {
       id: 1,
       title: "Thème 1",
@@ -234,6 +234,52 @@ const TeacherDashboard = () => {
       subtitle: "Art et créativité !",
       image: ce6Theme6,
       description: "Développez votre créativité et explorez les différentes formes d'art."
+    }
+  ];
+
+  // Définition des thèmes CM1 avec leurs images et descriptions
+  const cm1Themes = [
+    {
+      id: 1,
+      title: "Thème 1",
+      subtitle: "Tout le bonheur !",
+      image: image1,
+      description: "Découvrez les joies de l'apprentissage et les moments de bonheur dans vos études."
+    },
+    {
+      id: 2, 
+      title: "Thème 2",
+      subtitle: "Les contes détournés",
+      image: image2,
+      description: "Explorez les contes traditionnels revisités avec une approche moderne et créative."
+    },
+    {
+      id: 3,
+      title: "Thème 3",
+      subtitle: "Notre monde en question",
+      image: image3, 
+      description: "Interrogez le monde qui vous entoure et développez votre esprit critique."
+    },
+    {
+      id: 4,
+      title: "Thème 4",
+      subtitle: "Les romans policiers",
+      image: image4,
+      description: "Plongez dans l'univers passionnant des enquêtes et de la résolution d'énigmes."
+    },
+    {
+      id: 5,
+      title: "Thème 5",
+      subtitle: "L'enfance en B.D",
+      image: image5,
+      description: "Découvrez l'art de la bande dessinée et ses histoires captivantes."
+    },
+    {
+      id: 6,
+      title: "Thème 6",
+      subtitle: "Des journaux intimes",
+      image: image6,
+      description: "Apprenez à exprimer vos pensées et vos émotions à travers l'écriture personnelle."
     }
   ];
 
@@ -284,7 +330,9 @@ const TeacherDashboard = () => {
   ];
 
   // Sélectionner les thèmes selon le niveau sélectionné
-  const currentThemes = (selectedLevel === 'CM1' || selectedLevel === 'CE6') ? themes : cm2Themes;
+  const currentThemes = selectedLevel === 'CE6' ? ce6Themes : 
+                        selectedLevel === 'CM1' ? cm1Themes : 
+                        cm2Themes;
 
   const getContentTypes = (category) => {
     if (category === 'THEMES') {
