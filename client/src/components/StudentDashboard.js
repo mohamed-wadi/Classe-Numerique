@@ -155,15 +155,7 @@ const StudentDashboard = () => {
     }
   }, [user?.level]);
 
-  // Mettre à jour l'état "vu" lors du changement de niveau utilisateur
-  useEffect(() => {
-    if (!user?.level) return;
-    // Si l'utilisateur n'a pas de timestamp enregistré, initialiser à maintenant pour éviter un badge massif
-    const key = getLastSeenKey(user.level);
-    if (!localStorage.getItem(key)) {
-      try { localStorage.setItem(key, new Date().toISOString()); } catch(_) {}
-    }
-  }, [user?.level]);
+  // Note: ne pas initialiser last-seen par défaut pour permettre d'afficher les ajouts récents
 
   useEffect(() => {
     fetchContents();
