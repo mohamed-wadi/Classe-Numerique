@@ -177,54 +177,6 @@ router.get('/', (req, res) => {
   }
 });
 
-// GET - Notifications des nouveaux contenus visibles par niveau depuis une date
-// Exemple: /api/content/notifications?level=CM2&since=2025-09-01T00:00:00.000Z&limit=10
-router.get('/notifications', (req, res) => {
-  try {
-    const level = String(req.query.level || '').toUpperCase();
-    const sinceRaw = req.query.since;
-    const limit = Number.parseInt(req.query.limit, 10);
-
-    if (!level) {
-      return res.status(400).json({ message: "Paramètre 'level' requis (CM2, CM1, CE6)" });
-    }
-
-    // Date de référence: par défaut il y a 30 jours si non fourni
-    const since = sinceRaw ? new Date(sinceRaw) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-    if (Number.isNaN(since.getTime())) {
-      return res.status(400).json({ message: "Paramètre 'since' invalide" });
-    }
-
-    // On notifie seulement le contenu visible et correspondant au niveau
-    // Un élément est considéré "nouveau" si sa visibilité a changé récemment
-    // ou s'il a été créé récemment (selon la plus récente des deux dates)
-    const recentVisible = contents
-      .filter((c) => c.level === level && c.isVisible)
-      .map((c) => {
-        const created = c.createdAt ? new Date(c.createdAt) : new Date(0);
-        const visibilityChanged = c.visibilityChangedAt ? new Date(c.visibilityChangedAt) : created;
-        const referenceDate = visibilityChanged > created ? visibilityChanged : created;
-        return { ...c, __referenceDate: referenceDate };
-      })
-      .filter((c) => c.__referenceDate > since)
-      .sort((a, b) => b.__referenceDate - a.__referenceDate);
-
-    const limited = Number.isFinite(limit) && limit > 0 ? recentVisible.slice(0, limit) : recentVisible;
-
-    // Ne pas renvoyer le champ interne __referenceDate
-    const payload = limited.map(({ __referenceDate, ...rest }) => rest);
-
-    res.json({
-      count: payload.length,
-      items: payload,
-      since: since.toISOString()
-    });
-  } catch (error) {
-    console.error('❌ Erreur notifications:', error);
-    res.status(500).json({ message: 'Erreur lors de la récupération des notifications' });
-  }
-});
-
 // POST - Création d'un nouveau contenu
 router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
