@@ -133,6 +133,12 @@ const StudentDashboard = () => {
     return undefined;
   };
 
+  const getReferenceDate = (item) => {
+    const created = item?.createdAt ? new Date(item.createdAt) : new Date(0);
+    const vis = item?.visibilityChangedAt ? new Date(item.visibilityChangedAt) : created;
+    return vis > created ? vis : created;
+  };
+
   const markNotificationsSeen = (level) => {
     try {
       const nowIso = new Date().toISOString();
@@ -144,12 +150,18 @@ const StudentDashboard = () => {
   const fetchNotifications = useCallback(async () => {
     if (!user?.level) return;
     try {
-      const since = getLastSeenISO(user.level);
-      const url = API_ENDPOINTS.CONTENT.NOTIFICATIONS({ level: user.level, since, limit: 10 });
+      // Toujours récupérer au moins les éléments des dernières 48h
+      const since48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+      const url = API_ENDPOINTS.CONTENT.NOTIFICATIONS({ level: user.level, since: since48h, limit: 50 });
       const resp = await axios.get(url);
-      const items = resp.data?.items || [];
+      const items = (resp.data?.items || []).slice().sort((a, b) => getReferenceDate(b) - getReferenceDate(a));
+
+      // Compter comme "non lus" ceux dont la référence est > lastSeen
+      const lastSeenIso = getLastSeenISO(user.level);
+      const lastSeen = lastSeenIso ? new Date(lastSeenIso) : null;
+      const newCount = lastSeen ? items.filter((it) => getReferenceDate(it) > lastSeen).length : items.length;
       setNotifications(items);
-      setUnreadCount(items.length);
+      setUnreadCount(newCount);
     } catch (error) {
       // silencieux pour ne pas perturber l'UX
     }
