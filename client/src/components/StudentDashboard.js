@@ -25,7 +25,10 @@ import {
   useMediaQuery,
   IconButton,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Badge,
+  Menu,
+  MenuItem
 } from '@mui/material';
 import {
   School,
@@ -40,7 +43,8 @@ import {
   GetApp,
   Menu as MenuIcon,
   Close as CloseIcon,
-  Search as SearchIcon
+  Search as SearchIcon,
+  Notifications as NotificationsIcon
 } from '@mui/icons-material';
 import SvgIcon from '@mui/material/SvgIcon';
 import { useAuth } from '../contexts/AuthContext';
@@ -80,6 +84,9 @@ const StudentDashboard = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifAnchorEl, setNotifAnchorEl] = useState(null);
   
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -116,9 +123,68 @@ const StudentDashboard = () => {
     }
   }, [user.level, selectedCategory]);
 
+  // Notifications: key helpers
+  const getLastSeenKey = (level) => `notif_last_seen_${level || 'UNKNOWN'}`;
+  const getLastSeenISO = (level) => {
+    try {
+      const value = localStorage.getItem(getLastSeenKey(level));
+      if (value) return new Date(value).toISOString();
+    } catch (_) {}
+    return undefined;
+  };
+
+  const markNotificationsSeen = (level) => {
+    try {
+      const nowIso = new Date().toISOString();
+      localStorage.setItem(getLastSeenKey(level), nowIso);
+      setUnreadCount(0);
+    } catch (_) {}
+  };
+
+  const fetchNotifications = useCallback(async () => {
+    if (!user?.level) return;
+    try {
+      const since = getLastSeenISO(user.level);
+      const url = API_ENDPOINTS.CONTENT.NOTIFICATIONS({ level: user.level, since, limit: 10 });
+      const resp = await axios.get(url);
+      const items = resp.data?.items || [];
+      setNotifications(items);
+      setUnreadCount(items.length);
+    } catch (error) {
+      // silencieux pour ne pas perturber l'UX
+    }
+  }, [user?.level]);
+
+  // Mettre à jour l'état "vu" lors du changement de niveau utilisateur
+  useEffect(() => {
+    if (!user?.level) return;
+    // Si l'utilisateur n'a pas de timestamp enregistré, initialiser à maintenant pour éviter un badge massif
+    const key = getLastSeenKey(user.level);
+    if (!localStorage.getItem(key)) {
+      try { localStorage.setItem(key, new Date().toISOString()); } catch(_) {}
+    }
+  }, [user?.level]);
+
   useEffect(() => {
     fetchContents();
   }, [fetchContents, selectedTheme]);
+
+  // Initialiser et démarrer le polling des notifications
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  const handleOpenNotifications = (event) => {
+    setNotifAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseNotifications = () => {
+    setNotifAnchorEl(null);
+  };
 
   const handleContentClick = (content) => {
     setSelectedContent(content);
@@ -552,6 +618,11 @@ const StudentDashboard = () => {
             <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 600 }}>
               Espace Élève
             </Typography>
+            <IconButton color="inherit" onClick={(e) => { handleOpenNotifications(e); markNotificationsSeen(user?.level); }}>
+              <Badge color="error" overlap="circular" badgeContent={unreadCount} invisible={unreadCount === 0}>
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
           </Toolbar>
         </AppBar>
 
@@ -572,6 +643,14 @@ const StudentDashboard = () => {
             >
               Bienvenue, {user?.username}! 👨‍🎓
             </Typography>
+            {/* Bell also visible on desktop */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'center', mb: 1 }}>
+              <IconButton onClick={(e) => { handleOpenNotifications(e); markNotificationsSeen(user?.level); }}>
+                <Badge color="error" overlap="circular" badgeContent={unreadCount} invisible={unreadCount === 0}>
+                  <NotificationsIcon sx={{ color: '#2c3e50' }} />
+                </Badge>
+              </IconButton>
+            </Box>
             <Typography 
               variant="h5" 
               sx={{
@@ -1173,6 +1252,32 @@ const StudentDashboard = () => {
             </DialogActions>
           </Dialog>
         </Container>
+
+        {/* Notifications dropdown */}
+        <Menu
+          anchorEl={notifAnchorEl}
+          open={Boolean(notifAnchorEl)}
+          onClose={handleCloseNotifications}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        >
+          {notifications.length === 0 && (
+            <MenuItem dense disabled>Aucune nouvelle notification</MenuItem>
+          )}
+          {notifications.map((n) => (
+            <MenuItem key={n.id} onClick={() => { setSelectedContent(n); setOpenDialog(true); handleCloseNotifications(); }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>{n.title}</Typography>
+                <Typography variant="caption" sx={{ color: '#7f8c8d' }}>{n.category}{n.theme ? ` • Thème ${n.theme}` : ''}</Typography>
+              </Box>
+            </MenuItem>
+          ))}
+          {notifications.length > 0 && (
+            <MenuItem onClick={() => { markNotificationsSeen(user?.level); handleCloseNotifications(); }}>
+              Marquer comme lu
+            </MenuItem>
+          )}
+        </Menu>
       </Box>
     </Box>
   );

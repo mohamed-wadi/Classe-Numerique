@@ -20,6 +20,15 @@ export const API_ENDPOINTS = {
     BASE: `${API_BASE_URL}/api/content`,
     BY_LEVEL_CATEGORY: (level, category) => `${API_BASE_URL}/api/content/${level}/${category}`,
     BY_ID: (id) => `${API_BASE_URL}/api/content/${id}`,
+    NOTIFICATIONS: (params = {}) => {
+      const url = new URL(`${API_BASE_URL}/api/content/notifications`);
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && `${value}`.length > 0) {
+          url.searchParams.set(key, `${value}`);
+        }
+      });
+      return url.toString();
+    },
   },
   STUDENTS: {
     BASE: `${API_BASE_URL}/api/students`,
