@@ -1969,10 +1969,58 @@ const TeacherDashboard = () => {
                                     {content.description}
                                   </Typography>
                                 )}
-                                <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                                  {content.pdfFile && (<Chip size="small" icon={<PictureAsPdf />} label="PDF" sx={{ background: 'rgba(231, 76, 60, 0.1)', color: '#e74c3c', fontWeight: 500, fontSize: '0.7rem' }} />)}
-                                  {content.miniature && (<Chip size="small" icon={<Image />} label="Image" sx={{ background: 'rgba(52, 152, 219, 0.1)', color: '#3498db', fontWeight: 500, fontSize: '0.7rem' }} />)}
-                                  {content.audioFile && (<Chip size="small" icon={<AudioFile />} label="Audio" sx={{ background: 'rgba(230, 126, 34, 0.1)', color: '#e67e22', fontWeight: 500, fontSize: '0.7rem' }} />)}
+                                <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap', justifyContent: 'center' }}>
+                                  {content.pdfFile && (
+                                    <IconButton 
+                                      size="small" 
+                                      onClick={() => handleContentView(content)}
+                                      sx={{ 
+                                        background: 'rgba(231, 76, 60, 0.1)', 
+                                        color: '#e74c3c',
+                                        '&:hover': { 
+                                          background: 'rgba(231, 76, 60, 0.2)',
+                                          transform: 'scale(1.1)'
+                                        },
+                                        transition: 'all 0.2s ease'
+                                      }}
+                                    >
+                                      <PictureAsPdf />
+                                    </IconButton>
+                                  )}
+                                  {content.miniature && (
+                                    <IconButton 
+                                      size="small"
+                                      onClick={() => handleContentView(content)}
+                                      sx={{ 
+                                        background: 'rgba(52, 152, 219, 0.1)', 
+                                        color: '#3498db',
+                                        '&:hover': { 
+                                          background: 'rgba(52, 152, 219, 0.2)',
+                                          transform: 'scale(1.1)'
+                                        },
+                                        transition: 'all 0.2s ease'
+                                      }}
+                                    >
+                                      <Image />
+                                    </IconButton>
+                                  )}
+                                  {content.audioFile && (
+                                    <IconButton 
+                                      size="small"
+                                      onClick={() => handleContentView(content)}
+                                      sx={{ 
+                                        background: 'rgba(230, 126, 34, 0.1)', 
+                                        color: '#e67e22',
+                                        '&:hover': { 
+                                          background: 'rgba(230, 126, 34, 0.2)',
+                                          transform: 'scale(1.1)'
+                                        },
+                                        transition: 'all 0.2s ease'
+                                      }}
+                                    >
+                                      <AudioFile />
+                                    </IconButton>
+                                  )}
                                 </Box>
                               </CardContent>
                               <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
