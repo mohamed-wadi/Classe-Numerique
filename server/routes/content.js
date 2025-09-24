@@ -181,8 +181,7 @@ router.get('/', (req, res) => {
 router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 },
-  { name: 'audioFile', maxCount: 1 },
-  { name: 'videoFile', maxCount: 1 }
+  { name: 'audioFile', maxCount: 1 }
 ]), async (req, res) => {
   try {
     console.log('🆕 Création d\'un nouveau contenu...');
@@ -193,7 +192,6 @@ router.post('/', verifyToken, upload.fields([
     let miniaturePath = '';
     let pdfFilePath = '';
     let audioFilePath = '';
-    let videoFilePath = '';
 
     if (req.files?.miniature) {
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
@@ -213,12 +211,6 @@ router.post('/', verifyToken, upload.fields([
       console.log('🔊 Audio existe?', fs.existsSync(audioFilePath));
     }
 
-    if (req.files?.videoFile) {
-      videoFilePath = req.files.videoFile[0].path;
-      console.log('🎬 Vidéo traitée:', videoFilePath);
-      console.log('🎬 Vidéo existe?', fs.existsSync(videoFilePath));
-    }
-
     const newContent = {
       id: nextId++,
       title: req.body.title,
@@ -231,7 +223,6 @@ router.post('/', verifyToken, upload.fields([
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
       audioFile: audioFilePath,
-      videoFile: videoFilePath,
       pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : 1,
       isVisible: false,
       createdBy: req.user.username,
@@ -264,8 +255,7 @@ router.post('/', verifyToken, upload.fields([
 router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 },
-  { name: 'audioFile', maxCount: 1 },
-  { name: 'videoFile', maxCount: 1 }
+  { name: 'audioFile', maxCount: 1 }
 ]), async (req, res) => {
   try {
     const contentId = parseInt(req.params.id);
@@ -283,7 +273,6 @@ router.put('/:id', verifyToken, upload.fields([
     let miniaturePath = existingContent.miniature;
     let pdfFilePath = existingContent.pdfFile;
     let audioFilePath = existingContent.audioFile || '';
-    let videoFilePath = existingContent.videoFile || '';
     
     if (req.files?.miniature) {
       // Supprimer l'ancienne miniature si elle existe
@@ -329,21 +318,6 @@ router.put('/:id', verifyToken, upload.fields([
       audioFilePath = req.files.audioFile[0].path;
       console.log('🔊 Nouveau fichier audio traité:', audioFilePath);
     }
-
-    if (req.files?.videoFile) {
-      // Supprimer l'ancien fichier vidéo s'il existe
-      if (existingContent.videoFile && fs.existsSync(existingContent.videoFile)) {
-        try {
-          fs.unlinkSync(existingContent.videoFile);
-          console.log(`🗑️ Ancien fichier vidéo supprimé: ${existingContent.videoFile}`);
-        } catch (err) {
-          console.error(`❌ Erreur lors de la suppression de l'ancien fichier vidéo: ${err.message}`);
-        }
-      }
-      
-      videoFilePath = req.files.videoFile[0].path;
-      console.log('🎬 Nouveau fichier vidéo traité:', videoFilePath);
-    }
     
     // Mettre à jour le contenu
     contents[contentIndex] = {
@@ -358,7 +332,6 @@ router.put('/:id', verifyToken, upload.fields([
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
       audioFile: audioFilePath,
-      videoFile: videoFilePath,
       updatedAt: new Date()
     };
     

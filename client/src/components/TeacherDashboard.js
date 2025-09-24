@@ -67,9 +67,7 @@ import {
   Person,
   Search as SearchIcon,
   AudioFile,
-  Mic,
-  VideoFile,
-  Videocam
+  Mic
 } from '@mui/icons-material';
   import SeyesBoard from './SeyesBoard';
 import { useAuth } from '../contexts/AuthContext';
@@ -371,8 +369,7 @@ const TeacherDashboard = () => {
       description: '',
       miniature: null,
       pdfFile: null,
-      audioFile: null,
-      videoFile: null
+      audioFile: null
     });
     setEditingContent(null);
     setOpenDialog(true);
@@ -595,10 +592,6 @@ const TeacherDashboard = () => {
       submitData.append('audioFile', formData.audioFile, formData.audioFile.name);
       console.log('🔊 Audio ajouté au formulaire');
     }
-    if (formData.videoFile) {
-      submitData.append('videoFile', formData.videoFile, formData.videoFile.name);
-      console.log('🎬 Vidéo ajoutée au formulaire');
-    }
     
     try {
       if (editingContent) {
@@ -638,8 +631,7 @@ const TeacherDashboard = () => {
       description: content.description,
       pdfFile: null,
       miniature: null,
-      audioFile: null,
-      videoFile: null
+      audioFile: null
     });
     setOpenDialog(true);
   };
@@ -1981,7 +1973,6 @@ const TeacherDashboard = () => {
                                   {content.pdfFile && (<Chip size="small" icon={<PictureAsPdf />} label="PDF" sx={{ background: 'rgba(231, 76, 60, 0.1)', color: '#e74c3c', fontWeight: 500, fontSize: '0.7rem' }} />)}
                                   {content.miniature && (<Chip size="small" icon={<Image />} label="Image" sx={{ background: 'rgba(52, 152, 219, 0.1)', color: '#3498db', fontWeight: 500, fontSize: '0.7rem' }} />)}
                                   {content.audioFile && (<Chip size="small" icon={<AudioFile />} label="Audio" sx={{ background: 'rgba(230, 126, 34, 0.1)', color: '#e67e22', fontWeight: 500, fontSize: '0.7rem' }} />)}
-                                  {content.videoFile && (<Chip size="small" icon={<VideoFile />} label="Vidéo" sx={{ background: 'rgba(155, 89, 182, 0.1)', color: '#9b59b6', fontWeight: 500, fontSize: '0.7rem' }} />)}
                                 </Box>
                               </CardContent>
                               <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
@@ -2182,7 +2173,7 @@ const TeacherDashboard = () => {
                 />
 
                 <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <Button
                       variant="outlined"
                       component="label"
@@ -2207,7 +2198,7 @@ const TeacherDashboard = () => {
                     </Button>
                   </Grid>
                   
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <Button
                       variant="outlined"
                       component="label"
@@ -2232,7 +2223,7 @@ const TeacherDashboard = () => {
                     </Button>
                   </Grid>
 
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Grid item xs={12} sm={6} md={4}>
                     <Button
                       variant="outlined"
                       component="label"
@@ -2253,31 +2244,6 @@ const TeacherDashboard = () => {
                         hidden
                         accept="audio/*"
                         onChange={(e) => setFormData({ ...formData, audioFile: e.target.files[0] })}
-                      />
-                    </Button>
-                  </Grid>
-
-                  <Grid item xs={12} sm={6} md={3}>
-                    <Button
-                      variant="outlined"
-                      component="label"
-                      fullWidth
-                      startIcon={<VideoFile />}
-                      sx={{
-                        borderColor: '#9b59b6',
-                        color: '#9b59b6',
-                        '&:hover': {
-                          borderColor: '#8e44ad',
-                          backgroundColor: 'rgba(155, 89, 182, 0.05)',
-                        }
-                      }}
-                    >
-                      Fichier Vidéo
-                      <input
-                        type="file"
-                        hidden
-                        accept="video/*"
-                        onChange={(e) => setFormData({ ...formData, videoFile: e.target.files[0] })}
                       />
                     </Button>
                   </Grid>

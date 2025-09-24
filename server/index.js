@@ -99,9 +99,6 @@ function serveFile(filePath, filename, res) {
   } else if (['.mp3', '.wav', '.ogg'].includes(ext)) {
     contentType = `audio/${ext.substring(1)}`;
     disposition = 'inline';
-  } else if (['.mp4', '.webm', '.ogv'].includes(ext)) {
-    contentType = `video/${ext.substring(1)}`;
-    disposition = 'inline';
   }
   
   // Lire le fichier
