@@ -59,27 +59,53 @@ const storage = multer.diskStorage({
   }
 });
 
-// Filtrage des types MIME pour sécurité
-const allowedMimeTypes = new Set([
-  'application/pdf',
-  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-  'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm', 'audio/ogg',
-  'video/mp4', 'video/webm', 'video/ogg'
-]);
+// Filtrage des types MIME pour sécurité, par champ
+const isAllowedMimeForField = (fieldName, mime) => {
+  // Normaliser quelques variantes fréquentes
+  const normalized = mime === 'image/jpg' ? 'image/jpeg' : mime;
+  if (fieldName === 'miniature') {
+    return ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(normalized);
+  }
+  if (fieldName === 'pdfFile') {
+    return normalized === 'application/pdf';
+  }
+  if (fieldName === 'audioFile') {
+    return ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm', 'audio/ogg'].includes(normalized);
+  }
+  if (fieldName === 'videoFile') {
+    return ['video/mp4', 'video/webm', 'video/ogg'].includes(normalized);
+  }
+  // Par défaut, refuser
+  return false;
+};
 
 const upload = multer({ 
   storage,
   fileFilter: (req, file, cb) => {
-    if (allowedMimeTypes.has(file.mimetype)) {
+    if (isAllowedMimeForField(file.fieldname, file.mimetype)) {
       return cb(null, true);
     }
-    console.warn(`🚫 Type de fichier non autorisé: ${file.mimetype} (${file.originalname})`);
-    return cb(new Error('Type de fichier non autorisé'));
+    console.warn(`🚫 Type de fichier non autorisé pour ${file.fieldname}: ${file.mimetype} (${file.originalname})`);
+    const err = new Error(`Type de fichier non autorisé pour ${file.fieldname}`);
+    err.code = 'LIMIT_UNEXPECTED_FILE_TYPE';
+    return cb(err);
   },
   limits: {
     fileSize: 50 * 1024 * 1024 // 50MB
   }
 });
+
+// Helper pour gérer proprement les erreurs Multer (renvoyer 400 au lieu de 500)
+const withUploadFields = (fields) => (req, res, next) => {
+  upload.fields(fields)(req, res, (err) => {
+    if (err) {
+      console.error('❌ Erreur upload:', err);
+      const status = err.code && err.code.startsWith('LIMIT') ? 400 : 400;
+      return res.status(status).json({ message: err.message || 'Erreur lors du téléchargement des fichiers' });
+    }
+    return next();
+  });
+};
 
 // Stockage avec persistance locale
 let contents = [];
@@ -198,7 +224,7 @@ router.get('/', (req, res) => {
 });
 
 // POST - Création d'un nouveau contenu
-router.post('/', verifyToken, upload.fields([
+router.post('/', verifyToken, withUploadFields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 },
   { name: 'audioFile', maxCount: 1 },
@@ -281,7 +307,7 @@ router.post('/', verifyToken, upload.fields([
 });
 
 // PUT - Modification d'un contenu
-router.put('/:id', verifyToken, upload.fields([
+router.put('/:id', verifyToken, withUploadFields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 },
   { name: 'audioFile', maxCount: 1 },
