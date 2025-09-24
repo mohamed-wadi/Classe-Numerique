@@ -60,9 +60,13 @@ const storage = multer.diskStorage({
 });
 
 // Filtrage des types MIME pour sécurité, par champ
-const isAllowedMimeForField = (fieldName, mime) => {
-  // Normaliser quelques variantes fréquentes
-  const normalized = mime === 'image/jpg' ? 'image/jpeg' : mime;
+const isAllowedMimeForField = (fieldName, file) => {
+  // Normaliser quelques variantes et retirer les paramètres codec
+  const raw = file.mimetype || '';
+  const base = raw.split(';')[0].trim();
+  const normalized = base === 'image/jpg' ? 'image/jpeg' : base;
+  const lowerName = (file.originalname || '').toLowerCase();
+  const hasExt = (ext) => lowerName.endsWith(ext);
   if (fieldName === 'miniature') {
     return ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(normalized);
   }
@@ -70,10 +74,19 @@ const isAllowedMimeForField = (fieldName, mime) => {
     return normalized === 'application/pdf';
   }
   if (fieldName === 'audioFile') {
-    return ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm', 'audio/ogg'].includes(normalized);
+    if (['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm', 'audio/ogg'].includes(normalized)) return true;
+    // Tolérer certains cas "octet-stream" selon l'extension
+    if (normalized === 'application/octet-stream') {
+      return hasExt('.mp3') || hasExt('.wav') || hasExt('.ogg') || hasExt('.webm');
+    }
+    return false;
   }
   if (fieldName === 'videoFile') {
-    return ['video/mp4', 'video/webm', 'video/ogg'].includes(normalized);
+    if (['video/mp4', 'video/webm', 'video/ogg'].includes(normalized)) return true;
+    if (normalized === 'application/octet-stream') {
+      return hasExt('.mp4') || hasExt('.webm') || hasExt('.ogv') || hasExt('.ogg');
+    }
+    return false;
   }
   // Par défaut, refuser
   return false;
@@ -82,7 +95,7 @@ const isAllowedMimeForField = (fieldName, mime) => {
 const upload = multer({ 
   storage,
   fileFilter: (req, file, cb) => {
-    if (isAllowedMimeForField(file.fieldname, file.mimetype)) {
+    if (isAllowedMimeForField(file.fieldname, file)) {
       return cb(null, true);
     }
     console.warn(`🚫 Type de fichier non autorisé pour ${file.fieldname}: ${file.mimetype} (${file.originalname})`);
