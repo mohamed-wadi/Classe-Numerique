@@ -954,6 +954,30 @@ const StudentDashboard = () => {
                                           }}
                                         />
                                       )}
+                                      {content.audioFile && (
+                                        <Chip 
+                                          size="small" 
+                                          icon={<AutoStories />} 
+                                          label="Audio" 
+                                          sx={{ 
+                                            background: 'rgba(39, 174, 96, 0.1)',
+                                            color: '#27ae60',
+                                            fontWeight: 500,
+                                          }}
+                                        />
+                                      )}
+                                      {content.videoFile && (
+                                        <Chip 
+                                          size="small" 
+                                          icon={<Assessment />} 
+                                          label="Vidéo" 
+                                          sx={{ 
+                                            background: 'rgba(142, 68, 173, 0.1)',
+                                            color: '#8e44ad',
+                                            fontWeight: 500,
+                                          }}
+                                        />
+                                      )}
                                       {content.miniature && (
                                         <Chip 
                                           size="small" 
@@ -1073,6 +1097,30 @@ const StudentDashboard = () => {
                                   }}
                                 />
                               )}
+                              {content.audioFile && (
+                                <Chip 
+                                  size="small" 
+                                  icon={<AutoStories />} 
+                                  label="Audio" 
+                                  sx={{ 
+                                    background: 'rgba(39, 174, 96, 0.1)',
+                                    color: '#27ae60',
+                                    fontWeight: 500,
+                                  }}
+                                />
+                              )}
+                              {content.videoFile && (
+                                <Chip 
+                                  size="small" 
+                                  icon={<Assessment />} 
+                                  label="Vidéo" 
+                                  sx={{ 
+                                    background: 'rgba(142, 68, 173, 0.1)',
+                                    color: '#8e44ad',
+                                    fontWeight: 500,
+                                  }}
+                                />
+                              )}
                               {content.miniature && (
                                 <Chip 
                                   size="small" 
@@ -1147,6 +1195,28 @@ const StudentDashboard = () => {
                           Ouvrir dans le navigateur
                         </Button>
                       </Box>
+                    </Box>
+                  )}
+
+                  {selectedContent.audioFile && (
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50' }}>
+                        Audio
+                      </Typography>
+                      <audio controls style={{ width: '100%' }}>
+                        <source src={API_ENDPOINTS.UPLOADS.FILE(selectedContent.audioFile)} />
+                      </audio>
+                    </Box>
+                  )}
+
+                  {selectedContent.videoFile && (
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="h6" sx={{ mb: 2, color: '#2c3e50' }}>
+                        Vidéo
+                      </Typography>
+                      <video controls style={{ width: '100%', maxHeight: 420 }}>
+                        <source src={API_ENDPOINTS.UPLOADS.FILE(selectedContent.videoFile)} />
+                      </video>
                     </Box>
                   )}
                   

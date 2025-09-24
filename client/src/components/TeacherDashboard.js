@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box,
   AppBar,
@@ -65,7 +65,11 @@ import {
   ContactMail,
   People,
   Person,
-  Search as SearchIcon
+  Search as SearchIcon,
+  Audiotrack,
+  Videocam,
+  FiberManualRecord,
+  Stop
 } from '@mui/icons-material';
   import SeyesBoard from './SeyesBoard';
 import { useAuth } from '../contexts/AuthContext';
@@ -113,6 +117,10 @@ const TeacherDashboard = () => {
   const [editingStudent, setEditingStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [seyesShowMenu, setSeyesShowMenu] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingSupported, setRecordingSupported] = useState(false);
+  const mediaRecorderRef = useRef(null);
+  const mediaStreamRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     level: 'CM2',
@@ -122,7 +130,9 @@ const TeacherDashboard = () => {
     type: 'cours_manuel',
     description: '',
     miniature: null,
-    pdfFile: null
+    pdfFile: null,
+    audioFile: null,
+    videoFile: null
   });
 
   // Nouvel état pour le formulaire de gestion des élèves
@@ -145,6 +155,49 @@ const TeacherDashboard = () => {
     open: false,
     content: null
   });
+
+  // Vérifier le support d'enregistrement audio
+  useEffect(() => {
+    setRecordingSupported(!!(navigator.mediaDevices && window.MediaRecorder));
+  }, []);
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaStreamRef.current = stream;
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
+      const recorder = new MediaRecorder(stream, { mimeType });
+      const chunks = [];
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) chunks.push(e.data);
+      };
+      recorder.onstop = () => {
+        const blob = new Blob(chunks, { type: mimeType });
+        const file = new File([blob], `enregistrement-${Date.now()}.webm`, { type: mimeType });
+        setFormData((prev) => ({ ...prev, audioFile: file }));
+        if (mediaStreamRef.current) {
+          mediaStreamRef.current.getTracks().forEach(t => t.stop());
+          mediaStreamRef.current = null;
+        }
+      };
+      mediaRecorderRef.current = recorder;
+      recorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Erreur lors du démarrage de l\'enregistrement:', err);
+      alert('Impossible de démarrer l\'enregistrement audio. Vérifiez les permissions.');
+    }
+  };
+
+  const stopRecording = () => {
+    try {
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+      }
+    } finally {
+      setIsRecording(false);
+    }
+  };
 
   // États pour les historiques
   const [historiqueAjouts, setHistoriqueAjouts] = useState([]);
@@ -351,7 +404,9 @@ const TeacherDashboard = () => {
       type: 'cours_manuel',
       description: '',
       miniature: null,
-      pdfFile: null
+      pdfFile: null,
+      audioFile: null,
+      videoFile: null
     });
     setEditingContent(null);
   };
@@ -366,7 +421,9 @@ const TeacherDashboard = () => {
       type: 'cours_manuel',
       description: '',
       miniature: null,
-      pdfFile: null
+      pdfFile: null,
+      audioFile: null,
+      videoFile: null
     });
     setEditingContent(null);
     setOpenDialog(true);
@@ -585,6 +642,22 @@ const TeacherDashboard = () => {
       submitData.append('miniature', formData.miniature, formData.miniature.name);
       console.log('🖼️  Miniature ajoutée au formulaire');
     }
+    if (formData.audioFile) {
+      submitData.append('audioFile', formData.audioFile, formData.audioFile.name);
+      console.log('🎵 Audio ajouté au formulaire');
+    }
+    if (formData.videoFile) {
+      submitData.append('videoFile', formData.videoFile, formData.videoFile.name);
+      console.log('🎬 Vidéo ajoutée au formulaire');
+    }
+    if (formData.audioFile) {
+      submitData.append('audioFile', formData.audioFile, formData.audioFile.name);
+      console.log('🎵 Audio ajouté au formulaire');
+    }
+    if (formData.videoFile) {
+      submitData.append('videoFile', formData.videoFile, formData.videoFile.name);
+      console.log('🎬 Vidéo ajoutée au formulaire');
+    }
     
     try {
       if (editingContent) {
@@ -623,7 +696,9 @@ const TeacherDashboard = () => {
       type: content.type,
       description: content.description,
       pdfFile: null,
-      miniature: null
+      miniature: null,
+      audioFile: null,
+      videoFile: null
     });
     setOpenDialog(true);
   };
@@ -2210,6 +2285,72 @@ const TeacherDashboard = () => {
                         hidden
                         accept=".pdf"
                         onChange={(e) => setFormData({ ...formData, pdfFile: e.target.files[0] })}
+                      />
+                    </Button>
+                  </Grid>
+                  
+                  <Grid item xs={6}>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      fullWidth
+                      startIcon={<Audiotrack />}
+                      sx={{
+                        borderColor: '#3498db',
+                        color: '#3498db',
+                        '&:hover': {
+                          borderColor: '#2980b9',
+                          backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                        }
+                      }}
+                    >
+                      Fichier audio
+                      <input
+                        type="file"
+                        hidden
+                        accept="audio/*"
+                        onChange={(e) => setFormData({ ...formData, audioFile: e.target.files[0] })}
+                      />
+                    </Button>
+                    {recordingSupported && (
+                      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                        <Button
+                          variant="contained"
+                          color={isRecording ? 'error' : 'primary'}
+                          startIcon={isRecording ? <Stop /> : <FiberManualRecord />}
+                          onClick={isRecording ? stopRecording : startRecording}
+                          sx={{
+                            backgroundColor: isRecording ? '#e74c3c' : '#3498db',
+                            '&:hover': { backgroundColor: isRecording ? '#c0392b' : '#2980b9' }
+                          }}
+                        >
+                          {isRecording ? 'Arrêter' : 'Enregistrer audio'}
+                        </Button>
+                      </Box>
+                    )}
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <Button
+                      variant="outlined"
+                      component="label"
+                      fullWidth
+                      startIcon={<Videocam />}
+                      sx={{
+                        borderColor: '#3498db',
+                        color: '#3498db',
+                        '&:hover': {
+                          borderColor: '#2980b9',
+                          backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                        }
+                      }}
+                    >
+                      Fichier vidéo
+                      <input
+                        type="file"
+                        hidden
+                        accept="video/*"
+                        onChange={(e) => setFormData({ ...formData, videoFile: e.target.files[0] })}
                       />
                     </Button>
                   </Grid>

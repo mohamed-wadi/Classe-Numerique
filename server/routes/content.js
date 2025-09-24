@@ -59,7 +59,27 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+// Filtrage des types MIME pour sécurité
+const allowedMimeTypes = new Set([
+  'application/pdf',
+  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+  'audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm', 'audio/ogg',
+  'video/mp4', 'video/webm', 'video/ogg'
+]);
+
+const upload = multer({ 
+  storage,
+  fileFilter: (req, file, cb) => {
+    if (allowedMimeTypes.has(file.mimetype)) {
+      return cb(null, true);
+    }
+    console.warn(`🚫 Type de fichier non autorisé: ${file.mimetype} (${file.originalname})`);
+    return cb(new Error('Type de fichier non autorisé'));
+  },
+  limits: {
+    fileSize: 50 * 1024 * 1024 // 50MB
+  }
+});
 
 // Stockage avec persistance locale
 let contents = [];
@@ -180,7 +200,9 @@ router.get('/', (req, res) => {
 // POST - Création d'un nouveau contenu
 router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
-  { name: 'pdfFile', maxCount: 1 }
+  { name: 'pdfFile', maxCount: 1 },
+  { name: 'audioFile', maxCount: 1 },
+  { name: 'videoFile', maxCount: 1 }
 ]), async (req, res) => {
   try {
     console.log('🆕 Création d\'un nouveau contenu...');
@@ -190,6 +212,8 @@ router.post('/', verifyToken, upload.fields([
     
     let miniaturePath = '';
     let pdfFilePath = '';
+    let audioFilePath = '';
+    let videoFilePath = '';
 
     if (req.files?.miniature) {
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
@@ -201,6 +225,18 @@ router.post('/', verifyToken, upload.fields([
       pdfFilePath = req.files.pdfFile[0].path;
       console.log('📄 PDF traité:', pdfFilePath);
       console.log('📄 PDF existe?', fs.existsSync(pdfFilePath));
+    }
+
+    if (req.files?.audioFile) {
+      audioFilePath = req.files.audioFile[0].path;
+      console.log('🎵 Audio traité:', audioFilePath);
+      console.log('🎵 Audio existe?', fs.existsSync(audioFilePath));
+    }
+
+    if (req.files?.videoFile) {
+      videoFilePath = req.files.videoFile[0].path;
+      console.log('🎬 Vidéo traitée:', videoFilePath);
+      console.log('🎬 Vidéo existe?', fs.existsSync(videoFilePath));
     }
 
     const newContent = {
@@ -215,6 +251,8 @@ router.post('/', verifyToken, upload.fields([
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
       pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : 1,
+      audioFile: audioFilePath,
+      videoFile: videoFilePath,
       isVisible: false,
       createdBy: req.user.username,
       createdAt: new Date(),
@@ -245,7 +283,9 @@ router.post('/', verifyToken, upload.fields([
 // PUT - Modification d'un contenu
 router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
-  { name: 'pdfFile', maxCount: 1 }
+  { name: 'pdfFile', maxCount: 1 },
+  { name: 'audioFile', maxCount: 1 },
+  { name: 'videoFile', maxCount: 1 }
 ]), async (req, res) => {
   try {
     const contentId = parseInt(req.params.id);
@@ -260,6 +300,8 @@ router.put('/:id', verifyToken, upload.fields([
 
     let miniaturePath = contents[contentIndex].miniature;
     let pdfFilePath = contents[contentIndex].pdfFile;
+    let audioFilePath = contents[contentIndex].audioFile || '';
+    let videoFilePath = contents[contentIndex].videoFile || '';
 
     if (req.files?.miniature) {
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
@@ -269,6 +311,16 @@ router.put('/:id', verifyToken, upload.fields([
     if (req.files?.pdfFile) {
       pdfFilePath = req.files.pdfFile[0].path;
       console.log('📄 Nouveau PDF:', pdfFilePath);
+    }
+
+    if (req.files?.audioFile) {
+      audioFilePath = req.files.audioFile[0].path;
+      console.log('🎵 Nouvel audio:', audioFilePath);
+    }
+
+    if (req.files?.videoFile) {
+      videoFilePath = req.files.videoFile[0].path;
+      console.log('🎬 Nouvelle vidéo:', videoFilePath);
     }
 
     const updatedContent = {
@@ -282,6 +334,8 @@ router.put('/:id', verifyToken, upload.fields([
       description: req.body.description || contents[contentIndex].description,
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
+      audioFile: audioFilePath,
+      videoFile: videoFilePath,
       pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : contents[contentIndex].pageNumber || 1,
       updatedAt: new Date()
     };
