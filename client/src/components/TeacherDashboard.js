@@ -2630,6 +2630,28 @@ const TeacherDashboard = () => {
                         }}
                       />
                     )}
+                    {contentViewDialog.content.audioFile && (
+                      <>
+                        <Chip
+                          icon={<AudioFile />}
+                          label="Audio"
+                          sx={{
+                            background: 'rgba(230, 126, 34, 0.1)',
+                            color: '#e67e22',
+                            fontWeight: 500
+                          }}
+                        />
+                        <Box sx={{ mt: 2, mb: 2, width: '100%' }}>
+                          <audio 
+                            controls 
+                            style={{ width: '100%', borderRadius: '8px' }}
+                            src={API_ENDPOINTS.UPLOADS.FILE(contentViewDialog.content.audioFile)}
+                          >
+                            Votre navigateur ne supporte pas l'élément audio.
+                          </audio>
+                        </Box>
+                      </>
+                    )}
                     {contentViewDialog.content && (
                       <TextField
                         type="number"
