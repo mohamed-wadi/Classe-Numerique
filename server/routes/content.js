@@ -59,66 +59,7 @@ const storage = multer.diskStorage({
   }
 });
 
-// Filtrage des types MIME pour sécurité, par champ
-const isAllowedMimeForField = (fieldName, file) => {
-  // Normaliser quelques variantes et retirer les paramètres codec
-  const raw = file.mimetype || '';
-  const base = raw.split(';')[0].trim();
-  const normalized = base === 'image/jpg' ? 'image/jpeg' : base;
-  const lowerName = (file.originalname || '').toLowerCase();
-  const hasExt = (ext) => lowerName.endsWith(ext);
-  if (fieldName === 'miniature') {
-    return ['image/jpeg', 'image/png', 'image/gif', 'image/webp'].includes(normalized);
-  }
-  if (fieldName === 'pdfFile') {
-    return normalized === 'application/pdf';
-  }
-  if (fieldName === 'audioFile') {
-    if (['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/webm', 'audio/ogg'].includes(normalized)) return true;
-    // Tolérer certains cas "octet-stream" selon l'extension
-    if (normalized === 'application/octet-stream') {
-      return hasExt('.mp3') || hasExt('.wav') || hasExt('.ogg') || hasExt('.webm');
-    }
-    return false;
-  }
-  if (fieldName === 'videoFile') {
-    if (['video/mp4', 'video/webm', 'video/ogg'].includes(normalized)) return true;
-    if (normalized === 'application/octet-stream') {
-      return hasExt('.mp4') || hasExt('.webm') || hasExt('.ogv') || hasExt('.ogg');
-    }
-    return false;
-  }
-  // Par défaut, refuser
-  return false;
-};
-
-const upload = multer({ 
-  storage,
-  fileFilter: (req, file, cb) => {
-    if (isAllowedMimeForField(file.fieldname, file)) {
-      return cb(null, true);
-    }
-    console.warn(`🚫 Type de fichier non autorisé pour ${file.fieldname}: ${file.mimetype} (${file.originalname})`);
-    const err = new Error(`Type de fichier non autorisé pour ${file.fieldname}`);
-    err.code = 'LIMIT_UNEXPECTED_FILE_TYPE';
-    return cb(err);
-  },
-  limits: {
-    fileSize: 50 * 1024 * 1024 // 50MB
-  }
-});
-
-// Helper pour gérer proprement les erreurs Multer (renvoyer 400 au lieu de 500)
-const withUploadFields = (fields) => (req, res, next) => {
-  upload.fields(fields)(req, res, (err) => {
-    if (err) {
-      console.error('❌ Erreur upload:', err);
-      const status = err.code && err.code.startsWith('LIMIT') ? 400 : 400;
-      return res.status(status).json({ message: err.message || 'Erreur lors du téléchargement des fichiers' });
-    }
-    return next();
-  });
-};
+const upload = multer({ storage });
 
 // Stockage avec persistance locale
 let contents = [];
@@ -237,7 +178,7 @@ router.get('/', (req, res) => {
 });
 
 // POST - Création d'un nouveau contenu
-router.post('/', verifyToken, withUploadFields([
+router.post('/', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 },
   { name: 'audioFile', maxCount: 1 },
@@ -268,8 +209,8 @@ router.post('/', verifyToken, withUploadFields([
 
     if (req.files?.audioFile) {
       audioFilePath = req.files.audioFile[0].path;
-      console.log('🎵 Audio traité:', audioFilePath);
-      console.log('🎵 Audio existe?', fs.existsSync(audioFilePath));
+      console.log('🔊 Audio traité:', audioFilePath);
+      console.log('🔊 Audio existe?', fs.existsSync(audioFilePath));
     }
 
     if (req.files?.videoFile) {
@@ -289,9 +230,9 @@ router.post('/', verifyToken, withUploadFields([
       description: req.body.description || '',
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
-      pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : 1,
       audioFile: audioFilePath,
       videoFile: videoFilePath,
+      pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : 1,
       isVisible: false,
       createdBy: req.user.username,
       createdAt: new Date(),
@@ -320,7 +261,7 @@ router.post('/', verifyToken, withUploadFields([
 });
 
 // PUT - Modification d'un contenu
-router.put('/:id', verifyToken, withUploadFields([
+router.put('/:id', verifyToken, upload.fields([
   { name: 'miniature', maxCount: 1 },
   { name: 'pdfFile', maxCount: 1 },
   { name: 'audioFile', maxCount: 1 },
@@ -328,71 +269,106 @@ router.put('/:id', verifyToken, withUploadFields([
 ]), async (req, res) => {
   try {
     const contentId = parseInt(req.params.id);
-    console.log(`✏️  Modification du contenu ${contentId}...`);
-    
     const contentIndex = contents.findIndex(c => c.id === contentId);
-
+    
     if (contentIndex === -1) {
-      console.log(`❌ Contenu ${contentId} non trouvé`);
       return res.status(404).json({ message: 'Contenu non trouvé' });
     }
-
-    let miniaturePath = contents[contentIndex].miniature;
-    let pdfFilePath = contents[contentIndex].pdfFile;
-    let audioFilePath = contents[contentIndex].audioFile || '';
-    let videoFilePath = contents[contentIndex].videoFile || '';
-
+    
+    console.log(`✏️ Modification du contenu ${contentId}...`);
+    console.log('📝 Données reçues:', req.body);
+    console.log('📁 Fichiers reçus:', req.files);
+    
+    const existingContent = contents[contentIndex];
+    let miniaturePath = existingContent.miniature;
+    let pdfFilePath = existingContent.pdfFile;
+    let audioFilePath = existingContent.audioFile || '';
+    let videoFilePath = existingContent.videoFile || '';
+    
     if (req.files?.miniature) {
+      // Supprimer l'ancienne miniature si elle existe
+      if (existingContent.miniature && fs.existsSync(existingContent.miniature)) {
+        try {
+          fs.unlinkSync(existingContent.miniature);
+          console.log(`🗑️ Ancienne miniature supprimée: ${existingContent.miniature}`);
+        } catch (err) {
+          console.error(`❌ Erreur lors de la suppression de l'ancienne miniature: ${err.message}`);
+        }
+      }
+      
       miniaturePath = await resizeImageIfNeeded(req.files.miniature[0].path);
-      console.log('🖼️  Nouvelle miniature:', miniaturePath);
+      console.log('🖼️ Nouvelle miniature traitée:', miniaturePath);
     }
-
+    
     if (req.files?.pdfFile) {
+      // Supprimer l'ancien PDF s'il existe
+      if (existingContent.pdfFile && fs.existsSync(existingContent.pdfFile)) {
+        try {
+          fs.unlinkSync(existingContent.pdfFile);
+          console.log(`🗑️ Ancien PDF supprimé: ${existingContent.pdfFile}`);
+        } catch (err) {
+          console.error(`❌ Erreur lors de la suppression de l'ancien PDF: ${err.message}`);
+        }
+      }
+      
       pdfFilePath = req.files.pdfFile[0].path;
-      console.log('📄 Nouveau PDF:', pdfFilePath);
+      console.log('📄 Nouveau PDF traité:', pdfFilePath);
     }
 
     if (req.files?.audioFile) {
+      // Supprimer l'ancien fichier audio s'il existe
+      if (existingContent.audioFile && fs.existsSync(existingContent.audioFile)) {
+        try {
+          fs.unlinkSync(existingContent.audioFile);
+          console.log(`🗑️ Ancien fichier audio supprimé: ${existingContent.audioFile}`);
+        } catch (err) {
+          console.error(`❌ Erreur lors de la suppression de l'ancien fichier audio: ${err.message}`);
+        }
+      }
+      
       audioFilePath = req.files.audioFile[0].path;
-      console.log('🎵 Nouvel audio:', audioFilePath);
+      console.log('🔊 Nouveau fichier audio traité:', audioFilePath);
     }
 
     if (req.files?.videoFile) {
+      // Supprimer l'ancien fichier vidéo s'il existe
+      if (existingContent.videoFile && fs.existsSync(existingContent.videoFile)) {
+        try {
+          fs.unlinkSync(existingContent.videoFile);
+          console.log(`🗑️ Ancien fichier vidéo supprimé: ${existingContent.videoFile}`);
+        } catch (err) {
+          console.error(`❌ Erreur lors de la suppression de l'ancien fichier vidéo: ${err.message}`);
+        }
+      }
+      
       videoFilePath = req.files.videoFile[0].path;
-      console.log('🎬 Nouvelle vidéo:', videoFilePath);
+      console.log('🎬 Nouveau fichier vidéo traité:', videoFilePath);
     }
-
-    const updatedContent = {
-      ...contents[contentIndex],
-      title: req.body.title || contents[contentIndex].title,
-      level: req.body.level || contents[contentIndex].level,
-      category: req.body.category || contents[contentIndex].category,
-      theme: req.body.theme ? parseInt(req.body.theme) : contents[contentIndex].theme,
-      subcategory: req.body.subcategory || contents[contentIndex].subcategory,
-      type: req.body.type || contents[contentIndex].type,
-      description: req.body.description || contents[contentIndex].description,
+    
+    // Mettre à jour le contenu
+    contents[contentIndex] = {
+      ...existingContent,
+      title: req.body.title,
+      level: req.body.level,
+      category: req.body.category,
+      theme: req.body.theme ? parseInt(req.body.theme) : null,
+      subcategory: req.body.subcategory || '',
+      type: req.body.type,
+      description: req.body.description || '',
       miniature: miniaturePath,
       pdfFile: pdfFilePath,
       audioFile: audioFilePath,
       videoFile: videoFilePath,
-      pageNumber: req.body.pageNumber ? parseInt(req.body.pageNumber) : contents[contentIndex].pageNumber || 1,
       updatedAt: new Date()
     };
-
-    contents[contentIndex] = updatedContent;
     
     // Sauvegarder immédiatement
     saveContents();
     
-    console.log('✅ Contenu modifié:', {
-      id: updatedContent.id,
-      title: updatedContent.title,
-      miniature: updatedContent.miniature
-    });
-    
-    res.json(updatedContent);
+    console.log('✅ Contenu modifié avec succès');
+    res.json(contents[contentIndex]);
   } catch (error) {
-    console.error('❌ Erreur lors de la modification:', error);
+    console.error('❌ Erreur lors de la modification du contenu:', error);
     res.status(500).json({ message: 'Erreur lors de la modification du contenu' });
   }
 });

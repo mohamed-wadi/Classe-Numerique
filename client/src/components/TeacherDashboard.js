@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   AppBar,
@@ -66,10 +66,10 @@ import {
   People,
   Person,
   Search as SearchIcon,
-  Audiotrack,
-  Videocam,
-  FiberManualRecord,
-  Stop
+  AudioFile,
+  Mic,
+  VideoFile,
+  Videocam
 } from '@mui/icons-material';
   import SeyesBoard from './SeyesBoard';
 import { useAuth } from '../contexts/AuthContext';
@@ -117,10 +117,6 @@ const TeacherDashboard = () => {
   const [editingStudent, setEditingStudent] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [seyesShowMenu, setSeyesShowMenu] = useState(true);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordingSupported, setRecordingSupported] = useState(false);
-  const mediaRecorderRef = useRef(null);
-  const mediaStreamRef = useRef(null);
   const [formData, setFormData] = useState({
     title: '',
     level: 'CM2',
@@ -130,9 +126,7 @@ const TeacherDashboard = () => {
     type: 'cours_manuel',
     description: '',
     miniature: null,
-    pdfFile: null,
-    audioFile: null,
-    videoFile: null
+    pdfFile: null
   });
 
   // Nouvel état pour le formulaire de gestion des élèves
@@ -155,49 +149,6 @@ const TeacherDashboard = () => {
     open: false,
     content: null
   });
-
-  // Vérifier le support d'enregistrement audio
-  useEffect(() => {
-    setRecordingSupported(!!(navigator.mediaDevices && window.MediaRecorder));
-  }, []);
-
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      mediaStreamRef.current = stream;
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-      const recorder = new MediaRecorder(stream, { mimeType });
-      const chunks = [];
-      recorder.ondataavailable = (e) => {
-        if (e.data && e.data.size > 0) chunks.push(e.data);
-      };
-      recorder.onstop = () => {
-        const blob = new Blob(chunks, { type: mimeType });
-        const file = new File([blob], `enregistrement-${Date.now()}.webm`, { type: mimeType });
-        setFormData((prev) => ({ ...prev, audioFile: file }));
-        if (mediaStreamRef.current) {
-          mediaStreamRef.current.getTracks().forEach(t => t.stop());
-          mediaStreamRef.current = null;
-        }
-      };
-      mediaRecorderRef.current = recorder;
-      recorder.start();
-      setIsRecording(true);
-    } catch (err) {
-      console.error('Erreur lors du démarrage de l\'enregistrement:', err);
-      alert('Impossible de démarrer l\'enregistrement audio. Vérifiez les permissions.');
-    }
-  };
-
-  const stopRecording = () => {
-    try {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-        mediaRecorderRef.current.stop();
-      }
-    } finally {
-      setIsRecording(false);
-    }
-  };
 
   // États pour les historiques
   const [historiqueAjouts, setHistoriqueAjouts] = useState([]);
@@ -404,9 +355,7 @@ const TeacherDashboard = () => {
       type: 'cours_manuel',
       description: '',
       miniature: null,
-      pdfFile: null,
-      audioFile: null,
-      videoFile: null
+      pdfFile: null
     });
     setEditingContent(null);
   };
@@ -644,15 +593,7 @@ const TeacherDashboard = () => {
     }
     if (formData.audioFile) {
       submitData.append('audioFile', formData.audioFile, formData.audioFile.name);
-      console.log('🎵 Audio ajouté au formulaire');
-    }
-    if (formData.videoFile) {
-      submitData.append('videoFile', formData.videoFile, formData.videoFile.name);
-      console.log('🎬 Vidéo ajoutée au formulaire');
-    }
-    if (formData.audioFile) {
-      submitData.append('audioFile', formData.audioFile, formData.audioFile.name);
-      console.log('🎵 Audio ajouté au formulaire');
+      console.log('🔊 Audio ajouté au formulaire');
     }
     if (formData.videoFile) {
       submitData.append('videoFile', formData.videoFile, formData.videoFile.name);
@@ -2039,6 +1980,8 @@ const TeacherDashboard = () => {
                                 <Box sx={{ mt: 1.5, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                                   {content.pdfFile && (<Chip size="small" icon={<PictureAsPdf />} label="PDF" sx={{ background: 'rgba(231, 76, 60, 0.1)', color: '#e74c3c', fontWeight: 500, fontSize: '0.7rem' }} />)}
                                   {content.miniature && (<Chip size="small" icon={<Image />} label="Image" sx={{ background: 'rgba(52, 152, 219, 0.1)', color: '#3498db', fontWeight: 500, fontSize: '0.7rem' }} />)}
+                                  {content.audioFile && (<Chip size="small" icon={<AudioFile />} label="Audio" sx={{ background: 'rgba(230, 126, 34, 0.1)', color: '#e67e22', fontWeight: 500, fontSize: '0.7rem' }} />)}
+                                  {content.videoFile && (<Chip size="small" icon={<VideoFile />} label="Vidéo" sx={{ background: 'rgba(155, 89, 182, 0.1)', color: '#9b59b6', fontWeight: 500, fontSize: '0.7rem' }} />)}
                                 </Box>
                               </CardContent>
                               <CardActions sx={{ p: 2, pt: 0, justifyContent: 'space-between' }}>
@@ -2239,7 +2182,7 @@ const TeacherDashboard = () => {
                 />
 
                 <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Button
                       variant="outlined"
                       component="label"
@@ -2264,7 +2207,7 @@ const TeacherDashboard = () => {
                     </Button>
                   </Grid>
                   
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Button
                       variant="outlined"
                       component="label"
@@ -2288,23 +2231,23 @@ const TeacherDashboard = () => {
                       />
                     </Button>
                   </Grid>
-                  
-                  <Grid item xs={6}>
+
+                  <Grid item xs={12} sm={6} md={3}>
                     <Button
                       variant="outlined"
                       component="label"
                       fullWidth
-                      startIcon={<Audiotrack />}
+                      startIcon={<AudioFile />}
                       sx={{
-                        borderColor: '#3498db',
-                        color: '#3498db',
+                        borderColor: '#e67e22',
+                        color: '#e67e22',
                         '&:hover': {
-                          borderColor: '#2980b9',
-                          backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                          borderColor: '#d35400',
+                          backgroundColor: 'rgba(230, 126, 34, 0.05)',
                         }
                       }}
                     >
-                      Fichier audio
+                      Fichier Audio
                       <input
                         type="file"
                         hidden
@@ -2312,40 +2255,24 @@ const TeacherDashboard = () => {
                         onChange={(e) => setFormData({ ...formData, audioFile: e.target.files[0] })}
                       />
                     </Button>
-                    {recordingSupported && (
-                      <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                        <Button
-                          variant="contained"
-                          color={isRecording ? 'error' : 'primary'}
-                          startIcon={isRecording ? <Stop /> : <FiberManualRecord />}
-                          onClick={isRecording ? stopRecording : startRecording}
-                          sx={{
-                            backgroundColor: isRecording ? '#e74c3c' : '#3498db',
-                            '&:hover': { backgroundColor: isRecording ? '#c0392b' : '#2980b9' }
-                          }}
-                        >
-                          {isRecording ? 'Arrêter' : 'Enregistrer audio'}
-                        </Button>
-                      </Box>
-                    )}
                   </Grid>
 
-                  <Grid item xs={6}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Button
                       variant="outlined"
                       component="label"
                       fullWidth
-                      startIcon={<Videocam />}
+                      startIcon={<VideoFile />}
                       sx={{
-                        borderColor: '#3498db',
-                        color: '#3498db',
+                        borderColor: '#9b59b6',
+                        color: '#9b59b6',
                         '&:hover': {
-                          borderColor: '#2980b9',
-                          backgroundColor: 'rgba(52, 152, 219, 0.05)',
+                          borderColor: '#8e44ad',
+                          backgroundColor: 'rgba(155, 89, 182, 0.05)',
                         }
                       }}
                     >
-                      Fichier vidéo
+                      Fichier Vidéo
                       <input
                         type="file"
                         hidden

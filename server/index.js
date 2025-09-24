@@ -95,21 +95,11 @@ function serveFile(filePath, filename, res) {
   } else if (['.jpg', '.jpeg', '.png', '.gif', '.webp'].includes(ext)) {
     contentType = `image/${ext.substring(1)}`;
     disposition = 'inline';
-  } else if (['.mp3', '.mpeg'].includes(ext)) {
-    contentType = 'audio/mpeg';
+  } else if (['.mp3', '.wav', '.ogg'].includes(ext)) {
+    contentType = `audio/${ext.substring(1)}`;
     disposition = 'inline';
-  } else if (ext === '.wav') {
-    contentType = 'audio/wav';
-    disposition = 'inline';
-  } else if (ext === '.ogg') {
-    contentType = 'audio/ogg';
-    disposition = 'inline';
-  } else if (ext === '.webm') {
-    // Could be audio or video; default to video for browser playback
-    contentType = 'video/webm';
-    disposition = 'inline';
-  } else if (ext === '.mp4') {
-    contentType = 'video/mp4';
+  } else if (['.mp4', '.webm', '.ogv'].includes(ext)) {
+    contentType = `video/${ext.substring(1)}`;
     disposition = 'inline';
   }
   
