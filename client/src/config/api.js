@@ -41,9 +41,12 @@ export const API_ENDPOINTS = {
       // Extraire le nom de fichier pour l'endpoint /uploads et encoder pour URL
       const fileName = normalizedPath.split('/').pop();
       const encoded = encodeURIComponent(fileName);
-      return `${API_BASE_URL}/uploads/${encoded}`;
+      
+      // Ajouter un timestamp pour éviter la mise en cache agressive
+      const timestamp = Date.now();
+      return `${API_BASE_URL}/uploads/${encoded}?t=${timestamp}`;
     },
   },
 };
 
-export default API_BASE_URL; 
+export default API_BASE_URL;

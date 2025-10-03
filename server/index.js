@@ -108,7 +108,9 @@ function serveFile(filePath, filename, res) {
   res.setHeader('Content-Type', contentType);
   res.setHeader('Content-Disposition', `${disposition}; filename*=UTF-8''${encodeURIComponent(filename)}`);
   res.setHeader('Cache-Control', 'public, max-age=3600');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  
+  // Utiliser la configuration CORS existante au lieu de '*'
+  // res.setHeader('Access-Control-Allow-Origin', '*');
   
   // Gérer les erreurs de lecture
   fileStream.on('error', (error) => {

@@ -54,7 +54,9 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data.user);
     } catch (error) {
       console.error('Erreur vérification token:', error);
-      localStorage.removeItem('token');
+      // Nettoyer les deux types de stockage en cas d'erreur
+      sessionStorage.removeItem('token');
+      localStorage.removeItem('tokenData');
       delete axios.defaults.headers.common['Authorization'];
     } finally {
       setLoading(false);

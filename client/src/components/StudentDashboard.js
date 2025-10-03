@@ -1186,6 +1186,18 @@ const StudentDashboard = () => {
                           controls 
                           style={{ width: '100%', borderRadius: '8px' }}
                           src={API_ENDPOINTS.UPLOADS.FILE(selectedContent.audioFile)}
+                          onError={(e) => {
+                            console.error("Erreur de chargement audio:", e);
+                            e.target.parentNode.innerHTML += `
+                              <div style="color: #e74c3c; margin-top: 10px; text-align: center;">
+                                Impossible de charger le fichier audio. 
+                                <button onclick="window.open('${API_ENDPOINTS.UPLOADS.FILE(selectedContent.audioFile)}', '_blank')" 
+                                  style="background: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; margin-left: 10px; cursor: pointer;">
+                                  Télécharger
+                                </button>
+                              </div>
+                            `;
+                          }}
                         >
                           Votre navigateur ne supporte pas l'élément audio.
                         </audio>
